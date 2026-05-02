@@ -1,0 +1,8 @@
+May  2 09:14:01 auth-01 sshd[2201]: Failed password for invalid user admin from 203.0.113.66 port 52210 ssh2
+May  2 09:14:31 auth-01 sshd[2204]: Failed password for invalid user admin from 203.0.113.66 port 52212 ssh2
+May  2 09:15:01 auth-01 sshd[2207]: Failed password for invalid user admin from 203.0.113.66 port 52214 ssh2
+May  2 09:15:31 auth-01 sshd[2210]: Failed password for invalid user admin from 203.0.113.66 port 52216 ssh2
+May  2 09:16:01 auth-01 sshd[2213]: Failed password for invalid user admin from 203.0.113.66 port 52218 ssh2
+May  2 09:16:44 auth-01 sshd[2219]: Accepted password for admin from 203.0.113.66 port 52220 ssh2
+May  2 09:22:10 auth-01 sshd[2244]: Accepted password for alice from 198.51.100.11 port 50112 ssh2
+

@@ -1,0 +1,6 @@
+2026-05-02T09:20:01Z fw-01 DENY src=198.51.100.200 dst=10.0.0.12 proto=TCP dpt=22 msg=Denied SSH attempt to protected host
+2026-05-02T09:20:08Z fw-01 DENY src=198.51.100.200 dst=10.0.0.13 proto=TCP dpt=3389 msg=Denied RDP attempt to protected host
+2026-05-02T09:20:15Z fw-01 DENY src=198.51.100.200 dst=10.0.0.14 proto=TCP dpt=445 msg=Denied SMB attempt to protected host
+2026-05-02T09:20:22Z fw-01 DENY src=198.51.100.200 dst=10.0.0.15 proto=TCP dpt=5432 msg=Denied database access attempt
+2026-05-02T09:20:29Z fw-01 ALLOW src=203.0.113.10 dst=10.0.0.20 proto=TCP dpt=443 msg=Allowed HTTPS traffic
+

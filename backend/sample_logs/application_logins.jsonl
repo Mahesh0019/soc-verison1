@@ -1,0 +1,5 @@
+{"timestamp":"2026-05-02T09:25:00Z","source_ip":"45.88.12.24","username":"svc-legacy","hostname":"app-01","event_type":"failed_login","event_category":"authentication","severity":"medium","message":"Application login failed for svc-legacy"}
+{"timestamp":"2026-05-02T09:25:30Z","source_ip":"45.88.12.24","username":"svc-legacy","hostname":"app-01","event_type":"failed_login","event_category":"authentication","severity":"medium","message":"Application login failed for svc-legacy"}
+{"timestamp":"2026-05-02T09:26:00Z","source_ip":"45.88.12.24","username":"svc-legacy","hostname":"app-01","event_type":"successful_login","event_category":"authentication","severity":"low","message":"Application login succeeded for svc-legacy"}
+{"timestamp":"2026-05-02T09:27:00Z","source_ip":"198.51.100.30","username":"morgan","hostname":"app-01","event_type":"successful_login","event_category":"authentication","severity":"low","message":"Application login succeeded for morgan"}
+
