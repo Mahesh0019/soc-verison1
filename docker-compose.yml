@@ -17,12 +17,16 @@ services:
 
   backend:
     build:
-      context: ./backend
+      # Build context is repo root so connector/ is reachable by backend/Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     environment:
       DATABASE_URL: postgresql+psycopg://siem:siem@db:5432/mini_siem
       JWT_SECRET_KEY: change-me-for-local-dev
       CORS_ORIGINS: '["http://localhost:5173","http://127.0.0.1:5173"]'
       AUTO_CREATE_TABLES: "true"
+      # Connector is OFF by default locally; set to true + add secrets to enable
+      ENABLE_JUICE_SHOP_CONNECTOR: "false"
     ports:
       - "8000:8000"
     depends_on:
@@ -41,4 +45,3 @@ services:
 
 volumes:
   postgres_data:
-

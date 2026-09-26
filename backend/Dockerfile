@@ -6,14 +6,18 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends gcc libpq-dev && rm -rf /var/lib/apt/lists/*
-COPY requirements.txt .
+
+# Build context is the repo root so all paths must be prefixed with backend/
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app ./app
-COPY alembic ./alembic
-COPY alembic.ini .
-COPY sample_logs ./sample_logs
+COPY backend/app ./app
+COPY backend/alembic ./alembic
+COPY backend/alembic.ini .
+COPY backend/sample_logs ./sample_logs
+
+# Copy top-level connector package so it is importable inside the image
+COPY connector ./connector
 
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
-
