@@ -12,6 +12,7 @@ from app.api import (
     detection_quality,
     events,
     evidence,
+    feedback,
     incidents,
     logs,
     risk,
@@ -34,6 +35,7 @@ api_router.include_router(risk.router)
 api_router.include_router(rules.router)
 api_router.include_router(threat_intel.router)
 api_router.include_router(evidence.router)
+api_router.include_router(feedback.router)
 api_router.include_router(detection_quality.router)
 api_router.include_router(admin.router)
 api_router.include_router(demo.router)

@@ -19,6 +19,13 @@ from app.schemas.common import DashboardSummary, Message, Page
 from app.schemas.detection_quality import DetectionQualityOut, DetectionQualitySummaryOut
 from app.schemas.event import EventCreate, EventOut, IngestRequest, IngestResponse
 from app.schemas.evidence import EvidenceOut, EvidencePackageOut
+from app.schemas.feedback import (
+    AnalystFeedbackCreate,
+    AnalystFeedbackOut,
+    FeedbackSummaryOut,
+    RuleTuningApplyRequest,
+    RuleTuningProposal,
+)
 from app.schemas.incident import IncidentDetail, IncidentOut, IncidentStatusUpdate
 from app.schemas.risk import RiskAssessmentOut, RiskSummaryOut
 from app.schemas.rule import RuleCreate, RuleOut, RuleToggle
@@ -35,6 +42,8 @@ __all__ = [
     "AlertNoteOut",
     "AlertOut",
     "AlertStatusUpdate",
+    "AnalystFeedbackCreate",
+    "AnalystFeedbackOut",
     "BehavioralAnomalyResult",
     "BehavioralFeatureVector",
     "CaseCreate",
@@ -49,6 +58,7 @@ __all__ = [
     "EventOut",
     "EvidenceOut",
     "EvidencePackageOut",
+    "FeedbackSummaryOut",
     "IncidentDetail",
     "IncidentOut",
     "IncidentStatusUpdate",
@@ -65,6 +75,8 @@ __all__ = [
     "RuleCreate",
     "RuleOut",
     "RuleToggle",
+    "RuleTuningApplyRequest",
+    "RuleTuningProposal",
     "ThreatIndicatorCreate",
     "ThreatIndicatorOut",
     "Token",
