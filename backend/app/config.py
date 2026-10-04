@@ -1,5 +1,6 @@
 from functools import lru_cache
-from pydantic import AnyHttpUrl, Field
+from typing import Any
+from pydantic import AnyHttpUrl, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,7 +12,18 @@ class Settings(BaseSettings):
     jwt_secret_key: str = Field(default="change-me-in-production")
     jwt_algorithm: str = "HS256"
     jwt_expire_minutes: int = 60 * 12
-    cors_origins: list[AnyHttpUrl | str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    cors_origins: list[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v: Any) -> list[str]:
+        if isinstance(v, str):
+            if v.strip() == "*":
+                return ["*"]
+            return [i.strip() for i in v.split(",") if i.strip()]
+        elif isinstance(v, (list, set, tuple)):
+            return [str(i) for i in v]
+        return ["http://localhost:5173", "http://127.0.0.1:5173"]
     max_upload_bytes: int = 2 * 1024 * 1024
     allowed_upload_extensions: set[str] = {".json", ".csv", ".txt", ".log"}
     auto_create_tables: bool = True
