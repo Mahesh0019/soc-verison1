@@ -29,3 +29,10 @@ class AIAnalysis(Base):
 
     alert = relationship("Alert", back_populates="ai_analyses")
     incident = relationship("Incident", back_populates="ai_analyses")
+
+    @property
+    def grounding_rate(self) -> float:
+        if self.ai_claim_count <= 0:
+            return 1.0 if self.supported_claim_count > 0 else 0.0
+        return round(self.supported_claim_count / self.ai_claim_count, 2)
+

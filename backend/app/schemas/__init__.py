@@ -1,3 +1,4 @@
+from app.schemas.ai_triage import AIAgreementRequest, AIAnalysisOut, AIClaim, AITriageSummary
 from app.schemas.alert import AlertDetail, AlertNoteCreate, AlertNoteOut, AlertOut, AlertStatusUpdate
 from app.schemas.behavioral import (
     BehavioralAnomalyResult,
@@ -25,6 +26,10 @@ from app.schemas.threat import ThreatIndicatorCreate, ThreatIndicatorOut
 from app.schemas.user import LoginRequest, Token, UserCreate, UserOut, UserUpdate
 
 __all__ = [
+    "AIAgreementRequest",
+    "AIAnalysisOut",
+    "AIClaim",
+    "AITriageSummary",
     "AlertDetail",
     "AlertNoteCreate",
     "AlertNoteOut",
