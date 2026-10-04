@@ -1,0 +1,14 @@
+.git
+.venv
+node_modules
+frontend/node_modules
+frontend/dist
+backend/.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+*.log
+attack_results.csv
+soc_attack_results.csv
