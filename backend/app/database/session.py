@@ -13,9 +13,23 @@ if db_url.startswith("postgres://"):
 elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+"):
     db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
 
-engine = create_engine(db_url, pool_pre_ping=True)
-SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
+connect_args = {}
+if db_url.startswith("sqlite"):
+    connect_args = {"check_same_thread": False}
+    engine = create_engine(db_url, connect_args=connect_args)
+else:
+    try:
+        engine = create_engine(db_url, pool_pre_ping=True)
+        # test connection
+        with engine.connect() as conn:
+            pass
+    except Exception:
+        # Fallback to local SQLite if PostgreSQL is not running
+        db_url = "sqlite:///./mini_siem.db"
+        connect_args = {"check_same_thread": False}
+        engine = create_engine(db_url, connect_args=connect_args)
 
+SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False, expire_on_commit=False)
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -24,4 +38,5 @@ def get_db() -> Generator[Session, None, None]:
         yield db
     finally:
         db.close()
+
 
