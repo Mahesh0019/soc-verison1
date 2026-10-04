@@ -77,7 +77,17 @@ def create_app() -> FastAPI:
 
     app.include_router(api_router)
 
-    @app.get("/health")
+    @app.api_route("/", methods=["GET", "HEAD"])
+    def root() -> dict:
+        return {
+            "status": "online",
+            "service": settings.app_name,
+            "version": "1.0.0",
+            "docs": "/api/docs",
+            "health": "/health",
+        }
+
+    @app.api_route("/health", methods=["GET", "HEAD"])
     def health() -> dict:
         return {"status": "ok", "service": settings.app_name}
 

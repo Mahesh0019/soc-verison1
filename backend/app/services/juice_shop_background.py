@@ -83,7 +83,6 @@ def _poll_once(
     from app.database.session import SessionLocal
     from app.services.ingestion import ingest_api_payload
 
-    print("[CONNECTOR] polling telemetry")
     checkpoint = load_checkpoint(checkpoint_path)
 
     try:
@@ -93,11 +92,14 @@ def _poll_once(
             since=checkpoint,
         )
     except Exception as exc:
-        logger.error(f"[CONNECTOR] Telemetry fetch failed: {exc}")
+        err_str = str(exc)
+        if "502" in err_str or "503" in err_str or "504" in err_str:
+            logger.warning(f"[CONNECTOR] Remote telemetry server waking up ({exc}). Will retry...")
+        else:
+            logger.error(f"[CONNECTOR] Telemetry fetch failed: {exc}")
         raise
 
     if not raw_events:
-        print("[CONNECTOR] received 0 events")
         return 0
 
     print(f"[CONNECTOR] received {len(raw_events)} events")
@@ -168,10 +170,12 @@ async def _poll_loop(
     """
     backoff = 1.0
     max_backoff = 60.0
+    cycle_count = 0
 
     print("[CONNECTOR] background telemetry collector starting")
     try:
         while True:
+            cycle_count += 1
             try:
                 await asyncio.to_thread(
                     _poll_once,
@@ -182,13 +186,22 @@ async def _poll_loop(
                     checkpoint_path,
                 )
                 backoff = 1.0  # reset on success
+                if cycle_count % 60 == 0:
+                    logger.info("[CONNECTOR] Heartbeat: telemetry collector active and polling.")
             except asyncio.CancelledError:
                 raise
             except Exception as exc:
-                logger.error(
-                    f"[CONNECTOR] cycle error: {exc}. "
-                    f"Retrying in {backoff:.1f}s..."
-                )
+                err_str = str(exc)
+                if "502" in err_str or "503" in err_str or "504" in err_str:
+                    logger.warning(
+                        f"[CONNECTOR] Upstream telemetry waking up / temporarily unavailable. "
+                        f"Retrying in {backoff:.1f}s..."
+                    )
+                else:
+                    logger.error(
+                        f"[CONNECTOR] cycle error: {exc}. "
+                        f"Retrying in {backoff:.1f}s..."
+                    )
                 try:
                     await asyncio.sleep(backoff)
                 except asyncio.CancelledError:

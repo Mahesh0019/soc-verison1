@@ -32,6 +32,20 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("mini-siem-token");
+      localStorage.removeItem("mini-siem-user");
+      if (typeof window !== "undefined" && window.location.pathname !== "/login") {
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export async function login(username: string, password: string) {
   const { data } = await api.post<{ access_token: string; token_type: string; user: User }>("/auth/login", { username, password });
   return data;

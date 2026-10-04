@@ -195,6 +195,8 @@ def fetch_telemetry(url: str, api_key: str, since: str | None = None, timeout: f
             logger.error(f"[CONNECTOR] Authentication/Authorization failure ({err.code}) when calling telemetry API")
         elif err.code == 429:
             logger.warning("[CONNECTOR] Telemetry API rate limit exceeded (429)")
+        elif err.code in (502, 503, 504):
+            logger.warning(f"[CONNECTOR] Telemetry API temporarily unavailable or sleeping (HTTP {err.code}) - retrying shortly")
         else:
             logger.error(f"[CONNECTOR] Telemetry API HTTP error: {err.code}")
         raise err
@@ -243,7 +245,6 @@ def poll_and_process(config: ConnectorConfig) -> int:
     Executes one poll-transform-ingest iteration.
     Returns the total number of events successfully ingested into the SIEM.
     """
-    print("[CONNECTOR] polling telemetry")
     checkpoint = load_checkpoint(config.checkpoint_file)
 
     raw_events = fetch_telemetry(
@@ -253,7 +254,6 @@ def poll_and_process(config: ConnectorConfig) -> int:
     )
 
     if not raw_events:
-        print("[CONNECTOR] received 0 events")
         return 0
 
     print(f"[CONNECTOR] received {len(raw_events)} events")
