@@ -1,4 +1,12 @@
 from app.schemas.alert import AlertDetail, AlertNoteCreate, AlertNoteOut, AlertOut, AlertStatusUpdate
+from app.schemas.behavioral import (
+    BehavioralAnomalyResult,
+    BehavioralFeatureVector,
+    ModelStatusResponse,
+    ModelTrainingRequest,
+    ModelTrainingResponse,
+)
+
 from app.schemas.case import (
     CaseCreate,
     CaseOut,
@@ -22,6 +30,8 @@ __all__ = [
     "AlertNoteOut",
     "AlertOut",
     "AlertStatusUpdate",
+    "BehavioralAnomalyResult",
+    "BehavioralFeatureVector",
     "CaseCreate",
     "CaseOut",
     "CaseUpdate",
@@ -41,6 +51,9 @@ __all__ = [
     "IngestResponse",
     "LoginRequest",
     "Message",
+    "ModelStatusResponse",
+    "ModelTrainingRequest",
+    "ModelTrainingResponse",
     "Page",
     "RiskAssessmentOut",
     "RiskSummaryOut",

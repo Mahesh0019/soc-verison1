@@ -85,22 +85,36 @@ def calculate_context_confidence(alert: Alert, db: Session) -> float:
     return min(1.0, round(score, 2))
 
 
-def calculate_behavioral_confidence(alert: Alert) -> float:
+def calculate_behavioral_confidence(alert: Alert, db: Optional[Session] = None) -> float:
     """
-    Evaluates behavioral anomaly confidence (heuristic baseline before ML Isolation Forest).
+    Evaluates behavioral anomaly confidence blending heuristic baseline and ML Isolation Forest.
     """
-    score = 0.60
-    # Escalation based on high severity
+    base_score = 0.60
     if alert.severity.lower() == "critical":
-        score += 0.25
+        base_score += 0.25
     elif alert.severity.lower() == "high":
-        score += 0.15
+        base_score += 0.15
 
-    # Multiple events indicating sustained behavior
     if alert.event_count >= 5:
-        score += 0.10
+        base_score += 0.10
 
-    return min(1.0, round(score, 2))
+    base_score = min(1.0, round(base_score, 2))
+
+    if db is not None:
+        try:
+            from app.services.ml_anomaly_service import score_alert_behavior
+
+            ml_result = score_alert_behavior(db, alert)
+            ml_anomaly = ml_result.get("anomaly_score", 0.5)
+            # Blend 50% heuristic baseline + 50% calibrated ML anomaly score
+            calibrated_ml = 0.40 + (0.60 * ml_anomaly)
+            blended = (0.50 * base_score) + (0.50 * calibrated_ml)
+            return min(1.0, round(blended, 2))
+        except Exception:
+            return base_score
+
+    return base_score
+
 
 
 def evaluate_alert_quality(db: Session, alert: Alert) -> DetectionQuality:
@@ -134,7 +148,7 @@ def evaluate_alert_quality(db: Session, alert: Alert) -> DetectionQuality:
     rule_conf = get_rule_confidence(alert)
 
     # 4. Behavioral Confidence
-    behav_conf = calculate_behavioral_confidence(alert)
+    behav_conf = calculate_behavioral_confidence(alert, db=db)
 
     # 5. Context Confidence
     context_conf = calculate_context_confidence(alert, db)
@@ -166,6 +180,7 @@ def evaluate_alert_quality(db: Session, alert: Alert) -> DetectionQuality:
         "event_count": alert.event_count,
         "is_incident_linked": inc_link is not None,
     }
+
 
     tier = "High" if overall_quality >= 0.80 else "Medium" if overall_quality >= 0.55 else "Low"
     explanation = (
