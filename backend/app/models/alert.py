@@ -27,6 +27,11 @@ class Alert(Base):
     rule = relationship("DetectionRule", back_populates="alerts")
     events = relationship("AlertEvent", back_populates="alert", cascade="all, delete-orphan")
     notes = relationship("AlertNote", back_populates="alert", cascade="all, delete-orphan")
+    evidence_items = relationship("Evidence", back_populates="alert", cascade="all, delete-orphan")
+    detection_quality = relationship("DetectionQuality", back_populates="alert", uselist=False, cascade="all, delete-orphan")
+    risk_assessment = relationship("RiskAssessment", back_populates="alert", uselist=False, cascade="all, delete-orphan")
+    ai_analyses = relationship("AIAnalysis", back_populates="alert", cascade="all, delete-orphan")
+    feedbacks = relationship("AnalystFeedback", back_populates="alert", cascade="all, delete-orphan")
 
 
 class AlertEvent(Base):
