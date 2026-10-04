@@ -122,5 +122,50 @@ def builtin_rules() -> list[dict[str, Any]]:
             "time_window_minutes": 60,
             "threshold": 1,
         },
+        {
+            "name": "SQL injection attempt detected",
+            "description": "Detects SQL injection signatures in HTTP request paths or messages.",
+            "severity": "critical",
+            "enabled": True,
+            "conditions_json": {
+                "type": "pattern",
+                "filters": {
+                    "pattern_any": ["' or '1'='1", "union select", "sleep(", "' or 1=1", "select * from", "-- -"]
+                },
+                "group_by": ["source_ip"],
+            },
+            "time_window_minutes": 15,
+            "threshold": 1,
+        },
+        {
+            "name": "Path traversal attempt detected",
+            "description": "Detects directory traversal sequences in requested URLs or query parameters.",
+            "severity": "high",
+            "enabled": True,
+            "conditions_json": {
+                "type": "pattern",
+                "filters": {
+                    "pattern_any": ["../", "..%2f", "..%5c", "/etc/passwd", "win.ini"]
+                },
+                "group_by": ["source_ip"],
+            },
+            "time_window_minutes": 15,
+            "threshold": 1,
+        },
+        {
+            "name": "Cross-site scripting probe detected",
+            "description": "Detects common XSS payload signatures in HTTP parameters.",
+            "severity": "high",
+            "enabled": True,
+            "conditions_json": {
+                "type": "pattern",
+                "filters": {
+                    "pattern_any": ["<script>", "javascript:", "alert(", "<img src=x onerror="]
+                },
+                "group_by": ["source_ip"],
+            },
+            "time_window_minutes": 15,
+            "threshold": 1,
+        },
     ]
 

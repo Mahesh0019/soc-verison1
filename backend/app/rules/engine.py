@@ -10,7 +10,7 @@ from app.models import Alert, AlertEvent, DetectionRule, NormalizedEvent, Threat
 ACTIVE_ALERT_STATUSES = ("open", "investigating")
 
 
-def evaluate_rules_for_events(db: Session, events: list[NormalizedEvent]) -> int:
+def evaluate_rules_for_events(db: Session, events: list[NormalizedEvent], auto_correlate: bool = True) -> int:
     if not events:
         return 0
     rules = db.query(DetectionRule).filter(DetectionRule.enabled.is_(True)).all()
@@ -21,9 +21,15 @@ def evaluate_rules_for_events(db: Session, events: list[NormalizedEvent]) -> int
             touched_alert_ids.update(evaluate_success_after_failures(db, rule, events))
         elif rule_type == "blacklist":
             touched_alert_ids.update(evaluate_blacklist(db, rule, events))
+        elif rule_type == "pattern":
+            touched_alert_ids.update(evaluate_pattern_rule(db, rule, events))
         else:
             touched_alert_ids.update(evaluate_threshold_rule(db, rule, events))
     db.flush()
+    if auto_correlate and touched_alert_ids:
+        from app.rules.correlation import correlate_incidents
+        correlate_incidents(db, touched_alert_ids)
+        db.flush()
     return len(touched_alert_ids)
 
 
@@ -88,6 +94,29 @@ def evaluate_blacklist(db: Session, rule: DetectionRule, events: list[Normalized
             continue
         alert = upsert_alert(db, rule, event, [event], {"source_ip": event.source_ip, "username": event.username}, forced_title="Blacklisted indicator matched")
         alert_ids.add(alert.id)
+    return alert_ids
+
+
+def evaluate_pattern_rule(db: Session, rule: DetectionRule, events: list[NormalizedEvent]) -> set[int]:
+    alert_ids: set[int] = set()
+    filters = rule.conditions_json.get("filters", {})
+    group_by = rule.conditions_json.get("group_by", ["source_ip"])
+    for event in events:
+        if not event_matches_filters(event, filters):
+            continue
+        group_values = {field: getattr(event, field, None) for field in group_by}
+        start = event.timestamp - timedelta(minutes=rule.time_window_minutes)
+        query = db.query(NormalizedEvent).filter(NormalizedEvent.timestamp >= start, NormalizedEvent.timestamp <= event.timestamp)
+        query = apply_filters(query, filters)
+        for field, value in group_values.items():
+            if value:
+                query = query.filter(getattr(NormalizedEvent, field) == value)
+        related = query.order_by(NormalizedEvent.timestamp.desc()).limit(250).all()
+        if not related:
+            related = [event]
+        if len(related) >= rule.threshold:
+            alert = upsert_alert(db, rule, event, related, group_values)
+            alert_ids.add(alert.id)
     return alert_ids
 
 
@@ -173,6 +202,10 @@ def event_matches_filters(event: NormalizedEvent, filters: dict[str, Any]) -> bo
             haystack = (event.user_agent or "").lower()
             if not any(str(token).lower() in haystack for token in expected):
                 return False
+        elif key == "pattern_any":
+            haystack = f"{event.request_path or ''} {event.message or ''} {event.raw_log or ''}".lower()
+            if not any(str(token).lower() in haystack for token in expected):
+                return False
         elif key == "geo_country_not_in":
             if event.geo_country in expected:
                 return False
@@ -197,6 +230,12 @@ def apply_filters(query, filters: dict[str, Any]):
             query = query.filter(or_(*clauses))
         elif key == "user_agent_contains_any":
             clauses = [NormalizedEvent.user_agent.ilike(f"%{token}%") for token in expected]
+            query = query.filter(or_(*clauses))
+        elif key == "pattern_any":
+            clauses = []
+            for token in expected:
+                clauses.append(NormalizedEvent.request_path.ilike(f"%{token}%"))
+                clauses.append(NormalizedEvent.message.ilike(f"%{token}%"))
             query = query.filter(or_(*clauses))
         elif key == "geo_country_not_in":
             query = query.filter(~NormalizedEvent.geo_country.in_(expected))
