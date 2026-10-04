@@ -17,6 +17,12 @@ from pathlib import Path
 # Add backend directory to sys.path
 sys.path.insert(0, str(Path(__file__).parent.parent / "backend"))
 
+# Enforce isolated in-memory test environment
+os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+os.environ["AUTO_CREATE_TABLES"] = "true"
+os.environ["ENABLE_JUICE_SHOP_CONNECTOR"] = "false"
+os.environ["JWT_SECRET_KEY"] = "integration-test-secret-key-12345"
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
@@ -74,6 +80,7 @@ class TestEvidenceEngine(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         Base.metadata.drop_all(bind=cls.engine)
+        cls.engine.dispose()
 
     def setUp(self):
         self.db = self.SessionLocal()
