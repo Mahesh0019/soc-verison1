@@ -18,6 +18,7 @@ COPY backend/sample_logs ./sample_logs
 
 # Copy top-level connector package so it is importable inside the image
 COPY connector ./connector
+COPY soc_attack_catalog.json ./soc_attack_catalog.json
 
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

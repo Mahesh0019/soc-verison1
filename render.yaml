@@ -1,0 +1,50 @@
+services:
+  # ── Backend API & Telemetry Service ──────────────────────────────────────────
+  - type: web
+    name: mini-siem-backend
+    env: docker
+    dockerContext: .
+    dockerfilePath: backend/Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mini-siem-db
+          property: connectionString
+      - key: AUTO_CREATE_TABLES
+        value: "true"
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: "*"
+      - key: ENABLE_JUICE_SHOP_CONNECTOR
+        value: "true"
+      - key: JUICE_SHOP_TELEMETRY_URL
+        value: "https://demo-victim-1.onrender.com/api/telemetry/events"
+      - key: POLL_INTERVAL_SECONDS
+        value: "10.0"
+
+  # ── Frontend React + Vite Dashboard ──────────────────────────────────────────
+  - type: web
+    name: mini-siem-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: mini-siem-backend
+          property: host
+
+databases:
+  # ── Managed PostgreSQL Database ──────────────────────────────────────────────
+  - name: mini-siem-db
+    plan: free
+    databaseName: mini_siem
+    user: siem
