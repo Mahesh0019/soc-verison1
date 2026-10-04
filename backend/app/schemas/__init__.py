@@ -31,6 +31,13 @@ from app.schemas.risk import RiskAssessmentOut, RiskSummaryOut
 from app.schemas.rule import RuleCreate, RuleOut, RuleToggle
 from app.schemas.threat import ThreatIndicatorCreate, ThreatIndicatorOut
 from app.schemas.user import LoginRequest, Token, UserCreate, UserOut, UserUpdate
+from app.schemas.validation import (
+    CustomValidationTestRequest,
+    RuleHealthMetric,
+    ValidationSuiteRunResponse,
+    ValidationSummaryOut,
+    ValidationTestOut,
+)
 
 __all__ = [
     "AIAgreementRequest",
@@ -83,4 +90,9 @@ __all__ = [
     "UserCreate",
     "UserOut",
     "UserUpdate",
+    "CustomValidationTestRequest",
+    "RuleHealthMetric",
+    "ValidationSuiteRunResponse",
+    "ValidationSummaryOut",
+    "ValidationTestOut",
 ]

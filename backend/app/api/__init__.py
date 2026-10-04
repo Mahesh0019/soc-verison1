@@ -18,6 +18,7 @@ from app.api import (
     risk,
     rules,
     threat_intel,
+    validation,
 )
 
 
@@ -34,6 +35,7 @@ api_router.include_router(cases.router)
 api_router.include_router(risk.router)
 api_router.include_router(rules.router)
 api_router.include_router(threat_intel.router)
+api_router.include_router(validation.router)
 api_router.include_router(evidence.router)
 api_router.include_router(feedback.router)
 api_router.include_router(detection_quality.router)
