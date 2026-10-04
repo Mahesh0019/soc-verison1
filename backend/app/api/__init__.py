@@ -19,6 +19,7 @@ from app.api import (
     rules,
     threat_intel,
     validation,
+    experiments,
 )
 
 
@@ -41,3 +42,4 @@ api_router.include_router(feedback.router)
 api_router.include_router(detection_quality.router)
 api_router.include_router(admin.router)
 api_router.include_router(demo.router)
+api_router.include_router(experiments.router)

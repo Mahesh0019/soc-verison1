@@ -19,6 +19,15 @@ from app.schemas.common import DashboardSummary, Message, Page
 from app.schemas.detection_quality import DetectionQualityOut, DetectionQualitySummaryOut
 from app.schemas.event import EventCreate, EventOut, IngestRequest, IngestResponse
 from app.schemas.evidence import EvidenceOut, EvidencePackageOut
+from app.schemas.experiment import (
+    BenchmarkComparisonResponse,
+    BenchmarkComparisonRow,
+    ExperimentCreate,
+    ExperimentMetricOut,
+    ExperimentOut,
+    ExperimentRunOut,
+    RunExperimentRequest,
+)
 from app.schemas.feedback import (
     AnalystFeedbackCreate,
     AnalystFeedbackOut,
@@ -59,12 +68,18 @@ __all__ = [
     "ControlledResponseRequest",
     "ControlledResponseResult",
     "DashboardSummary",
+    "BenchmarkComparisonResponse",
+    "BenchmarkComparisonRow",
     "DetectionQualityOut",
     "DetectionQualitySummaryOut",
     "EventCreate",
     "EventOut",
     "EvidenceOut",
     "EvidencePackageOut",
+    "ExperimentCreate",
+    "ExperimentMetricOut",
+    "ExperimentOut",
+    "ExperimentRunOut",
     "FeedbackSummaryOut",
     "IncidentDetail",
     "IncidentOut",
@@ -84,6 +99,7 @@ __all__ = [
     "RuleToggle",
     "RuleTuningApplyRequest",
     "RuleTuningProposal",
+    "RunExperimentRequest",
     "ThreatIndicatorCreate",
     "ThreatIndicatorOut",
     "Token",
