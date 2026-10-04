@@ -125,3 +125,124 @@ export interface IngestResponse {
   preview: NormalizedEvent[];
 }
 
+export interface BenchmarkComparisonRow {
+  mode: string;
+  name: string;
+  description: string;
+  total_events: number;
+  alerts_generated: number;
+  incidents_promoted: number;
+  true_positives: number;
+  false_positives: number;
+  false_negatives: number;
+  true_negatives: number;
+  precision: number;
+  recall: number;
+  f1_score: number;
+  fp_reduction_pct: number;
+  attack_retention_pct: number;
+  mtti_minutes: number;
+  evidence_retrieval_ms: number;
+  ai_analyst_agreement_pct?: number | null;
+}
+
+export interface BenchmarkComparisonResponse {
+  experiment_id?: number | null;
+  experiment_name: string;
+  dataset_version: string;
+  timestamp: string;
+  comparison_matrix: BenchmarkComparisonRow[];
+  summary: {
+    baseline_mode?: string;
+    advanced_mode?: string;
+    total_test_scenarios?: number;
+    total_events_processed?: number;
+    max_fp_reduction_pct?: number;
+    genuine_attack_retention_pct?: number;
+    mtti_reduction_pct?: number;
+    evidence_retrieval_speedup_x?: number;
+    quality_aware_fp_reduction_pct?: number;
+    hypothesis_validated?: boolean;
+    [key: string]: unknown;
+  };
+}
+
+export interface DetectionQuality {
+  id: number;
+  alert_id: number;
+  evidence_quality_score: number;
+  correlation_score: number;
+  rule_reliability_score: number;
+  behavioral_score: number;
+  context_score: number;
+  composite_quality_score: number;
+  confidence_rating: string;
+  explanation_markdown?: string | null;
+  factor_breakdown?: Record<string, unknown> | null;
+}
+
+export interface EvidenceItem {
+  id: number;
+  evidence_type: string;
+  source: string;
+  sha256_hash: string;
+  captured_at: string;
+  data_payload?: Record<string, unknown> | null;
+}
+
+export interface EvidencePackage {
+  id: number;
+  alert_id: number;
+  completeness_score: number;
+  is_complete: boolean;
+  integrity_hash: string;
+  evidence_count: number;
+  evidence_items?: EvidenceItem[];
+}
+
+export interface AIClaim {
+  claim_text: string;
+  evidence_ids: number[];
+  audit_status: string;
+  citation: string;
+}
+
+export interface AITriageSummary {
+  id: number;
+  alert_id: number;
+  executive_summary: string;
+  root_cause_analysis: string;
+  recommended_action: string;
+  triage_recommendation: string;
+  grounded_claims: AIClaim[];
+  hallucination_audit_passed: boolean;
+  analyst_agreed?: boolean | null;
+}
+
+export interface RuleHealthMetric {
+  rule_id: number;
+  rule_name: string;
+  total_tests: number;
+  passed_tests: number;
+  pass_rate: number;
+  status: string;
+}
+
+export interface ValidationSummary {
+  total_runs: number;
+  overall_pass_rate: number;
+  total_passed: number;
+  total_failed: number;
+  rules_tested_count: number;
+  rule_health: RuleHealthMetric[];
+}
+
+export interface BehavioralModelStatus {
+  is_trained: boolean;
+  model_version: string;
+  total_samples: number;
+  anomaly_threshold: number;
+  last_trained_at?: string | null;
+}
+
+

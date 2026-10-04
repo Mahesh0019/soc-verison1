@@ -4,13 +4,19 @@ import type {
   Alert,
   AlertDetail,
   AlertStatus,
+  AITriageSummary,
+  BehavioralModelStatus,
+  BenchmarkComparisonResponse,
   DashboardSummary,
+  DetectionQuality,
   DetectionRule,
+  EvidencePackage,
   IngestResponse,
   NormalizedEvent,
   Page,
   ThreatIndicator,
   User,
+  ValidationSummary,
 } from "../types";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
@@ -128,7 +134,99 @@ export async function clearDemo() {
   return data;
 }
 
+// Phase 11 Research & Evaluation Engine
+export async function fetchBenchmarkMatrix(forceRun = false) {
+  const { data } = await api.get<BenchmarkComparisonResponse>("/experiments/benchmark/matrix", {
+    params: forceRun ? { force_run: true } : undefined,
+  });
+  return data;
+}
+
+export async function runBenchmarkExperiment(mode = "ALL", datasetVersion = "v1.0") {
+  const { data } = await api.post<BenchmarkComparisonResponse>("/experiments/run", {
+    mode,
+    dataset_version: datasetVersion,
+  });
+  return data;
+}
+
+// Phase 5 Detection Quality Engine
+export async function fetchDetectionQuality(alertId: number) {
+  try {
+    const { data } = await api.get<DetectionQuality>(`/detection-quality/alert/${alertId}`);
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+// Phase 4 Evidence Packaging Engine
+export async function fetchEvidencePackage(alertId: number) {
+  try {
+    const { data } = await api.get<EvidencePackage>(`/evidence/alert/${alertId}`);
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+// Phase 8 AI Grounded Triage & Claims Audit
+export async function fetchAITriage(alertId: number) {
+  try {
+    const { data } = await api.get<AITriageSummary>(`/ai-triage/alert/${alertId}`);
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateAITriage(alertId: number) {
+  const { data } = await api.post<AITriageSummary>(`/ai-triage/alert/${alertId}`);
+  return data;
+}
+
+export async function submitAIAgreement(alertId: number, agreed: boolean, feedbackText?: string) {
+  const { data } = await api.post(`/ai-triage/alert/${alertId}/agreement`, {
+    agreed,
+    feedback_text: feedbackText || "",
+  });
+  return data;
+}
+
+// Phase 9 Analyst Feedback Loop
+export async function submitAnalystFeedback(alertId: number, feedbackLabel: string, comments?: string) {
+  const { data } = await api.post("/feedback", {
+    alert_id: alertId,
+    feedback_label: feedbackLabel,
+    analyst_comments: comments || "",
+  });
+  return data;
+}
+
+// Phase 10 Detection Validation Engine
+export async function fetchValidationSummary() {
+  const { data } = await api.get<ValidationSummary>("/validation/summary");
+  return data;
+}
+
+export async function runAllValidations() {
+  const { data } = await api.post("/validation/run-all");
+  return data;
+}
+
+// Phase 7 Behavioral ML Anomaly Detection
+export async function fetchBehavioralStatus() {
+  const { data } = await api.get<BehavioralModelStatus>("/behavioral/status");
+  return data;
+}
+
+export async function trainBehavioralModel() {
+  const { data } = await api.post("/behavioral/train", {});
+  return data;
+}
+
 function compact<T extends Record<string, unknown>>(params: T) {
   return Object.fromEntries(Object.entries(params).filter(([, value]) => value !== undefined && value !== ""));
 }
+
 
