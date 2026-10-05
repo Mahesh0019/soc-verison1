@@ -1,13 +1,13 @@
 # Detection-Quality-Aware Security Operations Center (SOC) Framework
 
-[![CI/CD Tests](https://img.shields.io/badge/tests-78%20passing-emerald)](https://github.com/Mahesh0019/soc-verison1)
+[![CI/CD Tests](https://img.shields.io/badge/tests-79%20passing-emerald)](https://github.com/Mahesh0019/soc-verison1)
 [![Python](https://img.shields.io/badge/Python-3.12-blue)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115-teal)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18%20%7C%20TypeScript-blue)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-8.0-purple)](https://vitejs.dev)
 [![Security](https://img.shields.io/badge/OWASP-Hardened-success)](https://owasp.org)
 
-An enterprise-grade, research-validated **Detection-Quality-Aware Security Operations Center (SOC)** platform. Unlike traditional signature-only SIEM systems that flood analysts with false positives, this framework implements a transparent 5-factor explainable detection quality formulation, behavioral machine learning anomaly detection, cryptographic evidence packaging, and evidence-grounded AI triage assistance with automated claims verification.
+An enterprise-grade, research-validated **Detection-Quality-Aware Security Operations Center (SOC)** platform. Unlike traditional signature-only SIEM systems that flood analysts with false positives, this framework implements a transparent 5-factor explainable detection quality formulation, behavioral machine learning anomaly detection, cryptographic evidence packaging, and evidence-grounded deterministic AI triage simulation with automated claims verification.
 
 ---
 
@@ -15,15 +15,19 @@ An enterprise-grade, research-validated **Detection-Quality-Aware Security Opera
 
 Evaluated against reproducible ground truth attack datasets ([soc_attack_catalog.json](soc_attack_catalog.json)) combining MITRE ATT&CK vectors (SQLi, XSS, Path Traversal, Brute Force, Broken Access Control) and realistic benign noise lookalikes:
 
-| Mode | Architecture | Precision | Recall | F1 Score | FP Reduction (%) | Attack Retention (%) | MTTI (min) | Evidence Latency |
+| Mode | Architecture | Precision | Recall | F1 Score | FP Reduction (%) | Dataset Attack Retention (%) | MTTI (min) | Evidence Latency |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **M0** | Raw Telemetry Baseline | 0.00 | 0.00 | 0.00 | 0.0% | 0.0% | 45.0m | 3500ms |
-| **M1** | Static Rule-Based SIEM *(Baseline)* | 0.83 | 0.91 | 0.87 | 0.0% *(Baseline)* | 100.0% *(Baseline)* | 18.5m | 1450ms |
-| **M2** | Correlated Multi-Event SIEM | 0.83 | 0.91 | 0.87 | 0.0% | 100.0% | 12.0m | 850ms |
-| **M3** | Evidence-Packaged Correlated SIEM | 0.83 | 0.91 | 0.87 | 0.0% | 100.0% | 7.5m | 45ms *(32x)* |
-| **M4** | **Detection-Quality-Aware SOC** | 1.00 | 0.91 | 0.95 | **100.0%** | **100.0%** | 4.8m | 40ms |
-| **M5** | **Quality-Aware + Behavioral ML** | 1.00 | 1.00 | 1.00 | **100.0%** | **110.0%** | 3.8m | 35ms |
-| **M6** | **Full Hybrid SOC (Grounded AI + Feedback)** | **1.00** | **1.00** | **1.00** | **100.0%** | **110.0%** | **2.1m** *(89% faster)* | **28ms** *(51x)* |
+| **M0** | M0 — Raw Telemetry Baseline | 0.00 | 0.00 | 0.00 | 0.0% | 0.0% | 45.0m | 3500ms |
+| **M1** | Static Rule-Based SIEM *(Baseline)* | 0.83 | 0.91 | 0.87 | 0.0% *(Baseline)* | 90.9% | 18.5m | 1450ms |
+| **M2** | Correlated Multi-Event SIEM | 0.83 | 0.91 | 0.87 | 0.0% | 90.9% | 12.0m | 850ms |
+| **M3** | Evidence-Packaged Correlated SIEM | 0.83 | 0.91 | 0.87 | 0.0% | 90.9% | 7.5m | 45ms *(32x)* |
+| **M4** | **Detection-Quality-Aware SOC** | 1.00 | 0.91 | 0.95 | **100.0%** | 90.9% | 4.8m | 40ms |
+| **M5** | **Quality-Aware + Behavioral ML** | 1.00 | 1.00 | 1.00 | **100.0%** | **100.0%** *(1.10x vs M1 TP)* | 3.8m | 35ms |
+| **M6** | **Full Hybrid SOC (Grounded AI + Feedback)** | **1.00** | **1.00** | **1.00** | **100.0%** | **100.0%** *(1.10x vs M1 TP)* | **2.1m** *(89% faster)* | **28ms** *(51x)* |
+
+> **Note on Metrics & AI Scope:**  
+> 1. **Dataset Attack Retention:** 100.0% represents detection of all 11 genuine attack scenarios within the evaluated dataset. Relative to the M1 baseline (10 TP), M5/M6 achieves a 1.10x detection ratio due to Isolation Forest capturing low-and-slow evasions.  
+> 2. **AI Implementation Classification:** Evaluated using an evidence-grounded deterministic triage simulation engine (`RULE_BASED_SIMULATION`). No live third-party SLM or LLM API was evaluated in this benchmark.  
 
 ---
 
