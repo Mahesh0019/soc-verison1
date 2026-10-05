@@ -1,0 +1,125 @@
+[
+  {
+    "test_id": "RECON-001",
+    "category": "Reconnaissance",
+    "name": "Root Ping / Static Asset",
+    "method": "GET",
+    "path": "/",
+    "safety_class": "read-only",
+    "expected_status": 200,
+    "description": "Normal GET request to main web page"
+  },
+  {
+    "test_id": "RECON-002",
+    "category": "Reconnaissance",
+    "name": "Robots.txt Probe",
+    "method": "GET",
+    "path": "/robots.txt",
+    "safety_class": "read-only",
+    "expected_status": 200,
+    "description": "Check for sensitive path disclosures in robots.txt"
+  },
+  {
+    "test_id": "RECON-003",
+    "category": "Reconnaissance",
+    "name": "FTP Directory Probe",
+    "method": "GET",
+    "path": "/ftp",
+    "safety_class": "read-only",
+    "expected_status": 200,
+    "description": "Check exposed public FTP folder"
+  },
+  {
+    "test_id": "RECON-004",
+    "category": "Reconnaissance",
+    "name": "API Challenges Endpoint",
+    "method": "GET",
+    "path": "/api/Challenges",
+    "safety_class": "read-only",
+    "expected_status": 200,
+    "description": "Fetch public challenge catalogue"
+  },
+  {
+    "test_id": "SQLI-001",
+    "category": "SQL Injection Probes",
+    "name": "User Login SQLi Payload",
+    "method": "POST",
+    "path": "/rest/user/login",
+    "body": {
+      "email": "' OR 1=1--",
+      "password": "x"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "safety_class": "injection-probe",
+    "expected_status": 200,
+    "description": "Classic SQL injection payload on login endpoint"
+  },
+  {
+    "test_id": "SQLI-002",
+    "category": "SQL Injection Probes",
+    "name": "Product Search SQLi Payload",
+    "method": "GET",
+    "path": "/rest/products/search",
+    "params": {
+      "q": "apple'))--"
+    },
+    "safety_class": "injection-probe",
+    "expected_status": 200,
+    "description": "SQL injection probe via product search query"
+  },
+  {
+    "test_id": "XSS-001",
+    "category": "XSS Probes",
+    "name": "Search Reflected XSS Probe",
+    "method": "GET",
+    "path": "/rest/products/search",
+    "params": {
+      "q": "<script>alert(1)</script>"
+    },
+    "safety_class": "injection-probe",
+    "expected_status": 200,
+    "description": "Reflected XSS payload in product search parameter"
+  },
+  {
+    "test_id": "XSS-002",
+    "category": "XSS Probes",
+    "name": "SVG XSS Probe",
+    "method": "GET",
+    "path": "/rest/products/search",
+    "params": {
+      "q": "<svg onload=alert(1)>"
+    },
+    "safety_class": "injection-probe",
+    "expected_status": 200,
+    "description": "SVG-based XSS payload search query"
+  },
+  {
+    "test_id": "AUTH-001",
+    "category": "Authentication Probes",
+    "name": "Invalid Credentials Brute Force Probe",
+    "method": "POST",
+    "path": "/rest/user/login",
+    "body": {
+      "email": "admin@juice-sh.op",
+      "password": "wrongpassword123"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "safety_class": "auth-probe",
+    "expected_status": 401,
+    "description": "Failed login attempt with bad credentials"
+  },
+  {
+    "test_id": "BAC-001",
+    "category": "Broken Access Control",
+    "name": "Admin Configuration Access",
+    "method": "GET",
+    "path": "/rest/admin/application-configuration",
+    "safety_class": "read-only",
+    "expected_status": 200,
+    "description": "Unauthenticated query for admin app configuration"
+  }
+]

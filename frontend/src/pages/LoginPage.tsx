@@ -9,8 +9,8 @@ export function LoginPage() {
   const { login, token } = useAuth();
   const { notify } = useToast();
   const navigate = useNavigate();
-  const [username, setUsername] = useState("admin");
-  const [password, setPassword] = useState("AdminPass123!");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   if (token) return <Navigate to="/" replace />;

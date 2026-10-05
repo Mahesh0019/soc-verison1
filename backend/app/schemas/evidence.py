@@ -14,6 +14,7 @@ class EvidenceOut(BaseModel):
     title: str
     description: str
     data_json: dict[str, Any]
+    sha256_hash: Optional[str] = None
     confidence: float
     is_verified: bool
     created_at: datetime

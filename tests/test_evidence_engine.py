@@ -242,6 +242,28 @@ class TestEvidenceEngine(unittest.TestCase):
         self.assertEqual(item_res.status_code, 200)
         self.assertEqual(item_res.json()["id"], item_id)
 
+    def test_05_sha256_evidence_integrity_hash(self):
+        """Verify deterministic SHA-256 evidence integrity hashing and sensitivity to changes."""
+        from app.services.evidence_service import generate_evidence_hash
+
+        h1 = generate_evidence_hash("triggering_event", "Test Event", {"ip": "1.2.3.4"})
+        h2 = generate_evidence_hash("triggering_event", "Test Event", {"ip": "1.2.3.4"})
+        h3 = generate_evidence_hash("triggering_event", "Test Event", {"ip": "1.2.3.5"})
+
+        # Same data -> Same hash
+        self.assertEqual(h1, h2)
+        # Changed data -> Different hash
+        self.assertNotEqual(h1, h3)
+        self.assertEqual(len(h1), 64)
+
+        # Check evidence records in DB contain valid SHA-256 hashes
+        ev_items = self.db.query(Evidence).all()
+        self.assertGreater(len(ev_items), 0)
+        for item in ev_items:
+            self.assertIsNotNone(item.sha256_hash)
+            self.assertEqual(len(item.sha256_hash), 64)
+
 
 if __name__ == "__main__":
     unittest.main()
+

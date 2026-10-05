@@ -1,0 +1,8 @@
+mode,name,precision,recall,f1_score,false_positives,fp_reduction_pct,attack_retention_pct,mtti_minutes,evidence_retrieval_ms
+M0,Raw Telemetry Baseline,0.0,0.0,0.0,0,,,45.0,3500.0
+M1,Static Rule-Based SIEM,0.8333,0.9091,0.8696,2,,,18.5,1450.0
+M2,Correlated SIEM,0.8333,0.9091,0.8696,2,,,12.0,850.0
+M3,Evidence-Packaged Correlated SIEM,0.8333,0.9091,0.8696,2,,,7.5,45.0
+M4,Detection-Quality-Aware SOC,1.0,0.9091,0.9524,0,,,4.8,40.0
+M5,Quality-Aware SOC + Behavioral ML,1.0,1.0,1.0,0,,,3.8,35.0
+M6,Full Hybrid SOC,1.0,1.0,1.0,0,,,2.1,28.0

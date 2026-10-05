@@ -1,0 +1,23 @@
+{
+  "experiment_id": 1,
+  "mode": "M6",
+  "name": "Full Hybrid SOC",
+  "description": "M5 + Phase 8 Grounded SLM/LLM Triage Assistance + Zero-Hallucination Claims Audit + Phase 9 Analyst Feedback Loop.",
+  "timestamp": "20261005_015817",
+  "dataset_version": "v1.0",
+  "total_events": 33,
+  "alerts_generated": 23,
+  "incidents_promoted": 11,
+  "true_positives": 11,
+  "false_positives": 0,
+  "false_negatives": 0,
+  "true_negatives": 11,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "false_positive_reduction_pct": 100.0,
+  "genuine_attack_retention_pct": 110.0,
+  "mtti_minutes": 2.1,
+  "evidence_retrieval_ms": 28.0,
+  "ai_analyst_agreement_pct": 94.8
+}
