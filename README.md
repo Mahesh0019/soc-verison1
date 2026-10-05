@@ -7,7 +7,7 @@
 [![Vite](https://img.shields.io/badge/Vite-8.0-purple)](https://vitejs.dev)
 [![Security](https://img.shields.io/badge/OWASP-Hardened-success)](https://owasp.org)
 
-An enterprise-grade, research-validated **Detection-Quality-Aware Security Operations Center (SOC)** platform. Unlike traditional signature-only SIEM systems that flood analysts with false positives, this framework implements a transparent 5-factor explainable detection quality formulation, behavioral machine learning anomaly detection, cryptographic evidence packaging, and zero-hallucination SLM/LLM triage assistance.
+An enterprise-grade, research-validated **Detection-Quality-Aware Security Operations Center (SOC)** platform. Unlike traditional signature-only SIEM systems that flood analysts with false positives, this framework implements a transparent 5-factor explainable detection quality formulation, behavioral machine learning anomaly detection, cryptographic evidence packaging, and evidence-grounded AI triage assistance with automated claims verification.
 
 ---
 
@@ -18,12 +18,12 @@ Evaluated against reproducible ground truth attack datasets ([soc_attack_catalog
 | Mode | Architecture | Precision | Recall | F1 Score | FP Reduction (%) | Attack Retention (%) | MTTI (min) | Evidence Latency |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **M0** | Raw Telemetry Baseline | 0.00 | 0.00 | 0.00 | 0.0% | 0.0% | 45.0m | 3500ms |
-| **M1** | Static Rule-Based SIEM *(Baseline)* | 0.70 | 0.88 | 0.78 | 0.0% *(Baseline)* | 100.0% *(Baseline)* | 18.5m | 1450ms |
-| **M2** | Correlated Multi-Event SIEM | 0.70 | 0.88 | 0.78 | 0.0% | 100.0% | 12.0m | 850ms |
-| **M3** | Evidence-Packaged Correlated SIEM | 0.70 | 0.88 | 0.78 | 0.0% | 100.0% | 7.5m | 45ms *(32x)* |
-| **M4** | **Detection-Quality-Aware SOC** | 1.00 | 0.88 | 0.93 | **100.0%** | **100.0%** | 4.8m | 40ms |
-| **M5** | **Quality-Aware + Behavioral ML** | 1.00 | 1.00 | 1.00 | **100.0%** | **100.0%** | 3.8m | 35ms |
-| **M6** | **Full Hybrid SOC (Grounded AI + Feedback)** | **1.00** | **1.00** | **1.00** | **100.0%** | **100.0%** | **2.1m** *(89% faster)* | **28ms** *(51x)* |
+| **M1** | Static Rule-Based SIEM *(Baseline)* | 0.83 | 0.91 | 0.87 | 0.0% *(Baseline)* | 100.0% *(Baseline)* | 18.5m | 1450ms |
+| **M2** | Correlated Multi-Event SIEM | 0.83 | 0.91 | 0.87 | 0.0% | 100.0% | 12.0m | 850ms |
+| **M3** | Evidence-Packaged Correlated SIEM | 0.83 | 0.91 | 0.87 | 0.0% | 100.0% | 7.5m | 45ms *(32x)* |
+| **M4** | **Detection-Quality-Aware SOC** | 1.00 | 0.91 | 0.95 | **100.0%** | **100.0%** | 4.8m | 40ms |
+| **M5** | **Quality-Aware + Behavioral ML** | 1.00 | 1.00 | 1.00 | **100.0%** | **110.0%** | 3.8m | 35ms |
+| **M6** | **Full Hybrid SOC (Grounded AI + Feedback)** | **1.00** | **1.00** | **1.00** | **100.0%** | **110.0%** | **2.1m** *(89% faster)* | **28ms** *(51x)* |
 
 ---
 
@@ -70,8 +70,8 @@ $$Q_{composite} = w_e F_{evid} + w_c F_{corr} + w_r F_{rule} + w_b F_{behav} + w
 - **Evidence Completeness ($F_{evid}, 25\%$)**: Presence of structured request payload, headers, and parameters.
 - **Correlation Robustness ($F_{corr}, 20\%$)**: Multi-event temporal density and entity linkage.
 - **Rule Reliability ($F_{rule}, 20\%$)**: Historical true-positive rate weighted by analyst feedback.
-- **Behavioral Consistency ($F_{behav}, 20\%$)**: Statistical deviation computed via Isolation Forest.
-- **Context Completeness ($F_{context}, 15\%$)**: Threat intelligence matches, GeoIP, and asset criticality.
+- **Behavioral Confidence ($F_{behav}, 15\%$)**: Statistical deviation computed via Isolation Forest.
+- **Context Confidence ($F_{context}, 20\%$)**: Threat intelligence matches, GeoIP, and asset criticality.
 
 ### 2. Cryptographic Evidence Packaging (Phase 4)
 - Pre-indexes structured evidence artifacts with SHA-256 integrity hash chains.
@@ -82,8 +82,9 @@ $$Q_{composite} = w_e F_{evid} + w_c F_{corr} + w_r F_{rule} + w_b F_{behav} + w
 - Unsupervised `IsolationForest` identifies evasive and low-and-slow attacks bypassed by static regexes.
 
 ### 4. Evidence-Grounded SLM/LLM Triage & Claims Audit (Phase 8)
-- Zero-hallucination guarantee: every assertion in the AI incident summary is verified against cryptographic evidence items.
+- Evidence-grounded AI triage with automated claims verification: every assertion in the AI incident summary is verified against cryptographic evidence items.
 - Full claims citation checklist with audit status (`VERIFIED` / `UNSUPPORTED`).
+
 
 ### 5. Detection-as-Code Regression Harness (Phase 10)
 - Paired positive (exploit payload) and negative (benign lookalike) scenario assertion suite across all 14 active rules.
