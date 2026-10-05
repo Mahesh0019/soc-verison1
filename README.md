@@ -158,7 +158,7 @@ cd frontend && npm run build
 ```
 
 ### Credentials & Security Notice
-Demo/production credentials must be configured securely through deployment environment variables or administrator provisioning. Default credentials must not be used in production environments. Any previously committed default passwords are marked as `REQUIRES_ROTATION`.
+Authentication credentials must be configured through the deployment environment. No default production credentials are provided.
 
 ---
 
