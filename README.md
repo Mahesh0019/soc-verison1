@@ -27,7 +27,8 @@ Evaluated against reproducible ground truth attack datasets ([soc_attack_catalog
 
 > **Note on Metrics & AI Scope:**  
 > 1. **Dataset Attack Retention:** 100.0% represents detection of all 11 genuine attack scenarios within the evaluated dataset. Relative to the M1 baseline (10 TP), M5/M6 achieves a 1.10x detection ratio due to Isolation Forest capturing low-and-slow evasions.  
-> 2. **AI Implementation Classification:** Evaluated using an evidence-grounded deterministic triage simulation engine (`RULE_BASED_SIMULATION`). No live third-party SLM or LLM API was evaluated in this benchmark.  
+> 2. **AI Implementation Classification:** Evaluated using an evidence-grounded deterministic triage simulation engine (`RULE_BASED_SIMULATION`). The current benchmark evaluates a deterministic rule-based triage simulation. No live third-party SLM or LLM API was evaluated in this benchmark.  
+> 3. **Claims Verification Scope:** A 0.0% unsupported-claim rate was observed within the evaluated dataset and does not establish zero hallucination outside the evaluated benchmark.  
 
 ---
 
@@ -85,8 +86,8 @@ $$Q_{composite} = w_e F_{evid} + w_c F_{corr} + w_r F_{rule} + w_b F_{behav} + w
 - 10-dimensional unsupervised feature extraction (request velocity, 4xx/5xx burst ratios, path diversity, method variance, payload Shannon entropy).
 - Unsupervised `IsolationForest` identifies evasive and low-and-slow attacks bypassed by static regexes.
 
-### 4. Evidence-Grounded SLM/LLM Triage & Claims Audit (Phase 8)
-- Evidence-grounded AI triage with automated claims verification: every assertion in the AI incident summary is verified against cryptographic evidence items.
+### 4. Evidence-Grounded Deterministic Triage Simulation & Claims Audit (Phase 8)
+- Evidence-grounded deterministic AI triage simulation with automated claims verification: every assertion in the AI incident summary is verified against cryptographic evidence items.
 - Full claims citation checklist with audit status (`VERIFIED` / `UNSUPPORTED`).
 
 
@@ -149,7 +150,7 @@ docker compose up --build
 ## Running Verification Tests
 
 ```bash
-# Run all 78 automated unit, integration, and security tests across 13 modules:
+# Run all 79 automated unit, integration, and security tests across 13 modules:
 python -m unittest discover tests
 
 # Build and validate frontend production bundle:

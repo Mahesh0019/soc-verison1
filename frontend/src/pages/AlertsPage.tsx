@@ -535,7 +535,7 @@ function AlertDrawer({
                   <Bot className="mx-auto h-8 w-8 text-emerald-400" />
                   <h4 className="font-semibold text-zinc-100">Evidence-Grounded AI Triage Assistance</h4>
                   <p className="text-xs text-zinc-400 max-w-md mx-auto">
-                    Generate an audited incident triage synthesis with zero hallucinations. Every claim is verified
+                    Generate an audited incident triage synthesis with automated claims verification. Every claim is verified
                     against cryptographic evidence items.
                   </p>
                   <button
@@ -558,7 +558,7 @@ function AlertDrawer({
                       </div>
                       <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/40 bg-emerald-500/20 px-2 py-0.5 text-[10px] font-semibold text-emerald-300">
                         <CheckCircle2 className="h-3 w-3" />
-                        Zero-Hallucination Audit Passed
+                        Claims Audit Verified
                       </span>
                     </div>
 
