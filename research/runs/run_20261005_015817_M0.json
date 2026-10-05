@@ -1,0 +1,23 @@
+{
+  "experiment_id": 1,
+  "mode": "M0",
+  "name": "Raw Telemetry Baseline",
+  "description": "Raw event ingestion without rule-based detection or correlation filtering.",
+  "timestamp": "20261005_015817",
+  "dataset_version": "v1.0",
+  "total_events": 33,
+  "alerts_generated": 0,
+  "incidents_promoted": 0,
+  "true_positives": 0,
+  "false_positives": 0,
+  "false_negatives": 11,
+  "true_negatives": 11,
+  "precision": 0.0,
+  "recall": 0.0,
+  "f1_score": 0.0,
+  "false_positive_reduction_pct": 0.0,
+  "genuine_attack_retention_pct": 0.0,
+  "mtti_minutes": 45.0,
+  "evidence_retrieval_ms": 3500.0,
+  "ai_analyst_agreement_pct": null
+}

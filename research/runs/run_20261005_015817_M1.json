@@ -1,0 +1,23 @@
+{
+  "experiment_id": 1,
+  "mode": "M1",
+  "name": "Static Rule-Based SIEM",
+  "description": "Legacy threshold/signature SIEM. Each event evaluated independently without correlation or quality scoring.",
+  "timestamp": "20261005_015817",
+  "dataset_version": "v1.0",
+  "total_events": 33,
+  "alerts_generated": 23,
+  "incidents_promoted": 23,
+  "true_positives": 10,
+  "false_positives": 2,
+  "false_negatives": 1,
+  "true_negatives": 9,
+  "precision": 0.8333,
+  "recall": 0.9091,
+  "f1_score": 0.8696,
+  "false_positive_reduction_pct": 0.0,
+  "genuine_attack_retention_pct": 100.0,
+  "mtti_minutes": 18.5,
+  "evidence_retrieval_ms": 1450.0,
+  "ai_analyst_agreement_pct": null
+}

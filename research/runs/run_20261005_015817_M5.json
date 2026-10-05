@@ -1,0 +1,23 @@
+{
+  "experiment_id": 1,
+  "mode": "M5",
+  "name": "Quality-Aware SOC + Behavioral ML",
+  "description": "M4 + Phase 7 Behavioral ML anomaly detection (Isolation Forest) capturing low-and-slow evasions.",
+  "timestamp": "20261005_015817",
+  "dataset_version": "v1.0",
+  "total_events": 33,
+  "alerts_generated": 23,
+  "incidents_promoted": 11,
+  "true_positives": 11,
+  "false_positives": 0,
+  "false_negatives": 0,
+  "true_negatives": 11,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1_score": 1.0,
+  "false_positive_reduction_pct": 100.0,
+  "genuine_attack_retention_pct": 110.0,
+  "mtti_minutes": 3.8,
+  "evidence_retrieval_ms": 35.0,
+  "ai_analyst_agreement_pct": null
+}

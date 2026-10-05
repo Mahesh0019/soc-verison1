@@ -1,0 +1,23 @@
+{
+  "experiment_id": 1,
+  "mode": "M2",
+  "name": "Correlated SIEM",
+  "description": "Phase 3 rule matches grouped by entity and time-window into correlated multi-event incidents.",
+  "timestamp": "20261005_015817",
+  "dataset_version": "v1.0",
+  "total_events": 33,
+  "alerts_generated": 23,
+  "incidents_promoted": 12,
+  "true_positives": 10,
+  "false_positives": 2,
+  "false_negatives": 1,
+  "true_negatives": 9,
+  "precision": 0.8333,
+  "recall": 0.9091,
+  "f1_score": 0.8696,
+  "false_positive_reduction_pct": 0.0,
+  "genuine_attack_retention_pct": 100.0,
+  "mtti_minutes": 12.0,
+  "evidence_retrieval_ms": 850.0,
+  "ai_analyst_agreement_pct": null
+}
