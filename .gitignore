@@ -1,4 +1,6 @@
 .env
+.env.local
+.env.*.local
 .venv/
 __pycache__/
 *.pyc
@@ -14,4 +16,8 @@ postgres_data/
 !backend/sample_logs/*.log
 !frontend/public/sample_logs/*.log
 connector/.checkpoint
+attack_results.csv
+uvicorn_out.txt
+script.py
+
 

@@ -151,10 +151,8 @@ python -m unittest discover tests
 cd frontend && npm run build
 ```
 
-### Credentials
-- **Admin**: `admin` / `AdminPass123!`
-- **Analyst**: `analyst` / `AnalystPass123!`
-- **Viewer**: `viewer` / `ViewerPass123!`
+### Credentials & Security Notice
+Demo/production credentials must be configured securely through deployment environment variables or administrator provisioning. Default credentials must not be used in production environments. Any previously committed default passwords are marked as `REQUIRES_ROTATION`.
 
 ---
 
