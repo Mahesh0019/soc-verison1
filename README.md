@@ -22,11 +22,11 @@ Evaluated against reproducible ground truth attack datasets ([soc_attack_catalog
 | **M2** | Correlated Multi-Event SIEM | 0.83 | 0.91 | 0.87 | 0.0% | 90.9% | 12.0m | 850ms |
 | **M3** | Evidence-Packaged Correlated SIEM | 0.83 | 0.91 | 0.87 | 0.0% | 90.9% | 7.5m | 45ms *(32x)* |
 | **M4** | **Detection-Quality-Aware SOC** | 1.00 | 0.91 | 0.95 | **100.0%** | 90.9% | 4.8m | 40ms |
-| **M5** | **Quality-Aware + Behavioral ML** | 1.00 | 1.00 | 1.00 | **100.0%** | **100.0%** *(1.10x vs M1 TP)* | 3.8m | 35ms |
-| **M6** | **Full Hybrid SOC (Grounded AI + Feedback)** | **1.00** | **1.00** | **1.00** | **100.0%** | **100.0%** *(1.10x vs M1 TP)* | **2.1m** *(89% faster)* | **28ms** *(51x)* |
+| **M5** | **Quality-Aware + Behavioral ML** | 1.00 | 1.00 | 1.00 | **100.0%** | **100.0%** | 3.8m | 35ms |
+| **M6** | **Full Hybrid SOC (Grounded AI + Feedback)** | **1.00** | **1.00** | **1.00** | **100.0%** | **100.0%** | **2.1m** *(89% faster)* | **28ms** *(51x)* |
 
 > **Note on Metrics & AI Scope:**  
-> 1. **Dataset Attack Retention:** 100.0% represents detection of all 11 genuine attack scenarios within the evaluated dataset. Relative to the M1 baseline (10 TP), M5/M6 achieves a 1.10x detection ratio due to Isolation Forest capturing low-and-slow evasions.  
+> 1. **Dataset Attack Retention:** 100.0% — all 11 genuine attack scenarios were detected. M1 detected 10 of 11 genuine attack scenarios, while M5/M6 detected all 11.  
 > 2. **AI Implementation Classification:** Evaluated using an evidence-grounded deterministic triage simulation engine (`RULE_BASED_SIMULATION`). The current benchmark evaluates a deterministic rule-based triage simulation. No live third-party SLM or LLM API was evaluated in this benchmark.  
 > 3. **Claims Verification Scope:** A 0.0% unsupported-claim rate was observed within the evaluated dataset and does not establish zero hallucination outside the evaluated benchmark.  
 
