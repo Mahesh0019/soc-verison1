@@ -17,6 +17,7 @@ class Evidence(Base):
     title: Mapped[str] = mapped_column(String(255))
     description: Mapped[str] = mapped_column(Text)
     data_json: Mapped[dict[str, Any]] = mapped_column(JSON)
+    sha256_hash: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, index=True)
     confidence: Mapped[float] = mapped_column(Float, default=1.0)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
