@@ -138,6 +138,30 @@ def build_evidence_package(db: Session, alert: Alert) -> list[Evidence]:
             "geo_country": anchor_event.geo_country,
             "raw_log": anchor_event.raw_log,
         }
+        # Multi-Source & Network Telemetry fields (Zeek / EDR)
+        if getattr(anchor_event, "source_type", None):
+            trig_data["source_type"] = anchor_event.source_type
+        if getattr(anchor_event, "source_port", None) is not None:
+            trig_data["source_port"] = anchor_event.source_port
+        if getattr(anchor_event, "destination_port", None) is not None:
+            trig_data["destination_port"] = anchor_event.destination_port
+        if getattr(anchor_event, "protocol", None):
+            trig_data["protocol"] = anchor_event.protocol
+        if getattr(anchor_event, "connection_state", None):
+            trig_data["connection_state"] = anchor_event.connection_state
+        if getattr(anchor_event, "bytes_in", None) is not None:
+            trig_data["bytes_in"] = anchor_event.bytes_in
+        if getattr(anchor_event, "bytes_out", None) is not None:
+            trig_data["bytes_out"] = anchor_event.bytes_out
+        if getattr(anchor_event, "response_time_ms", None) is not None:
+            trig_data["response_time_ms"] = anchor_event.response_time_ms
+        if getattr(anchor_event, "dns_query", None):
+            trig_data["dns_query"] = anchor_event.dns_query
+        if getattr(anchor_event, "dns_response", None):
+            trig_data["dns_response"] = anchor_event.dns_response
+        if getattr(anchor_event, "raw_reference", None):
+            trig_data["raw_reference"] = anchor_event.raw_reference
+
         evidence_records.append(
             Evidence(
                 alert_id=alert.id,
@@ -157,6 +181,16 @@ def build_evidence_package(db: Session, alert: Alert) -> list[Evidence]:
             "event_ids": [e.id for e in events_sorted],
             "sample_messages": [e.message for e in events_sorted[:10]],
         }
+        # Include distinct ports and Zeek UIDs if present
+        dest_ports = [e.destination_port for e in events_sorted if getattr(e, "destination_port", None) is not None]
+        if dest_ports:
+            rel_data["destination_ports"] = sorted(list(set(dest_ports)))
+        protocols = [e.protocol for e in events_sorted if getattr(e, "protocol", None)]
+        if protocols:
+            rel_data["protocols"] = sorted(list(set(protocols)))
+        raw_refs = [e.raw_reference for e in events_sorted if getattr(e, "raw_reference", None)]
+        if raw_refs:
+            rel_data["zeek_uids"] = raw_refs[:10]
         evidence_records.append(
             Evidence(
                 alert_id=alert.id,

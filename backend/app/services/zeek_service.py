@@ -44,9 +44,12 @@ def ingest_zeek_telemetry(
     # Parse and normalize content
     parse_start = time.perf_counter()
     normalized_items, parse_errors, stats = parse_zeek_content(content, forced_type=resolved_type)
-    parse_time_ms = (time.perf_counter() - parse_start) * 1000.0
+    parse_time_sec = max(0.000001, time.perf_counter() - parse_start)
+    parse_time_ms = round(parse_time_sec * 1000.0, 3)
+    parser_throughput_eps = round(stats["processed"] / parse_time_sec, 2) if stats["processed"] else 0.0
 
-    # Store RawLog provenance
+    # Store RawLog provenance & persist NormalizedEvents (Ingestion DB stage)
+    db_start = time.perf_counter()
     raw_log = RawLog(
         source_type=f"ZEEK_{resolved_type.upper()}_{mode.upper()}",
         original_content=raw_preview,
@@ -67,12 +70,21 @@ def ingest_zeek_telemetry(
         latencies.append((time.perf_counter() - t0) * 1000.0)
 
     db.flush()
+    db_persistence_time_sec = max(0.000001, time.perf_counter() - db_start)
+    db_persistence_time_ms = round(db_persistence_time_sec * 1000.0, 3)
 
-    # Natural detection evaluation
+    ingestion_time_sec = max(0.000001, parse_time_sec + db_persistence_time_sec)
+    ingestion_throughput_eps = round(len(events) / ingestion_time_sec, 2) if events else 0.0
+
+    # Natural detection evaluation & alert generation
+    detect_start = time.perf_counter()
     alert_count = evaluate_rules_for_events(db, events, auto_correlate=True)
     db.commit()
+    detection_time_sec = max(0.000001, time.perf_counter() - detect_start)
+    detection_time_ms = round(detection_time_sec * 1000.0, 3)
+    detection_throughput_eps = round(len(events) / detection_time_sec, 2) if events else 0.0
 
-    total_time_sec = max(0.0001, time.perf_counter() - start_time)
+    total_time_sec = max(0.000001, time.perf_counter() - start_time)
     throughput_eps = round(len(events) / total_time_sec, 2)
     avg_lat = round(sum(latencies) / len(latencies), 3) if latencies else 0.0
     max_lat = round(max(latencies), 3) if latencies else 0.0
@@ -88,7 +100,13 @@ def ingest_zeek_telemetry(
         "throughput_eps": throughput_eps,
         "average_latency_ms": avg_lat,
         "maximum_latency_ms": max_lat,
-        "parse_time_ms": round(parse_time_ms, 2),
+        "parse_time_ms": parse_time_ms,
+        "db_persistence_time_ms": db_persistence_time_ms,
+        "detection_latency_ms": detection_time_ms,
+        "parser_throughput_eps": parser_throughput_eps,
+        "ingestion_throughput_eps": ingestion_throughput_eps,
+        "detection_throughput_eps": detection_throughput_eps,
+        "total_soc_throughput_eps": throughput_eps,
         "alert_count": alert_count,
         "errors": parse_errors,
         "preview": events[:10],

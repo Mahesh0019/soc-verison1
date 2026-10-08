@@ -1,0 +1,31 @@
+{
+  "dataset_name": "RESEARCH_NETWORK_DATASET_V1",
+  "dataset_version": "v1.0",
+  "created_at": "2026-10-08T06:56:43.860428+00:00",
+  "total_scenarios": 60,
+  "attack_count": 30,
+  "benign_count": 30,
+  "total_telemetry_events": 250,
+  "split_distribution": {
+    "development": {
+      "total": 30,
+      "attack": 15,
+      "benign": 15,
+      "sha256": "0088f2bc87352c23e26c549d2541b0dde35221734b4afe122a7e38b12adf58f6"
+    },
+    "validation": {
+      "total": 12,
+      "attack": 6,
+      "benign": 6,
+      "sha256": "94fd61d01e1d7faad1ddd8b6913d6be0fb0bb086004542edb4cf299edeaffa95"
+    },
+    "test": {
+      "total": 18,
+      "attack": 9,
+      "benign": 9,
+      "sha256": "79f1711b5ef256e511c92a0bec8ac0742c5bed6fc18e621432ac8fe6f24dd6ec",
+      "status": "HELD_OUT_UNTOUCHED"
+    }
+  },
+  "full_dataset_sha256": "9d6cf5919811a7b894681d1db3beecfbc63eb085ea4b76519f49a631e550b367"
+}

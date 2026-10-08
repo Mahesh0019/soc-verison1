@@ -95,6 +95,13 @@ class ZeekReplayResponse(BaseModel):
     throughput_eps: float
     average_latency_ms: float
     maximum_latency_ms: float
+    parse_time_ms: Optional[float] = None
+    db_persistence_time_ms: Optional[float] = None
+    detection_latency_ms: Optional[float] = None
+    parser_throughput_eps: Optional[float] = None
+    ingestion_throughput_eps: Optional[float] = None
+    detection_throughput_eps: Optional[float] = None
+    total_soc_throughput_eps: Optional[float] = None
     alert_count: int
     errors: list[str]
     preview: list[EventOut]

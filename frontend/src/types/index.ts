@@ -85,6 +85,13 @@ export interface ZeekReplayResponse {
   throughput_eps: number;
   average_latency_ms: number;
   maximum_latency_ms: number;
+  parse_time_ms?: number;
+  db_persistence_time_ms?: number;
+  detection_latency_ms?: number;
+  parser_throughput_eps?: number;
+  ingestion_throughput_eps?: number;
+  detection_throughput_eps?: number;
+  total_soc_throughput_eps?: number;
   alert_count: number;
   errors: string[];
   preview: NormalizedEvent[];
