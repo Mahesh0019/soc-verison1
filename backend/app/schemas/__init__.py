@@ -44,7 +44,18 @@ from app.schemas.feedback import (
     RuleTuningApplyRequest,
     RuleTuningProposal,
 )
-from app.schemas.incident import IncidentDetail, IncidentOut, IncidentStatusUpdate
+from app.schemas.incident import (
+    CrossSourceCorrelationRequest,
+    CrossSourceCorrelationResult,
+    IncidentDetail,
+    IncidentGraphData,
+    IncidentGraphEdge,
+    IncidentGraphNode,
+    IncidentOut,
+    IncidentStatusUpdate,
+    IncidentTimelineItem,
+    UnifiedIncidentOut,
+)
 from app.schemas.risk import RiskAssessmentOut, RiskSummaryOut
 from app.schemas.rule import RuleCreate, RuleHealthOut, RuleHealthSummaryOut, RuleOut, RuleToggle, RuleUpdate
 from app.schemas.threat import ThreatIndicatorCreate, ThreatIndicatorOut
@@ -93,6 +104,13 @@ __all__ = [
     "IncidentDetail",
     "IncidentOut",
     "IncidentStatusUpdate",
+    "IncidentTimelineItem",
+    "IncidentGraphNode",
+    "IncidentGraphEdge",
+    "IncidentGraphData",
+    "UnifiedIncidentOut",
+    "CrossSourceCorrelationRequest",
+    "CrossSourceCorrelationResult",
     "IngestRequest",
     "IngestResponse",
     "SysmonReplayRequest",

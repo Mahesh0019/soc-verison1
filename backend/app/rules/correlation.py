@@ -169,9 +169,10 @@ def correlate_incidents(
                 db.flush()
 
             # Extend timestamps
-            if first_seen_aware < incident.first_seen:
+            from app.services.correlation_service import ensure_utc
+            if ensure_utc(first_seen_aware) < ensure_utc(incident.first_seen):
                 incident.first_seen = first_seen_aware
-            if last_seen_aware > incident.last_seen:
+            if ensure_utc(last_seen_aware) > ensure_utc(incident.last_seen):
                 incident.last_seen = last_seen_aware
 
             # Update metrics from linked alerts
@@ -229,5 +230,44 @@ def correlate_incidents(
             db.flush()
 
             affected_incidents[new_incident.id] = new_incident
+
+    # Enrich affected incidents with Phase 6 Unified timeline, graph, and explainable scores
+    from app.models import AlertEvent, NormalizedEvent
+    from app.services.correlation_service import (
+        build_incident_graph,
+        build_incident_timeline,
+        calculate_explainable_correlation_score,
+        evaluate_correlation_rules,
+    )
+
+    for inc in affected_incidents.values():
+        linked_alerts = (
+            db.query(Alert)
+            .join(IncidentAlert, IncidentAlert.alert_id == Alert.id)
+            .filter(IncidentAlert.incident_id == inc.id)
+            .all()
+        )
+        linked_alert_ids = [a.id for a in linked_alerts]
+        linked_events = (
+            db.query(NormalizedEvent)
+            .join(AlertEvent, AlertEvent.event_id == NormalizedEvent.id)
+            .filter(AlertEvent.alert_id.in_(linked_alert_ids))
+            .all()
+        ) if linked_alert_ids else []
+
+        if not inc.primary_entity:
+            inc.primary_entity = f"ip:{inc.source_ip}" if inc.source_ip else f"user:{inc.affected_user}" if inc.affected_user else "entity:unspecified"
+
+        sources = list({e.source_type.upper() for e in linked_events if e.source_type})
+        inc.source_types_json = sources or ["WEB"]
+
+        attack_status, _, _ = evaluate_correlation_rules(linked_events, window_seconds=window_minutes * 60)
+        score, confidence, _ = calculate_explainable_correlation_score(linked_events, linked_alerts, window_seconds=window_minutes * 60)
+        inc.correlation_score = score
+        inc.confidence = confidence
+        inc.attack_chain_status = attack_status
+        inc.risk_score = round(min(100.0, max(20.0, score * 100.0)), 1)
+        inc.timeline_json = build_incident_timeline(linked_events, linked_alerts)
+        inc.graph_json = build_incident_graph(inc.id, inc.incident_number, linked_events, linked_alerts)
 
     return list(affected_incidents.values())

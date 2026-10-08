@@ -3,12 +3,19 @@ import {
   Award,
   Bot,
   CheckCircle2,
+  ExternalLink,
   FileCheck2,
   FileText,
   Fingerprint,
+  GitBranch,
   Layers,
   MessageSquarePlus,
+  Network,
+  Play,
+  RefreshCw,
   Search,
+  Share2,
+  Shield,
   ShieldAlert,
   ShieldCheck,
   Sparkles,
@@ -22,6 +29,8 @@ import { SeverityBadge, StatusBadge } from "../components/Badge";
 import { EmptyState, LoadingState } from "../components/State";
 import { useAuth } from "../components/AuthProvider";
 import { useToast } from "../components/Toast";
+import { IncidentGraphView } from "../components/IncidentGraphView";
+import { IncidentTimelineView } from "../components/IncidentTimelineView";
 import {
   addAlertNote,
   fetchAlert,
@@ -29,9 +38,12 @@ import {
   fetchAITriage,
   fetchDetectionQuality,
   fetchEvidencePackage,
+  fetchIncidents,
+  fetchUnifiedIncident,
   generateAITriage,
   submitAIAgreement,
   submitAnalystFeedback,
+  triggerCorrelation,
   updateAlertStatus,
 } from "../services/api";
 import type {
@@ -42,35 +54,155 @@ import type {
   DetectionQuality,
   EvidencePackage,
   Page,
+  UnifiedIncident,
 } from "../types";
 import { formatDate } from "../utils/format";
 
 export function AlertsPage() {
+  const { notify } = useToast();
+  const [viewMode, setViewMode] = useState<"alerts" | "incidents">("alerts");
   const [data, setData] = useState<Page<Alert> | null>(null);
   const [detail, setDetail] = useState<AlertDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState({ q: "", severity: "", status: "", source_ip: "", username: "" });
 
+  // Phase 6 Incidents State
+  const [incidentsData, setIncidentsData] = useState<Page<UnifiedIncident> | null>(null);
+  const [selectedIncident, setSelectedIncident] = useState<UnifiedIncident | null>(null);
+  const [incidentsLoading, setIncidentsLoading] = useState(false);
+  const [correlationWindow, setCorrelationWindow] = useState<number>(300);
+  const [correlating, setCorrelating] = useState(false);
+
   useEffect(() => {
-    setLoading(true);
-    fetchAlerts({ ...filters, page_size: 30 })
-      .then(setData)
-      .finally(() => setLoading(false));
-  }, [filters]);
+    if (viewMode === "alerts") {
+      setLoading(true);
+      fetchAlerts({ ...filters, page_size: 30 })
+        .then(setData)
+        .finally(() => setLoading(false));
+    } else {
+      loadIncidents();
+    }
+  }, [filters, viewMode]);
+
+  async function loadIncidents() {
+    setIncidentsLoading(true);
+    try {
+      const res = await fetchIncidents({ q: filters.q, severity: filters.severity, status: filters.status, page_size: 30 });
+      setIncidentsData(res);
+    } catch {
+      notify("Failed to fetch unified incidents", "error");
+    } finally {
+      setIncidentsLoading(false);
+    }
+  }
+
+  async function handleRunCorrelation() {
+    setCorrelating(true);
+    try {
+      const res = await triggerCorrelation({ window_seconds: correlationWindow });
+      notify(`Cross-source correlation complete: ${res.correlated_incidents_count} incident(s) reconstructed in ${res.execution_time_ms}ms`, "success");
+      await loadIncidents();
+    } catch {
+      notify("Failed to run correlation engine", "error");
+    } finally {
+      setCorrelating(false);
+    }
+  }
 
   async function openDetail(alert: Alert) {
     setDetail(await fetchAlert(alert.id));
   }
 
+  async function openIncidentDetail(incidentId: number) {
+    try {
+      const inc = await fetchUnifiedIncident(incidentId);
+      setSelectedIncident(inc);
+    } catch {
+      notify("Failed to fetch unified incident graph details", "error");
+    }
+  }
+
   return (
     <div className="space-y-4">
+      {/* Top View Mode Switcher */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-surface-border bg-surface-raised p-3">
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setViewMode("alerts")}
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition ${
+              viewMode === "alerts"
+                ? "bg-indigo-600 text-white shadow"
+                : "bg-surface-base text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <ShieldAlert className="h-4 w-4" />
+            <span>Alerts Queue</span>
+            {data && <span className="ml-1 rounded-full bg-black/30 px-2 py-0.5 text-xs">{data.total}</span>}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setViewMode("incidents")}
+            className={`flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-semibold transition ${
+              viewMode === "incidents"
+                ? "bg-indigo-600 text-white shadow"
+                : "bg-surface-base text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <GitBranch className="h-4 w-4" />
+            <span>Unified Incidents (Phase 6 Cross-Source)</span>
+            {incidentsData && <span className="ml-1 rounded-full bg-black/30 px-2 py-0.5 text-xs">{incidentsData.total}</span>}
+          </button>
+        </div>
+
+        {/* Action Controls for Incidents */}
+        {viewMode === "incidents" && (
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+              <span>Time Window:</span>
+              {[
+                { label: "±30s", val: 30 },
+                { label: "±2m", val: 120 },
+                { label: "±5m (Default)", val: 300 },
+                { label: "±10m", val: 600 },
+              ].map(({ label, val }) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => setCorrelationWindow(val)}
+                  className={`rounded px-2.5 py-1 text-xs font-medium transition ${
+                    correlationWindow === val
+                      ? "bg-indigo-600 text-white font-semibold"
+                      : "bg-surface-inset text-zinc-400 hover:text-zinc-200"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              disabled={correlating}
+              onClick={handleRunCorrelation}
+              className="flex items-center gap-2 rounded-lg bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 disabled:opacity-50"
+            >
+              {correlating ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : <Play className="h-3.5 w-3.5" />}
+              <span>{correlating ? "Correlating..." : "Run Cross-Source Correlation"}</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Filter Bar */}
       <div className="rounded-lg border border-surface-border bg-surface-raised p-4">
         <div className="grid gap-3 md:grid-cols-[minmax(180px,1.5fr)_repeat(4,minmax(120px,1fr))]">
           <label className="relative">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-zinc-500" />
             <input
               className="focus-ring w-full rounded-lg border border-surface-border bg-surface-inset py-2 pl-9 pr-3 text-sm"
-              placeholder="Search alerts"
+              placeholder={viewMode === "alerts" ? "Search alerts" : "Search incidents"}
               value={filters.q}
               onChange={(event) => setFilters((current) => ({ ...current, q: event.target.value }))}
             />
@@ -100,21 +232,67 @@ export function AlertsPage() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState label="Loading alerts" />
-      ) : data && data.items.length > 0 ? (
-        <AlertsTable alerts={data.items} onSelect={openDetail} />
+      {/* Content Section */}
+      {viewMode === "alerts" ? (
+        loading ? (
+          <LoadingState label="Loading alerts" />
+        ) : data && data.items.length > 0 ? (
+          <AlertsTable alerts={data.items} onSelect={openDetail} />
+        ) : (
+          <EmptyState title="No alerts found" />
+        )
+      ) : incidentsLoading ? (
+        <LoadingState label="Loading correlated incidents" />
+      ) : incidentsData && incidentsData.items.length > 0 ? (
+        <IncidentsTable
+          incidents={incidentsData.items}
+          onSelect={(inc) => openIncidentDetail(inc.incident_id)}
+        />
       ) : (
-        <EmptyState title="No alerts found" />
+        <div className="rounded-lg border border-surface-border bg-surface-raised p-8 text-center space-y-3">
+          <GitBranch className="mx-auto h-8 w-8 text-indigo-400" />
+          <h3 className="text-base font-semibold text-zinc-200">No Correlated Incidents Reconstructed Yet</h3>
+          <p className="text-sm text-zinc-400 max-w-md mx-auto">
+            Click "Run Cross-Source Correlation" above to evaluate telemetry events across Web, Zeek, and Sysmon within the configured temporal window.
+          </p>
+          <button
+            type="button"
+            onClick={handleRunCorrelation}
+            disabled={correlating}
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
+          >
+            <Play className="h-4 w-4" />
+            <span>Run Correlation Engine</span>
+          </button>
+        </div>
       )}
 
+      {/* Alert Drawer */}
       {detail ? (
         <AlertDrawer
           detail={detail}
           onClose={() => setDetail(null)}
           onRefresh={async () => setDetail(await fetchAlert(detail.id))}
+          onOpenIncident={openIncidentDetail}
         />
       ) : null}
+
+      {/* Phase 6 Incident Graph & Timeline Modal */}
+      {selectedIncident && (
+        <IncidentModal
+          incident={selectedIncident}
+          onClose={() => setSelectedIncident(null)}
+          onSelectAlert={async (alertId) => {
+            const al = await fetchAlert(alertId);
+            setDetail(al);
+          }}
+          onRefresh={async () => {
+            const inc = await fetchUnifiedIncident(selectedIncident.incident_id);
+            setSelectedIncident(inc);
+            await loadIncidents();
+          }}
+        />
+      )}
     </div>
   );
 }
@@ -175,10 +353,12 @@ function AlertDrawer({
   detail,
   onClose,
   onRefresh,
+  onOpenIncident,
 }: {
   detail: AlertDetail;
   onClose: () => void;
   onRefresh: () => Promise<void>;
+  onOpenIncident?: (incidentId: number) => void;
 }) {
   const { can } = useAuth();
   const { notify } = useToast();
@@ -714,3 +894,355 @@ function Text({
     />
   );
 }
+
+function IncidentsTable({
+  incidents,
+  onSelect,
+}: {
+  incidents: UnifiedIncident[];
+  onSelect: (incident: UnifiedIncident) => void;
+}) {
+  return (
+    <div className="overflow-hidden rounded-lg border border-surface-border bg-surface-raised">
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[960px] text-left text-sm">
+          <thead className="bg-surface-inset text-xs uppercase text-zinc-500">
+            <tr>
+              <th className="px-4 py-3">Incident</th>
+              <th className="px-4 py-3">Severity</th>
+              <th className="px-4 py-3">Attack Chain Status</th>
+              <th className="px-4 py-3">Sources</th>
+              <th className="px-4 py-3">Primary Entity</th>
+              <th className="px-4 py-3">Correlation Score</th>
+              <th className="px-4 py-3">Telemetry</th>
+              <th className="px-4 py-3">Last Seen</th>
+              <th className="px-4 py-3"></th>
+            </tr>
+          </thead>
+          <tbody>
+            {incidents.map((inc) => {
+              const statusColor =
+                inc.attack_chain_status === "POTENTIAL ATTACK CHAIN"
+                  ? "bg-amber-950/40 text-amber-300 border-amber-500/30"
+                  : inc.attack_chain_status === "CORRELATED ACTIVITY"
+                  ? "bg-blue-950/40 text-blue-300 border-blue-500/30"
+                  : "bg-zinc-800 text-zinc-400 border-zinc-700";
+
+              const scorePct = inc.correlation_score ? Math.round(inc.correlation_score * 100) : 50;
+
+              return (
+                <tr key={inc.incident_id} className="border-t border-surface-border hover:bg-surface-inset/70">
+                  <td className="max-w-xs px-4 py-3 text-zinc-200">
+                    <div className="font-mono text-xs font-semibold text-indigo-400">{inc.incident_number}</div>
+                    <div className="font-medium truncate">{inc.title}</div>
+                    <div className="text-xs text-zinc-500 line-clamp-1">{inc.description}</div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <SeverityBadge value={inc.severity} />
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${statusColor}`}>
+                      {inc.attack_chain_status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-wrap gap-1">
+                      {inc.source_types && inc.source_types.length > 0 ? (
+                        inc.source_types.map((src) => (
+                          <span key={src} className="rounded bg-surface-inset px-1.5 py-0.5 text-[10px] font-mono text-zinc-300 border border-surface-border">
+                            {src}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-zinc-500">WEB</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 font-mono text-xs text-amber-300">
+                    {inc.primary_entity || "-"}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-semibold text-zinc-200">{scorePct}%</span>
+                        <span className="text-[10px] text-zinc-400 uppercase">{inc.confidence}</span>
+                      </div>
+                      <div className="h-1.5 w-24 rounded-full bg-zinc-800 overflow-hidden">
+                        <div
+                          className={`h-full rounded-full ${
+                            scorePct >= 75 ? "bg-emerald-500" : scorePct >= 50 ? "bg-blue-500" : "bg-amber-500"
+                          }`}
+                          style={{ width: `${scorePct}%` }}
+                        />
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-zinc-300">
+                    <div>{inc.alerts?.length || 0} Alerts</div>
+                    <div className="text-zinc-500">{inc.events?.length || 0} Events</div>
+                  </td>
+                  <td className="px-4 py-3 text-xs text-zinc-400">
+                    {formatDate(inc.updated_at || inc.created_at)}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      type="button"
+                      onClick={() => onSelect(inc)}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-indigo-600/20 border border-indigo-500/30 px-3 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-indigo-600 hover:text-white transition"
+                    >
+                      <GitBranch className="h-3.5 w-3.5" />
+                      <span>Investigate</span>
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function IncidentModal({
+  incident,
+  onClose,
+  onSelectAlert,
+  onRefresh,
+}: {
+  incident: UnifiedIncident;
+  onClose: () => void;
+  onSelectAlert?: (alertId: number) => void;
+  onRefresh?: () => Promise<void>;
+}) {
+  const [modalTab, setModalTab] = useState<"graph" | "timeline" | "evidence" | "alerts">("graph");
+
+  const scorePct = incident.correlation_score ? Math.round(incident.correlation_score * 100) : 50;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+      <div className="flex h-[92vh] w-full max-w-6xl flex-col rounded-xl border border-surface-border bg-surface-base shadow-2xl overflow-hidden">
+        {/* Modal Header */}
+        <div className="flex flex-wrap items-center justify-between border-b border-surface-border bg-surface-raised px-6 py-4 gap-4">
+          <div className="space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <span className="font-mono text-sm font-bold text-indigo-400">
+                {incident.incident_number}
+              </span>
+              <SeverityBadge value={incident.severity} />
+              <span className="rounded-full border border-surface-border bg-surface-inset px-2.5 py-0.5 text-xs font-semibold text-zinc-200">
+                Status: {incident.status}
+              </span>
+              <span className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                incident.attack_chain_status === "POTENTIAL ATTACK CHAIN"
+                  ? "border-amber-500/40 bg-amber-500/10 text-amber-300"
+                  : "border-blue-500/40 bg-blue-500/10 text-blue-300"
+              }`}>
+                {incident.attack_chain_status}
+              </span>
+              <span className="rounded-full border border-purple-500/40 bg-purple-500/10 px-2.5 py-0.5 text-xs font-semibold text-purple-300">
+                Correlation Score: {scorePct}% ({incident.confidence})
+              </span>
+              <span className="rounded-full border border-rose-500/40 bg-rose-500/10 px-2.5 py-0.5 text-xs font-semibold text-rose-300">
+                Risk Score: {Math.round(incident.risk_score)}/100
+              </span>
+            </div>
+            <h2 className="text-base font-semibold text-zinc-100">{incident.title}</h2>
+            <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-400">
+              <span>Primary Entity: <span className="font-mono text-amber-300">{incident.primary_entity || "Unspecified"}</span></span>
+              <span>•</span>
+              <span>Telemetry Sources: {incident.source_types?.join(", ") || "WEB"}</span>
+              <span>•</span>
+              <span>Created: {formatDate(incident.created_at)}</span>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-2 text-zinc-400 hover:bg-surface-inset hover:text-zinc-100"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Modal Navigation Tabs */}
+        <div className="flex border-b border-surface-border bg-surface-base px-6 text-xs font-semibold">
+          <button
+            type="button"
+            onClick={() => setModalTab("graph")}
+            className={`flex items-center gap-2 border-b-2 py-3 px-4 transition ${
+              modalTab === "graph"
+                ? "border-indigo-400 text-indigo-400"
+                : "border-transparent text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <Share2 className="h-4 w-4" />
+            <span>Investigation Graph</span>
+            {incident.graph?.nodes && (
+              <span className="rounded-full bg-surface-inset px-2 py-0.5 text-[10px] text-zinc-300">
+                {incident.graph.nodes.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setModalTab("timeline")}
+            className={`flex items-center gap-2 border-b-2 py-3 px-4 transition ${
+              modalTab === "timeline"
+                ? "border-indigo-400 text-indigo-400"
+                : "border-transparent text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <CheckCircle2 className="h-4 w-4" />
+            <span>Chronological Telemetry Timeline</span>
+            {incident.timeline && (
+              <span className="rounded-full bg-surface-inset px-2 py-0.5 text-[10px] text-zinc-300">
+                {incident.timeline.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setModalTab("evidence")}
+            className={`flex items-center gap-2 border-b-2 py-3 px-4 transition ${
+              modalTab === "evidence"
+                ? "border-indigo-400 text-indigo-400"
+                : "border-transparent text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <Fingerprint className="h-4 w-4" />
+            <span>Cross-Source Evidence ({incident.evidence?.length || 0})</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setModalTab("alerts")}
+            className={`flex items-center gap-2 border-b-2 py-3 px-4 transition ${
+              modalTab === "alerts"
+                ? "border-indigo-400 text-indigo-400"
+                : "border-transparent text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <ShieldAlert className="h-4 w-4" />
+            <span>Correlated Alerts ({incident.alerts?.length || 0})</span>
+          </button>
+        </div>
+
+        {/* Modal Tab Body */}
+        <div className="flex-1 overflow-y-auto p-6 bg-surface-inset/40">
+          {modalTab === "graph" && (
+            <IncidentGraphView
+              graphData={incident.graph}
+              onSelectAlert={onSelectAlert}
+            />
+          )}
+
+          {modalTab === "timeline" && (
+            <IncidentTimelineView
+              timeline={incident.timeline}
+              onSelectAlert={onSelectAlert}
+            />
+          )}
+
+          {modalTab === "evidence" && (
+            <div className="space-y-4">
+              <div className="rounded-lg border border-surface-border bg-surface-raised p-4">
+                <h4 className="text-sm font-semibold text-zinc-200 mb-1">
+                  Cross-Source Correlation Evidence Items
+                </h4>
+                <p className="text-xs text-zinc-400">
+                  Tamper-evident cryptographic evidence packages documenting deterministic entity matches, temporal deltas, and multi-source attack progression.
+                </p>
+              </div>
+
+              {incident.evidence && incident.evidence.length > 0 ? (
+                incident.evidence.map((ev) => (
+                  <div key={ev.id} className="rounded-lg border border-surface-border bg-surface-raised p-4 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="rounded bg-indigo-950/40 border border-indigo-500/30 px-2 py-0.5 text-xs font-mono font-semibold text-indigo-300">
+                          {ev.evidence_type}
+                        </span>
+                        <span className="text-sm font-semibold text-zinc-200">{ev.title}</span>
+                      </div>
+                      {ev.sha256_hash && (
+                        <span className="font-mono text-[10px] text-zinc-500 truncate max-w-xs" title={ev.sha256_hash}>
+                          SHA256: {ev.sha256_hash}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="text-xs text-zinc-300">{ev.description}</div>
+
+                    {ev.data_json && (
+                      <div className="rounded bg-surface-inset p-3 font-mono text-xs space-y-1">
+                        <div className="text-zinc-400 font-semibold mb-1">Evidence Breakdown:</div>
+                        {Object.entries(ev.data_json).map(([k, v]) => (
+                          <div key={k} className="flex justify-between gap-4">
+                            <span className="text-zinc-500">{k}:</span>
+                            <span className="text-zinc-200 text-right break-all">
+                              {typeof v === "object" ? JSON.stringify(v) : String(v)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="py-8 text-center text-sm text-zinc-400">
+                  No explicit cross-source evidence records persisted for this incident.
+                </div>
+              )}
+            </div>
+          )}
+
+          {modalTab === "alerts" && (
+            <div className="space-y-3">
+              {incident.alerts && incident.alerts.length > 0 ? (
+                incident.alerts.map((al) => (
+                  <div
+                    key={al.id}
+                    className="flex items-center justify-between rounded-lg border border-surface-border bg-surface-raised p-4 hover:bg-surface-inset transition"
+                  >
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <SeverityBadge value={al.severity} />
+                        <span className="text-sm font-semibold text-zinc-200">{al.title}</span>
+                      </div>
+                      <div className="text-xs text-zinc-400">{al.description}</div>
+                      <div className="flex items-center gap-3 text-xs text-zinc-500 font-mono">
+                        <span>IP: {al.source_ip || "-"}</span>
+                        <span>User: {al.affected_user || "-"}</span>
+                        <span>Events: {al.event_count}</span>
+                        <span>Seen: {formatDate(al.last_seen)}</span>
+                      </div>
+                    </div>
+
+                    {onSelectAlert && (
+                      <button
+                        type="button"
+                        onClick={() => onSelectAlert(al.id)}
+                        className="rounded-lg bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500"
+                      >
+                        Inspect Alert
+                      </button>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="py-8 text-center text-sm text-zinc-400">
+                  No alerts linked to this incident.
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+

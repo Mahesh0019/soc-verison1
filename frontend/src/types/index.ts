@@ -366,4 +366,95 @@ export interface BehavioralModelStatus {
   last_trained_at?: string | null;
 }
 
+export interface IncidentTimelineItem {
+  timestamp: string;
+  source_type: string;
+  stage: string;
+  title: string;
+  description: string;
+  event_id?: string | null;
+  alert_id?: number | null;
+  raw_reference?: string | null;
+  evidence_ref?: string | null;
+  entities: Record<string, unknown>;
+}
+
+export interface IncidentGraphNode {
+  id: string;
+  label: string;
+  type: "IP" | "Host" | "User" | "Process" | "Event" | "Alert" | "Incident" | "Domain" | "URL" | string;
+  properties: Record<string, unknown>;
+}
+
+export interface IncidentGraphEdge {
+  source: string;
+  target: string;
+  relationship: string;
+  timestamp?: string | null;
+  evidence_ref?: string | null;
+}
+
+export interface IncidentGraphData {
+  nodes: IncidentGraphNode[];
+  edges: IncidentGraphEdge[];
+}
+
+export interface UnifiedIncident {
+  incident_id: number;
+  incident_number: string;
+  title: string;
+  description: string;
+  severity: Severity;
+  risk_score: number;
+  created_at: string;
+  updated_at: string;
+  status: AlertStatus | string;
+  primary_entity?: string | null;
+  related_entities: Array<{ type: string; value: string }>;
+  source_types: string[];
+  alerts: Alert[];
+  events: Array<{
+    id: number;
+    timestamp: string;
+    source_type: string;
+    event_type: string;
+    severity: string;
+    source_ip?: string | null;
+    destination_ip?: string | null;
+    hostname?: string | null;
+    process?: string | null;
+    dns_query?: string | null;
+    message?: string | null;
+  }>;
+  evidence: Array<{
+    id: number;
+    evidence_type: string;
+    title: string;
+    description: string;
+    data_json: Record<string, unknown>;
+    sha256_hash?: string | null;
+    confidence: number;
+  }>;
+  correlation_score?: number | null;
+  confidence: string;
+  attack_chain_status: string;
+  timeline: IncidentTimelineItem[];
+  graph: IncidentGraphData;
+}
+
+export interface CrossSourceCorrelationRequest {
+  window_seconds?: number;
+  alert_ids?: number[];
+  rule_ids?: string[];
+}
+
+export interface CrossSourceCorrelationResult {
+  correlated_incidents_count: number;
+  incidents: UnifiedIncident[];
+  execution_time_ms: number;
+  applied_window_seconds: number;
+  matched_rules: string[];
+}
+
+
 

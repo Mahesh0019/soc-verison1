@@ -1,0 +1,36 @@
+{
+  "categories_covered": [
+    "A: Web-only activity",
+    "B: Network-only activity",
+    "C: Endpoint-only activity",
+    "D: Multi-source attacks",
+    "E: Multi-source benign activity",
+    "F: Events with missing telemetry",
+    "G: Similar-looking but unrelated events",
+    "H: Timing variations",
+    "I: Shared IP but unrelated activity (NAT / proxy non-correlation)",
+    "J: Shared hostname but unrelated activity (multi-user / cron non-correlation)"
+  ],
+  "dataset_name": "Cross-Source Correlation Benchmark Dataset V1",
+  "generated_at": "2026-10-08T08:56:49.265425+00:00",
+  "splits": {
+    "dev": {
+      "file": "dev_scenarios.json",
+      "scenarios_count": 36,
+      "sha256": "515fea9a93b60e60211d8148023299c6cbae84938aeaab3a06aac74650164d1e"
+    },
+    "held_out_test": {
+      "file": "held_out_test_scenarios.json",
+      "scenarios_count": 18,
+      "sha256": "6951460034e4ad5b4a6cd0dd905fdc37d83d0e597eb99e5b8456e38714f3f71c",
+      "status": "HELD_OUT_FROZEN"
+    },
+    "validation": {
+      "file": "validation_scenarios.json",
+      "scenarios_count": 16,
+      "sha256": "829832ca8e9dd928ed448723f068efc5f9ac757fc90e95229fb19ffb8c3fe982"
+    }
+  },
+  "total_scenarios": 70,
+  "version": "1.0.0"
+}

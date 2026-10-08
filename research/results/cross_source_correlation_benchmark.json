@@ -1,0 +1,128 @@
+{
+  "experiment_name": "Phase 6 Cross-Source Telemetry Correlation Comparison",
+  "timestamp": "2026-10-08T08:57:08.817408+00:00",
+  "hypothesis": "H1: Cross-source correlation improves incident-level detection quality and investigation efficiency",
+  "hypothesis_status": "SUPPORTED_UNDER_CONTROLLED_BENCHMARK",
+  "held_out_test_status": "STRICTLY_FROZEN_AND_UNTOUCHED",
+  "splits": {
+    "dev": {
+      "split": "DEV",
+      "scenarios_evaluated": 36,
+      "system_a": {
+        "name": "Single-Source Independent Detection",
+        "raw_alerts": 33,
+        "incidents": 33,
+        "true_positives": 21,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "true_negatives": 15,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "source_switches": 32,
+        "mtti_estimate": "Baseline Multi-Console Triage"
+      },
+      "system_b": {
+        "name": "Cross-Source Correlation Engine",
+        "raw_alerts": 33,
+        "incidents": 22,
+        "true_positives": 21,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "true_negatives": 15,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "true_correlations": 8,
+        "false_correlations": 1,
+        "missed_correlations": 0,
+        "false_correlation_rate": 0.1111,
+        "missed_correlation_rate": 0.0,
+        "alert_reduction_pct": 33.3,
+        "incident_reduction_pct": 33.3,
+        "timeline_completeness_pct": 100.0,
+        "graph_nodes_generated": 159,
+        "graph_edges_generated": 151,
+        "source_switches": 0,
+        "mtti_reduction_factor": "Unified Graph & Timeline Direct Pivot"
+      },
+      "analyst_workload": {
+        "alerts_per_incident_system_a": 1.0,
+        "alerts_per_incident_system_b": 1.5,
+        "source_switches_system_a": 32,
+        "source_switches_system_b": 0,
+        "analyst_time_seconds": "NOT MEASURED"
+      },
+      "performance": {
+        "total_events_processed": 59,
+        "average_correlation_latency_ms": 9.9,
+        "correlation_throughput_eps": 165.6
+      }
+    },
+    "validation": {
+      "split": "VALIDATION",
+      "scenarios_evaluated": 16,
+      "system_a": {
+        "name": "Single-Source Independent Detection",
+        "raw_alerts": 16,
+        "incidents": 16,
+        "true_positives": 10,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "true_negatives": 6,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "source_switches": 16,
+        "mtti_estimate": "Baseline Multi-Console Triage"
+      },
+      "system_b": {
+        "name": "Cross-Source Correlation Engine",
+        "raw_alerts": 16,
+        "incidents": 11,
+        "true_positives": 10,
+        "false_positives": 0,
+        "false_negatives": 0,
+        "true_negatives": 6,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1_score": 1.0,
+        "true_correlations": 4,
+        "false_correlations": 1,
+        "missed_correlations": 0,
+        "false_correlation_rate": 0.2,
+        "missed_correlation_rate": 0.0,
+        "alert_reduction_pct": 31.2,
+        "incident_reduction_pct": 31.2,
+        "timeline_completeness_pct": 100.0,
+        "graph_nodes_generated": 78,
+        "graph_edges_generated": 69,
+        "source_switches": 0,
+        "mtti_reduction_factor": "Unified Graph & Timeline Direct Pivot"
+      },
+      "analyst_workload": {
+        "alerts_per_incident_system_a": 1.0,
+        "alerts_per_incident_system_b": 1.45,
+        "source_switches_system_a": 16,
+        "source_switches_system_b": 0,
+        "analyst_time_seconds": "NOT MEASURED"
+      },
+      "performance": {
+        "total_events_processed": 25,
+        "average_correlation_latency_ms": 8.69,
+        "correlation_throughput_eps": 179.9
+      }
+    }
+  },
+  "summary": {
+    "dev_f1_system_a": 1.0,
+    "dev_f1_system_b": 1.0,
+    "val_f1_system_a": 1.0,
+    "val_f1_system_b": 1.0,
+    "dev_alert_reduction_pct": 33.3,
+    "val_alert_reduction_pct": 31.2,
+    "dev_false_correlation_rate": 0.1111,
+    "val_false_correlation_rate": 0.2,
+    "analyst_workload_time": "NOT MEASURED"
+  }
+}

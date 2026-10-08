@@ -21,6 +21,11 @@ import type {
   RuleHealthSummary,
   TelemetrySourcesResponse,
   ZeekReplayResponse,
+  CrossSourceCorrelationRequest,
+  CrossSourceCorrelationResult,
+  IncidentGraphData,
+  IncidentTimelineItem,
+  UnifiedIncident,
 } from "../types";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
@@ -279,6 +284,32 @@ export async function uploadZeekLog(file: File, logType?: string, mode?: string)
     params,
     headers: { "Content-Type": "multipart/form-data" },
   });
+  return data;
+}
+
+// Phase 6 Cross-Source Correlation & Unified Incidents
+export async function fetchIncidents(params: Record<string, string | number | undefined>) {
+  const { data } = await api.get<Page<UnifiedIncident>>("/incidents", { params: compact(params) });
+  return data;
+}
+
+export async function fetchUnifiedIncident(incidentId: number) {
+  const { data } = await api.get<UnifiedIncident>(`/incidents/${incidentId}/unified`);
+  return data;
+}
+
+export async function fetchIncidentGraph(incidentId: number) {
+  const { data } = await api.get<IncidentGraphData>(`/incidents/${incidentId}/graph`);
+  return data;
+}
+
+export async function fetchIncidentTimeline(incidentId: number) {
+  const { data } = await api.get<IncidentTimelineItem[]>(`/incidents/${incidentId}/timeline`);
+  return data;
+}
+
+export async function triggerCorrelation(payload?: CrossSourceCorrelationRequest) {
+  const { data } = await api.post<CrossSourceCorrelationResult>("/incidents/correlate", payload || {});
   return data;
 }
 

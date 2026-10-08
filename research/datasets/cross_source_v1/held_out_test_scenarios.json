@@ -1,0 +1,605 @@
+[
+  {
+    "category": "A",
+    "category_name": "Web-Only Activity",
+    "description": "SQL injection probe in web form",
+    "events": [
+      {
+        "event_type": "WEB_REQUEST",
+        "message": "SQL injection probe in web form",
+        "request_path": "/run?q=' or '1'='1",
+        "severity": "critical",
+        "source_ip": "198.51.100.60",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T18:00:00+00:00"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 1,
+    "expected_non_correlation_reason": "Web-only",
+    "ground_truth": "ATTACK",
+    "is_multi_source": false,
+    "scenario_id": "CROSS-TEST-001",
+    "title": "Web SQLi Probe"
+  },
+  {
+    "category": "A",
+    "category_name": "Web-Only Activity",
+    "description": "Browser loading stylesheet",
+    "events": [
+      {
+        "event_type": "WEB_REQUEST",
+        "message": "Browser loading stylesheet",
+        "request_path": "/style.css",
+        "severity": "low",
+        "source_ip": "192.168.1.60",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T18:06:00+00:00"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 0,
+    "expected_non_correlation_reason": "Benign static asset",
+    "ground_truth": "BENIGN",
+    "is_multi_source": false,
+    "scenario_id": "CROSS-TEST-002",
+    "title": "Benign CSS Request"
+  },
+  {
+    "category": "B",
+    "category_name": "Network-Only Activity",
+    "description": "Zeek detects connection to backdoor port 4444",
+    "events": [
+      {
+        "destination_ip": "10.0.0.1",
+        "destination_port": 4444,
+        "event_type": "connection",
+        "message": "Zeek detects connection to backdoor port 4444",
+        "severity": "high",
+        "source_ip": "203.0.113.44",
+        "source_type": "ZEEK",
+        "timestamp": "2026-10-08T18:12:00+00:00"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 1,
+    "expected_non_correlation_reason": "Network-only",
+    "ground_truth": "ATTACK",
+    "is_multi_source": false,
+    "scenario_id": "CROSS-TEST-003",
+    "title": "Zeek Port 4444 Connection"
+  },
+  {
+    "category": "B",
+    "category_name": "Network-Only Activity",
+    "description": "Internal host synchronizing clock",
+    "events": [
+      {
+        "destination_ip": "10.0.0.1",
+        "destination_port": 123,
+        "event_type": "connection",
+        "message": "Internal host synchronizing clock",
+        "severity": "low",
+        "source_ip": "10.0.0.30",
+        "source_type": "ZEEK",
+        "timestamp": "2026-10-08T18:18:00+00:00"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 0,
+    "expected_non_correlation_reason": "Benign NTP",
+    "ground_truth": "BENIGN",
+    "is_multi_source": false,
+    "scenario_id": "CROSS-TEST-004",
+    "title": "Routine NTP Sync"
+  },
+  {
+    "category": "C",
+    "category_name": "Endpoint-Only Activity",
+    "description": "Obfuscated powershell -enc execution",
+    "events": [
+      {
+        "command_line": "powershell.exe -enc SQBFAFgA...",
+        "event_type": "sysmon_process_create",
+        "hostname": "CORP-TEST-HOST",
+        "message": "Obfuscated powershell -enc execution",
+        "process": "powershell.exe",
+        "severity": "high",
+        "source_type": "SYSMON",
+        "timestamp": "2026-10-08T18:24:00+00:00",
+        "username": "corp\\testuser"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 1,
+    "expected_non_correlation_reason": "Endpoint-only",
+    "ground_truth": "ATTACK",
+    "is_multi_source": false,
+    "scenario_id": "CROSS-TEST-005",
+    "title": "Sysmon Encoded PowerShell"
+  },
+  {
+    "category": "C",
+    "category_name": "Endpoint-Only Activity",
+    "description": "User opening Windows explorer",
+    "events": [
+      {
+        "command_line": "explorer.exe C:\\Users",
+        "event_type": "sysmon_process_create",
+        "hostname": "CORP-TEST-HOST",
+        "message": "User opening Windows explorer",
+        "process": "explorer.exe",
+        "severity": "low",
+        "source_type": "SYSMON",
+        "timestamp": "2026-10-08T18:30:00+00:00",
+        "username": "corp\\testuser"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 0,
+    "expected_non_correlation_reason": "Benign host activity",
+    "ground_truth": "BENIGN",
+    "is_multi_source": false,
+    "scenario_id": "CROSS-TEST-006",
+    "title": "Benign Explorer Launch"
+  },
+  {
+    "category": "D",
+    "category_name": "Multi-Source Attack",
+    "description": "SQLi attack followed by Zeek TCP session on 4444",
+    "events": [
+      {
+        "destination_ip": "10.0.0.10",
+        "event_type": "WEB_REQUEST",
+        "hostname": "CORP-TEST-01",
+        "message": "Initial exploit probe",
+        "request_path": "/shell.php?id=' or '1'='1",
+        "severity": "critical",
+        "source_ip": "198.51.100.95",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T18:36:00+00:00"
+      },
+      {
+        "command_line": "cmd.exe /c whoami",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "event_type": "connection",
+        "hostname": "CORP-TEST-01",
+        "message": "Correlated exploit follow-up",
+        "parent_process": "w3wp.exe",
+        "process": "cmd.exe",
+        "severity": "high",
+        "source_ip": "198.51.100.95",
+        "source_type": "ZEEK",
+        "timestamp": "2026-10-08T18:36:14+00:00"
+      }
+    ],
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-001"
+    ],
+    "expected_incident_count": 1,
+    "expected_non_correlation_reason": null,
+    "ground_truth": "ATTACK",
+    "is_multi_source": true,
+    "scenario_id": "CROSS-TEST-007",
+    "title": "Web SQLi -> Zeek Connection [CORR-001]"
+  },
+  {
+    "category": "D",
+    "category_name": "Multi-Source Attack",
+    "description": "Web backdoor upload spawning cmd.exe",
+    "events": [
+      {
+        "destination_ip": "10.0.0.10",
+        "event_type": "WEB_REQUEST",
+        "hostname": "CORP-TEST-01",
+        "message": "Initial exploit probe",
+        "request_path": "/shell.php?id=' or '1'='1",
+        "severity": "critical",
+        "source_ip": "198.51.100.95",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T18:42:00+00:00"
+      },
+      {
+        "command_line": "cmd.exe /c whoami",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "event_type": "sysmon_process_create",
+        "hostname": "CORP-TEST-01",
+        "message": "Correlated exploit follow-up",
+        "parent_process": "w3wp.exe",
+        "process": "cmd.exe",
+        "severity": "high",
+        "source_ip": "198.51.100.95",
+        "source_type": "SYSMON",
+        "timestamp": "2026-10-08T18:42:14+00:00"
+      }
+    ],
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-002"
+    ],
+    "expected_incident_count": 1,
+    "expected_non_correlation_reason": null,
+    "ground_truth": "ATTACK",
+    "is_multi_source": true,
+    "scenario_id": "CROSS-TEST-008",
+    "title": "Web Upload -> Sysmon Process [CORR-002]"
+  },
+  {
+    "category": "D",
+    "category_name": "Multi-Source Attack",
+    "description": "Sysmon rundll32 network socket matched by Zeek flow",
+    "events": [
+      {
+        "destination_ip": "10.0.0.10",
+        "event_type": "WEB_REQUEST",
+        "hostname": "CORP-TEST-01",
+        "message": "Initial exploit probe",
+        "request_path": "/shell.php?id=' or '1'='1",
+        "severity": "critical",
+        "source_ip": "198.51.100.95",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T18:48:00+00:00"
+      },
+      {
+        "command_line": "cmd.exe /c whoami",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "event_type": "sysmon_process_create",
+        "hostname": "CORP-TEST-01",
+        "message": "Correlated exploit follow-up",
+        "parent_process": "w3wp.exe",
+        "process": "cmd.exe",
+        "severity": "high",
+        "source_ip": "198.51.100.95",
+        "source_type": "SYSMON",
+        "timestamp": "2026-10-08T18:48:14+00:00"
+      }
+    ],
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-003"
+    ],
+    "expected_incident_count": 1,
+    "expected_non_correlation_reason": null,
+    "ground_truth": "ATTACK",
+    "is_multi_source": true,
+    "scenario_id": "CROSS-TEST-009",
+    "title": "Endpoint Outbound -> Zeek Flow [CORR-003]"
+  },
+  {
+    "category": "D",
+    "category_name": "Multi-Source Attack",
+    "description": "Sysmon malware DNS lookup verified by Zeek sensor",
+    "events": [
+      {
+        "destination_ip": "10.0.0.10",
+        "event_type": "WEB_REQUEST",
+        "hostname": "CORP-TEST-01",
+        "message": "Initial exploit probe",
+        "request_path": "/shell.php?id=' or '1'='1",
+        "severity": "critical",
+        "source_ip": "198.51.100.95",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T18:54:00+00:00"
+      },
+      {
+        "command_line": "cmd.exe /c whoami",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "event_type": "sysmon_process_create",
+        "hostname": "CORP-TEST-01",
+        "message": "Correlated exploit follow-up",
+        "parent_process": "w3wp.exe",
+        "process": "cmd.exe",
+        "severity": "high",
+        "source_ip": "198.51.100.95",
+        "source_type": "SYSMON",
+        "timestamp": "2026-10-08T18:54:14+00:00"
+      }
+    ],
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-004"
+    ],
+    "expected_incident_count": 1,
+    "expected_non_correlation_reason": null,
+    "ground_truth": "ATTACK",
+    "is_multi_source": true,
+    "scenario_id": "CROSS-TEST-010",
+    "title": "Endpoint DNS -> Zeek DNS [CORR-004]"
+  },
+  {
+    "category": "D",
+    "category_name": "Multi-Source Attack",
+    "description": "End-to-end multi-stage intrusion",
+    "events": [
+      {
+        "destination_ip": "10.0.0.10",
+        "event_type": "WEB_REQUEST",
+        "hostname": "CORP-TEST-01",
+        "message": "Initial exploit probe",
+        "request_path": "/shell.php?id=' or '1'='1",
+        "severity": "critical",
+        "source_ip": "198.51.100.95",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T19:00:00+00:00"
+      },
+      {
+        "command_line": "cmd.exe /c whoami",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "event_type": "connection",
+        "hostname": "CORP-TEST-01",
+        "message": "Correlated exploit follow-up",
+        "parent_process": "w3wp.exe",
+        "process": "cmd.exe",
+        "severity": "high",
+        "source_ip": "198.51.100.95",
+        "source_type": "ZEEK",
+        "timestamp": "2026-10-08T19:00:14+00:00"
+      },
+      {
+        "command_line": "cmd.exe /c whoami",
+        "event_type": "sysmon_process_create",
+        "hostname": "CORP-TEST-01",
+        "message": "Payload execution",
+        "parent_process": "w3wp.exe",
+        "process": "cmd.exe",
+        "severity": "critical",
+        "source_type": "SYSMON",
+        "timestamp": "2026-10-08T19:00:22+00:00",
+        "username": "IIS APPPOOL\\default"
+      }
+    ],
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-001",
+      "CORR-002"
+    ],
+    "expected_incident_count": 1,
+    "expected_non_correlation_reason": null,
+    "ground_truth": "ATTACK",
+    "is_multi_source": true,
+    "scenario_id": "CROSS-TEST-011",
+    "title": "Tri-Source Web + Zeek + Sysmon Chain"
+  },
+  {
+    "category": "E",
+    "category_name": "Multi-Source Benign Activity",
+    "description": "Developer local dev server & curl test",
+    "events": [
+      {
+        "event_type": "sysmon_process_create",
+        "hostname": "CORP-NODE-01",
+        "message": "Benign activity 1",
+        "process": "node.exe",
+        "severity": "low",
+        "source_ip": "192.0.2.88",
+        "source_type": "SYSMON",
+        "timestamp": "2026-10-08T19:06:00+00:00",
+        "username": "corp\\dev"
+      },
+      {
+        "event_type": "WEB_REQUEST",
+        "message": "Benign activity 2",
+        "request_path": "/api/test",
+        "severity": "low",
+        "source_ip": "192.0.2.88",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T19:06:09+00:00"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 0,
+    "expected_non_correlation_reason": "Benign workflow",
+    "ground_truth": "BENIGN",
+    "is_multi_source": true,
+    "scenario_id": "CROSS-TEST-012",
+    "title": "Developer Node Build & Web Test"
+  },
+  {
+    "category": "E",
+    "category_name": "Multi-Source Benign Activity",
+    "description": "Config management tool updating packages",
+    "events": [
+      {
+        "event_type": "sysmon_process_create",
+        "hostname": "CORP-NODE-01",
+        "message": "Benign activity 1",
+        "process": "node.exe",
+        "severity": "low",
+        "source_ip": "192.0.2.88",
+        "source_type": "SYSMON",
+        "timestamp": "2026-10-08T19:12:00+00:00",
+        "username": "corp\\dev"
+      },
+      {
+        "event_type": "WEB_REQUEST",
+        "message": "Benign activity 2",
+        "request_path": "/api/test",
+        "severity": "low",
+        "source_ip": "192.0.2.88",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T19:12:09+00:00"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 0,
+    "expected_non_correlation_reason": "Approved IT config",
+    "ground_truth": "BENIGN",
+    "is_multi_source": true,
+    "scenario_id": "CROSS-TEST-013",
+    "title": "Automated Ansible Deployment"
+  },
+  {
+    "category": "F",
+    "category_name": "Missing Telemetry Layer",
+    "description": "Web SQL injection with dropped network log",
+    "events": [
+      {
+        "event_type": "WEB_REQUEST",
+        "message": "Web SQL injection with dropped network log",
+        "request_path": "/test?id=' or '1'='1",
+        "severity": "critical",
+        "source_ip": "198.51.100.55",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T19:18:00+00:00"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 1,
+    "expected_non_correlation_reason": "Web-only visible",
+    "ground_truth": "ATTACK",
+    "is_multi_source": false,
+    "scenario_id": "CROSS-TEST-014",
+    "title": "Web Exploit Without Net Traffic"
+  },
+  {
+    "category": "G",
+    "category_name": "Unrelated Simultaneous Events",
+    "description": "Simultaneous unrelated events with different IPs",
+    "events": [
+      {
+        "event_type": "WEB_REQUEST",
+        "message": "Initial scan",
+        "request_path": "/admin?id=' or '1'='1",
+        "severity": "critical",
+        "source_ip": "198.51.100.41",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T19:24:00+00:00"
+      },
+      {
+        "destination_port": 4444,
+        "event_type": "connection",
+        "message": "Secondary scan",
+        "severity": "high",
+        "source_ip": "203.0.113.42",
+        "source_type": "ZEEK",
+        "timestamp": "2026-10-08T19:24:01+00:00"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 1,
+    "expected_non_correlation_reason": "Distinct IPs; must not merge",
+    "ground_truth": "ATTACK",
+    "is_multi_source": true,
+    "scenario_id": "CROSS-TEST-015",
+    "title": "Admin Curl & External Scanner at dt=0.5s"
+  },
+  {
+    "category": "H",
+    "category_name": "Timing Boundary Evaluation",
+    "description": "Same IP attacks spaced by 800s",
+    "events": [
+      {
+        "event_type": "WEB_REQUEST",
+        "message": "Initial scan",
+        "request_path": "/admin?id=' or '1'='1",
+        "severity": "critical",
+        "source_ip": "198.51.100.41",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T19:30:00+00:00"
+      },
+      {
+        "destination_port": 4444,
+        "event_type": "connection",
+        "message": "Secondary scan",
+        "severity": "high",
+        "source_ip": "198.51.100.41",
+        "source_type": "ZEEK",
+        "timestamp": "2026-10-08T19:43:20+00:00"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 2,
+    "expected_non_correlation_reason": "Exceeds 600s window limit",
+    "ground_truth": "ATTACK",
+    "is_multi_source": true,
+    "scenario_id": "CROSS-TEST-016",
+    "title": "Attacks Separated by 800s (Exceeds Max)"
+  },
+  {
+    "category": "I",
+    "category_name": "Shared IP Non-Correlation",
+    "description": "NAT IP used by benign user and separate attacker",
+    "events": [
+      {
+        "event_type": "sysmon_process_create",
+        "hostname": "CORP-NODE-01",
+        "message": "Benign activity 1",
+        "process": "node.exe",
+        "severity": "low",
+        "source_ip": "192.0.2.88",
+        "source_type": "SYSMON",
+        "timestamp": "2026-10-08T19:36:00+00:00",
+        "username": "corp\\dev"
+      },
+      {
+        "event_type": "WEB_REQUEST",
+        "message": "Benign activity 2",
+        "request_path": "/api/test",
+        "severity": "low",
+        "source_ip": "192.0.2.88",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T19:36:09+00:00"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 1,
+    "expected_non_correlation_reason": "NAT IP sharing; unrelated destination",
+    "ground_truth": "ATTACK",
+    "is_multi_source": true,
+    "scenario_id": "CROSS-TEST-017",
+    "title": "Public NAT Gateway Mixed Traffic"
+  },
+  {
+    "category": "J",
+    "category_name": "Shared Host Non-Correlation",
+    "description": "Endpoint running scan during normal web visit",
+    "events": [
+      {
+        "event_type": "sysmon_process_create",
+        "hostname": "CORP-NODE-01",
+        "message": "Benign activity 1",
+        "process": "node.exe",
+        "severity": "low",
+        "source_ip": "192.0.2.88",
+        "source_type": "SYSMON",
+        "timestamp": "2026-10-08T19:42:00+00:00",
+        "username": "corp\\dev"
+      },
+      {
+        "event_type": "WEB_REQUEST",
+        "message": "Benign activity 2",
+        "request_path": "/api/test",
+        "severity": "low",
+        "source_ip": "192.0.2.88",
+        "source_type": "WEB",
+        "timestamp": "2026-10-08T19:42:09+00:00"
+      }
+    ],
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_incident_count": 0,
+    "expected_non_correlation_reason": "Separate processes without attack",
+    "ground_truth": "BENIGN",
+    "is_multi_source": true,
+    "scenario_id": "CROSS-TEST-018",
+    "title": "Shared Host Scheduled Antivirus Scan"
+  }
+]

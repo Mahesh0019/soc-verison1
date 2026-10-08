@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
-from sqlalchemy import DateTime, ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, JSON, String, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database.base import Base
@@ -23,8 +23,53 @@ class Incident(Base):
     last_seen: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
     alert_count: Mapped[int] = mapped_column(Integer, default=0)
     event_count: Mapped[int] = mapped_column(Integer, default=0)
+
+    # Phase 6: Cross-Source Correlation & Unified Incident Fields
+    primary_entity: Mapped[Optional[str]] = mapped_column(String(128), nullable=True, index=True)
+    related_entities_json: Mapped[Optional[list[dict[str, Any]]]] = mapped_column(JSON, nullable=True)
+    source_types_json: Mapped[Optional[list[str]]] = mapped_column(JSON, nullable=True)
+    correlation_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    confidence: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, default="MEDIUM")
+    risk_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True, default=50.0)
+    attack_chain_status: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, default="CORRELATED ACTIVITY")
+    timeline_json: Mapped[Optional[list[dict[str, Any]]]] = mapped_column(JSON, nullable=True)
+    graph_json: Mapped[Optional[dict[str, Any]]] = mapped_column(JSON, nullable=True)
+
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+    @property
+    def source_types(self) -> list[str]:
+        return self.source_types_json or []
+
+    @source_types.setter
+    def source_types(self, val: list[str]) -> None:
+        self.source_types_json = val
+
+    @property
+    def timeline(self) -> list[dict[str, Any]]:
+        return self.timeline_json or []
+
+    @timeline.setter
+    def timeline(self, val: list[dict[str, Any]]) -> None:
+        self.timeline_json = val
+
+    @property
+    def graph(self) -> dict[str, Any]:
+        return self.graph_json or {}
+
+    @graph.setter
+    def graph(self, val: dict[str, Any]) -> None:
+        self.graph_json = val
+
+    @property
+    def related_entities(self) -> list[Any]:
+        return self.related_entities_json or []
+
+    @related_entities.setter
+    def related_entities(self, val: list[Any]) -> None:
+        self.related_entities_json = val
+
 
     alerts = relationship("IncidentAlert", back_populates="incident", cascade="all, delete-orphan")
     cases = relationship("Case", back_populates="incident")
