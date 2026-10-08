@@ -140,7 +140,7 @@ Historical Baseline: **Phase 6 Cross-Source V1** (Commit `bdaf3ec46ed79dcc3cea98
 | **False Positive Rate** | 0.0000 | 0.0000 | 0.0000 | 0.00% | Preserved |
 | **False Correlation Rate** | 0.1111 | 0.2143 | +0.1032 | +92.89% | Degraded (Elevated) |
 | **Correlation Latency** | 9.90 ms | 17.50 ms | +7.60 ms | +76.77% | Slower |
-| **Throughput (EPS)** | 98.4 eps | 63.2 eps | -35.2 eps | -35.77% | Decreased |
+| **Composite Throughput** | 98.4 eps | 63.2 eps | -35.2 eps | -35.77% | Decreased |
 
 ### 6.2 Validation Split (18 Scenarios)
 
@@ -152,7 +152,21 @@ Historical Baseline: **Phase 6 Cross-Source V1** (Commit `bdaf3ec46ed79dcc3cea98
 | **False Positive Rate** | 0.0000 | 0.0000 | 0.0000 | 0.00% | Preserved |
 | **False Correlation Rate** | 0.2000 | 0.2000 | 0.0000 | 0.00% | Unchanged |
 | **Correlation Latency** | 8.69 ms | 13.07 ms | +4.38 ms | +50.40% | Slower |
-| **Throughput (EPS)** | 104.2 eps | 74.2 eps | -30.0 eps | -28.79% | Decreased |
+| **Composite Throughput** | 104.2 eps | 74.2 eps | -30.0 eps | -28.79% | Decreased |
+
+### 6.3 Throughput Reconciliation (Phase 6 vs. Phase 7 Methodology)
+
+The reported throughput metrics reflect distinct pipeline stages and benchmarking methodologies and must NOT be directly compared as equivalent:
+
+1. **Phase 6 "Event Ingestion Throughput" (~1,200 events/sec)**:
+   - **Scope**: Isolated Stage 1 (Raw Ingestion). Measures only single-table event validation and SQLite bulk insertion.
+   - **Exclusions**: Evaluated *without* rule detection matching, alert generation, cross-source correlation, timeline synthesis, or attack graph generation.
+   - **Workload**: Continuous batch of 1,200 events.
+2. **Phase 7 "Composite Pipeline Throughput" (63.2 – 98.4 eps)**:
+   - **Scope**: End-to-End Composite Pipeline ($T_{\text{total}} = T_{\text{ingest}} + T_{\text{detection}} + T_{\text{correlation}}$).
+   - **Inclusions**: Measures ingestion ($2.24–2.54\text{ ms}$ per scenario), complete rule evaluation with obfuscated string parsing ($19.9–25.1\text{ ms}$), incident creation, evidence linking, and graph generation ($13.1–17.5\text{ ms}$).
+   - **Workload**: Scenario-by-scenario evaluation over small multi-plane event clusters (averaging 2.85 events per scenario).
+   - **Ingestion-Only Rate in Phase 7**: If measured in isolation, Phase 7 ingestion latency of $2.54\text{ ms}$ per 2.85 events corresponds to $\approx 1,122\text{ events/sec}$, fully consistent with Phase 6 ingestion speed.
 
 *Finding*: Precision remained high (no false alarms generated on benign administrative scripts like Class M/N), but Recall dropped by 8.3% to 14.3% due to dropped telemetry planes and mutated process names. False correlation rate rose from 11.1% to 21.4% due to shared IP collisions.
 
@@ -163,16 +177,28 @@ Historical Baseline: **Phase 6 Cross-Source V1** (Commit `bdaf3ec46ed79dcc3cea98
 ### 7.1 Telemetry Loss Sensitivity (Missing Telemetry Curve)
 Evaluated across 10-incident multi-source campaigns with randomly dropped telemetry planes:
 
-| Loss Severity (%) | Precision | Recall | F1 Score | True Correlation Rate | Incidents Created |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **0%** (Full Telemetry) | 1.000 | 1.000 | 1.000 | 1.000 | 10 |
-| **10%** | 1.000 | 1.000 | 1.000 | 1.000 | 10 |
-| **20%** | 1.000 | 1.000 | 1.000 | 1.000 | 10 |
-| **30%** | 1.000 | 1.000 | 1.000 | 1.000 | 10 |
-| **40%** | 1.000 | 1.000 | 1.000 | 1.000 | 10 |
-| **50%** | 1.000 | 1.000 | 1.000 | **0.000** | 10 |
+| Loss Severity Setting | Discrete Planes Dropped | Actual Telemetry Loss | Precision | Recall | F1 Score | True Correlation Rate | Incidents Created |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **0%** (Full) | 0 of 3 planes | 0.0% | 1.000 | 1.000 | 1.000 | 1.000 | 10 |
+| **10%** | 0 of 3 planes | 0.0% | 1.000 | 1.000 | 1.000 | 1.000 | 10 |
+| **20%** | 1 of 3 planes | 33.3% | 1.000 | 1.000 | 1.000 | 1.000 | 10 |
+| **30%** | 1 of 3 planes | 33.3% | 1.000 | 1.000 | 1.000 | 1.000 | 10 |
+| **40%** | 1 of 3 planes | 33.3% | 1.000 | 1.000 | 1.000 | 1.000 | 10 |
+| **50%** | 2 of 3 planes | 66.7% | 1.000 | 1.000 | 1.000 | **0.000** | 10 |
 
-*Boundary*: Correlation holds up to 40% telemetry loss when at least two correlated planes survive. Beyond 40% loss (specifically at 50% where 2 of 3 planes drop simultaneously), multi-plane correlation drops to 0.
+*Methodological Reconciliation of 33.3% Loss vs. 0–40% Table Rows*:
+Each canonical scenario in this benchmark comprises exactly $N=3$ telemetry sources (1 Web, 1 Zeek, 1 Sysmon). When evaluating perturbation levels:
+- `drop_count = int(round(3 * rate))`
+- Rates 0% and 10% round to 0 events dropped ($0.0\%$ actual loss).
+- Rates 20%, 30%, and 40% round to 1 event dropped out of 3 ($1/3 \approx 33.3\%$ actual discrete loss).
+- Rate 50% rounds to 2 events dropped out of 3 ($2/3 \approx 66.7\%$ actual discrete loss).
+
+Consequently, the plateau across the 20%, 30%, and 40% table rows reflects discrete event quantization. The mathematically exact threshold in this 3-source model is:
+- **0 dropped (0.0% loss)**: 3 planes available -> 3-plane correlation succeeds.
+- **1 dropped (33.3% loss)**: 2 planes available -> 2-plane fallback correlation (e.g., CORR-002) succeeds with True Correlation Rate = 1.000.
+- **2 dropped (66.7% loss)**: 1 plane available -> cross-source correlation is mathematically impossible (True Correlation Rate = 0.000), as cross-source correlation requires $\ge 2$ distinct planes.
+
+Thus, the exact maximum tolerable telemetry loss under this 3-plane architecture is **1 source out of 3 ($33.3\%$)**, not an arbitrary continuous 40%.
 
 ### 7.2 Timestamp Drift Sensitivity (Clock Skew Curve)
 Evaluated with artificial clock offset applied between network and endpoint sensors:
@@ -223,21 +249,20 @@ Eight mandatory boundary conditions were evaluated to empirically dissect correl
 
 ## 9. Failure Boundaries & Limits
 
-Empirically derived operational boundaries for the deterministic SOC pipeline:
+Empirically observed operational boundaries for the deterministic SOC pipeline under tested conditions (not claimed as universal limits):
 
-1. **Maximum Tolerable Telemetry Loss**: **33.3%**
-   - Single plane loss is tolerated (2 of 3 planes maintain correlation).
-   - Multi-plane loss ($\ge 2$ planes dropped simultaneously) causes total correlation collapse.
-2. **Maximum Useful Timestamp Drift**: **300 seconds (5 minutes)**
-   - Hard cutoff governed by `window_seconds`. Events with drift $> 300$ seconds fragment into isolated incident tickets.
-3. **Correlation Window Sensitivity**:
-   - The deterministic engine exhibits a step-function cutoff at window boundary. No soft-clustering or fuzzy temporal grouping exists past 300 seconds.
-4. **Duplicate Event Tolerance**: **$\ge 50.0\%$**
-   - Timeline and evidence deduplication reliably suppresses duplicate alert creation.
-5. **False Correlation Vulnerabilities**:
+1. **Maximum Tolerable Telemetry Loss in 3-Plane Architecture**: **33.3% (1 of 3 sources)**
+   - The loss of a single telemetry plane is tolerated; 2-plane correlation rules maintain unified incident reconstruction.
+   - Multi-plane loss ($\ge 2$ planes dropped simultaneously, or 66.7% loss) prevents cross-source correlation by definition, as at least two sources are required.
+2. **Correlation Window Boundary Sensitivity (Configured `window_seconds=300`)**:
+   - The engine utilizes a static window threshold. For events with inter-arrival drift exceeding the configured 300-second window, an abrupt step-function cutoff occurs, fragmenting the attack into isolated incidents.
+   - This 300-second boundary is a configurable parameter rather than an inherent physical limit; however, deterministic windowing without time-decay soft clustering inherently exhibits brittle step-function boundaries.
+3. **Duplicate Event Tolerance (Tested up to 50% Duplication)**:
+   - Timeline and evidence deduplication reliably suppresses duplicate alert creation up to the tested 50% duplication rate.
+4. **Specific False Correlation Conditions**:
    - Carrier-grade NAT or proxy IP reuse when endpoint hostname telemetry is unavailable.
-6. **Missed Correlation Vulnerabilities**:
-   - Attacks spaced across intervals $> 300$ seconds.
+5. **Specific Missed Correlation Conditions**:
+   - Telemetry inter-arrival times exceeding the configured `window_seconds`.
    - Typo-squatted process names (`svch0st.exe`) or mutated domain names that evade exact rule string matching.
 
 ---
@@ -246,11 +271,11 @@ Empirically derived operational boundaries for the deterministic SOC pipeline:
 
 All 5 resilience tests passed under automated security test fixtures:
 
-1. **Oversized Telemetry Fields**: Tested with 100 KB command-line string payloads. Processed and persisted without memory ballooning, recursion depth errors, or process termination.
+1. **Oversized Telemetry Fields (Tested up to 100 KB payloads)**: Ingested and stored a single 100 KB command line without process crash or SQLite buffer errors under tested benchmark conditions. (Note: This verifies parser robustness against single oversized fields, but does NOT constitute a formal proof of bounded memory under sustained, unbounded multi-gigabyte ingestion streams).
 2. **Malformed JSON & Corrupt Logs**: Ingested unclosed brackets, missing commas, and truncated tokens. Handled with explicit 400/422 HTTP validation errors; no backend crash.
 3. **SQL Injection Resilience**: Ingested raw SQL injection strings (`'; DROP TABLE incidents; --`, `' OR '1'='1`) within `hostname`, `user`, and `raw_reference` fields. Parameterized SQLAlchemy ORM queries ensured zero SQL injection vulnerability.
 4. **Unicode & Non-Standard Payloads**: Ingested multi-byte Unicode, Asian characters, and emojis in user-agent and process fields. Persisted and rendered without encoding failures.
-5. **Cross-Site Scripting (XSS)**: Telemetry containing `<script>alert('xss')</script>` was safely handled without executing in UI or corrupting timeline structures.
+5. **Cross-Site Scripting (XSS)**: Telemetry containing `<script>alert('xss')</script>` was safely stored and rendered via React JSX escaping without script execution.
 
 ---
 
