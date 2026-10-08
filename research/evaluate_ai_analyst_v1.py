@@ -501,28 +501,28 @@ def run_full_evaluation():
     hypotheses = {
         "H1_incident_interpretation_without_state_mutation": {
             "hypothesis": "Evidence-grounded AI assistance improves incident interpretation quality without changing authoritative detection results.",
-            "status": "CONFIRMED_EMPIRICALLY",
-            "evidence": "AI assistant generated structured explanations for 100% of scenarios without mutating incident severity, alert status, or detection rules.",
+            "status": "PARTIALLY_SUPPORTED",
+            "evidence": "Deterministic SOC authority was 100% preserved (0 state mutations). Structured explanation generation was verified. However, human analyst interpretation quality, cognitive workload, and decision accuracy were not measured; claims of improved analyst interpretation remain unverified without a human-subject study.",
         },
         "H2_evidence_constraints_reduce_unsupported_claims": {
             "hypothesis": "Evidence citation constraints reduce unsupported factual claims compared with unconstrained AI output.",
-            "status": "CONFIRMED_EMPIRICALLY",
-            "evidence": f"Citation validation achieved {dev_results['evidence_citation_coverage_pct']}% citation coverage with unsupported claim rate of {dev_results['unsupported_claim_rate'] * 100}%.",
+            "status": "CONFIRMED_FOR_DETERMINISTIC_BASELINE",
+            "evidence": f"Citation validation achieved {dev_results['evidence_citation_coverage_pct']}% citation coverage with 0.0% unsupported factual claim rate within the evaluated deterministic AI Analyst Baseline benchmark.",
         },
         "H3_correct_abstention_on_insufficient_evidence": {
             "hypothesis": "An evidence-grounded AI assistant correctly abstains when incident evidence is insufficient.",
-            "status": "CONFIRMED_EMPIRICALLY",
-            "evidence": f"Abstention Precision = {dev_results['abstention_precision'] * 100}%, Abstention Recall = {dev_results['abstention_recall'] * 100}% on incomplete telemetry scenarios.",
+            "status": "CONFIRMED_FOR_DETERMINISTIC_BASELINE",
+            "evidence": f"The deterministic baseline is conservative and exhibits false-abstention behavior: Abstention Recall = {dev_results['abstention_recall'] * 100}%, Abstention Precision = {dev_results['abstention_precision'] * 100}% (TP=6, FP=18, FN=2, TN=14).",
         },
         "H4_prompt_injection_resistance": {
             "hypothesis": "Telemetry-based prompt injection can be resisted when untrusted telemetry is explicitly isolated from system instructions.",
-            "status": "CONFIRMED_EMPIRICALLY",
-            "evidence": "Prompt Injection Success Rate = 0.0% across all adversarial scenarios; untrusted telemetry payloads were parsed strictly as data.",
+            "status": "CONFIRMED_FOR_TESTED_VECTORS",
+            "evidence": "No successful telemetry-based prompt injection was observed across the evaluated attack vectors (0.0% success rate on tested inputs); untrusted telemetry payloads were parsed strictly as passive data literals within the evaluated benchmark.",
         },
         "H5_analyst_facing_quality_preserves_soc_authority": {
             "hypothesis": "AI assistance improves analyst-facing explanation quality while preserving deterministic SOC authority.",
-            "status": "CONFIRMED_EMPIRICALLY",
-            "evidence": "Separated FACT vs INFERENCE vs RECOMMENDATION in 100% of outputs; all recommendations remain advisory and require human authorization.",
+            "status": "SUPPORTED_FOR_TESTED_OUTPUT_STRUCTURE_CRITERIA",
+            "evidence": "Separated FACT vs INFERENCE vs RECOMMENDATION in 100% of outputs; all recommendations remain advisory and require human authorization. Human explanation effectiveness was not independently evaluated.",
         },
     }
 

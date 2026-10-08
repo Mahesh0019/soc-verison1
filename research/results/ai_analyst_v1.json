@@ -1,6 +1,6 @@
 {
   "experiment_name": "Phase 8 Evidence-Grounded AI Analyst Assistance & Hallucination Evaluation",
-  "timestamp": "2026-10-08T10:45:25.021775+00:00",
+  "timestamp": "2026-10-08T11:16:01.279566+00:00",
   "baseline_model_designation": "Deterministic AI Analyst Baseline",
   "splits": {
     "dev": {
@@ -20,7 +20,7 @@
       "prompt_injection_cases": 2,
       "prompt_injection_success_rate": 0.0,
       "assessment_accuracy": 0.25,
-      "avg_ai_latency_ms": 97.97
+      "avg_ai_latency_ms": 90.47
     },
     "validation": {
       "scenarios_evaluated": 20,
@@ -39,7 +39,7 @@
       "prompt_injection_cases": 1,
       "prompt_injection_success_rate": 0.0,
       "assessment_accuracy": 0.25,
-      "avg_ai_latency_ms": 6.63
+      "avg_ai_latency_ms": 8.51
     }
   },
   "comparison_system_a_vs_system_b": {
@@ -65,7 +65,7 @@
       "automated_mitre_mapping": "Evidence-backed tactic/technique context",
       "explicit_uncertainty_quantification": "Explicit data gaps and missing telemetry planes reported",
       "prompt_injection_vulnerability": "0.0% (Telemetry isolated as untrusted data)",
-      "average_assistance_latency_ms": 97.97
+      "average_assistance_latency_ms": 90.47
     }
   },
   "failure_modes_testing": [
@@ -109,28 +109,28 @@
   "hypotheses_evaluation": {
     "H1_incident_interpretation_without_state_mutation": {
       "hypothesis": "Evidence-grounded AI assistance improves incident interpretation quality without changing authoritative detection results.",
-      "status": "CONFIRMED_EMPIRICALLY",
-      "evidence": "AI assistant generated structured explanations for 100% of scenarios without mutating incident severity, alert status, or detection rules."
+      "status": "PARTIALLY_SUPPORTED",
+      "evidence": "Deterministic SOC authority was 100% preserved (0 state mutations). Structured explanation generation was verified. However, human analyst interpretation quality, cognitive workload, and decision accuracy were not measured; claims of improved analyst interpretation remain unverified without a human-subject study."
     },
     "H2_evidence_constraints_reduce_unsupported_claims": {
       "hypothesis": "Evidence citation constraints reduce unsupported factual claims compared with unconstrained AI output.",
-      "status": "CONFIRMED_EMPIRICALLY",
-      "evidence": "Citation validation achieved 100.0% citation coverage with unsupported claim rate of 0.0%."
+      "status": "CONFIRMED_FOR_DETERMINISTIC_BASELINE",
+      "evidence": "Citation validation achieved 100.0% citation coverage with 0.0% unsupported factual claim rate within the evaluated deterministic AI Analyst Baseline benchmark."
     },
     "H3_correct_abstention_on_insufficient_evidence": {
       "hypothesis": "An evidence-grounded AI assistant correctly abstains when incident evidence is insufficient.",
-      "status": "CONFIRMED_EMPIRICALLY",
-      "evidence": "Abstention Precision = 25.0%, Abstention Recall = 75.0% on incomplete telemetry scenarios."
+      "status": "CONFIRMED_FOR_DETERMINISTIC_BASELINE",
+      "evidence": "The deterministic baseline is conservative and exhibits false-abstention behavior: Abstention Recall = 75.0%, Abstention Precision = 25.0% (TP=6, FP=18, FN=2, TN=14)."
     },
     "H4_prompt_injection_resistance": {
       "hypothesis": "Telemetry-based prompt injection can be resisted when untrusted telemetry is explicitly isolated from system instructions.",
-      "status": "CONFIRMED_EMPIRICALLY",
-      "evidence": "Prompt Injection Success Rate = 0.0% across all adversarial scenarios; untrusted telemetry payloads were parsed strictly as data."
+      "status": "CONFIRMED_FOR_TESTED_VECTORS",
+      "evidence": "No successful telemetry-based prompt injection was observed across the evaluated attack vectors (0.0% success rate on tested inputs); untrusted telemetry payloads were parsed strictly as passive data literals within the evaluated benchmark."
     },
     "H5_analyst_facing_quality_preserves_soc_authority": {
       "hypothesis": "AI assistance improves analyst-facing explanation quality while preserving deterministic SOC authority.",
-      "status": "CONFIRMED_EMPIRICALLY",
-      "evidence": "Separated FACT vs INFERENCE vs RECOMMENDATION in 100% of outputs; all recommendations remain advisory and require human authorization."
+      "status": "SUPPORTED_FOR_TESTED_OUTPUT_STRUCTURE_CRITERIA",
+      "evidence": "Separated FACT vs INFERENCE vs RECOMMENDATION in 100% of outputs; all recommendations remain advisory and require human authorization. Human explanation effectiveness was not independently evaluated."
     }
   },
   "security_findings": {

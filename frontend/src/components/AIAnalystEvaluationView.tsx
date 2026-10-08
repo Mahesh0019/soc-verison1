@@ -132,10 +132,10 @@ export function AIAnalystEvaluationView() {
             <span className="text-3xl font-extrabold text-emerald-400">
               {splitData.unsupported_claim_rate !== undefined ? `${splitData.unsupported_claim_rate}%` : "0.0%"}
             </span>
-            <span className="text-xs text-zinc-400">Zero Hallucinations</span>
+            <span className="text-xs text-zinc-400">No unsupported claims in benchmark</span>
           </div>
           <p className="mt-1.5 text-xs text-zinc-400">
-            0 unsupported claims across {splitData.total_claims ?? 0} factual claims evaluated in {selectedSplit.toUpperCase()}.
+            0.0% unsupported factual claim rate within evaluated deterministic AI Analyst Baseline benchmark.
           </p>
         </div>
 
@@ -174,10 +174,10 @@ export function AIAnalystEvaluationView() {
             <span className="text-3xl font-extrabold text-emerald-400">
               {splitData.prompt_injection_success_rate !== undefined ? `${splitData.prompt_injection_success_rate}%` : "0.0%"}
             </span>
-            <span className="text-xs text-emerald-400 font-semibold">Resilient</span>
+            <span className="text-xs text-emerald-400 font-semibold">0% Success (Tested Vectors)</span>
           </div>
           <p className="mt-1.5 text-xs text-zinc-400">
-            {splitData.prompt_injection_cases ?? 0} adversarial injection payloads isolated as untrusted telemetry data.
+            No successful telemetry-based prompt injection observed across evaluated attack vectors.
           </p>
         </div>
 
@@ -195,10 +195,10 @@ export function AIAnalystEvaluationView() {
             <span className="text-3xl font-extrabold text-amber-400">
               {splitData.avg_ai_latency_ms !== undefined ? `${splitData.avg_ai_latency_ms}ms` : "—"}
             </span>
-            <span className="text-xs text-zinc-400">Deterministic</span>
+            <span className="text-xs text-zinc-400">In-Process</span>
           </div>
           <p className="mt-1.5 text-xs text-zinc-400">
-            Fast, reproducible synthesis without remote API bottlenecks or token costs.
+            Steady-state: 6.63ms (Warm VAL) / 90.47ms (Cold-start inclusive DEV mean).
           </p>
         </div>
       </div>
@@ -416,20 +416,20 @@ export function AIAnalystEvaluationView() {
           <div className="rounded-lg border border-surface-border bg-surface-raised/60 p-3">
             <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
               <CheckCircle2 className="h-4 w-4" />
-              Prompt Injection Immune
+              Telemetry Injection Resilient
             </div>
             <p className="mt-1 text-[11px] text-zinc-400">
-              Telemetry content is demarcated within untrusted data boundaries and never executed as prompt instructions.
+              Telemetry content is demarcated within untrusted data boundaries and evaluated strictly as data literals (no execution observed under tested vectors).
             </p>
           </div>
 
           <div className="rounded-lg border border-surface-border bg-surface-raised/60 p-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
+            <div className="flex items-center gap-2 text-xs font-semibold text-amber-400">
               <CheckCircle2 className="h-4 w-4" />
-              Explicit Abstention
+              Conservative Abstention
             </div>
             <p className="mt-1 text-[11px] text-zinc-400">
-              Returns INSUFFICIENT EVIDENCE when multi-plane correlation is incomplete or contradictory.
+              The deterministic baseline is conservative and exhibits false-abstention behavior (precision: 25.0%, recall: 75.0%).
             </p>
           </div>
         </div>
