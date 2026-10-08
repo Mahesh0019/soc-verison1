@@ -1,0 +1,44 @@
+{
+  "benchmark_name": "Phase 8 AI Analyst Assistance & Hallucination Benchmark (AI Analyst V1)",
+  "generated_at": "2026-10-08T10:24:50.183486+00:00",
+  "total_scenarios": 80,
+  "scenario_classes": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M",
+    "N",
+    "O",
+    "P",
+    "Q",
+    "R",
+    "S",
+    "T"
+  ],
+  "splits": {
+    "dev": {
+      "file": "dev_scenarios.json",
+      "count": 40,
+      "sha256": "fdd0286f80384c86e7a9ce4f7a9857a3f34532a2da250a6d2dad360ca1bece84"
+    },
+    "validation": {
+      "file": "validation_scenarios.json",
+      "count": 20,
+      "sha256": "2556dc4501ac2d598db0f1baf4915e3deb7a53108045a3f03f9f592af1c7e05d"
+    },
+    "held_out_test": {
+      "file": "held_out_test_scenarios.json",
+      "count": 20,
+      "sha256": "15af6d06049402fed760a82335bd5064389601db03f279002834ed75e41c9aea"
+    }
+  }
+}

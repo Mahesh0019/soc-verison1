@@ -30,13 +30,14 @@ import {
 import { fetchBenchmarkMatrix, runBenchmarkExperiment } from "../services/api";
 import type { BenchmarkComparisonResponse, BenchmarkComparisonRow } from "../types";
 import { AdversarialRobustnessView } from "../components/AdversarialRobustnessView";
+import { AIAnalystEvaluationView } from "../components/AIAnalystEvaluationView";
 
 export function ResearchBenchmarkPage() {
   const [data, setData] = useState<BenchmarkComparisonResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"overview" | "metrics" | "architecture" | "adversarial">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "metrics" | "architecture" | "adversarial" | "ai_analyst">("overview");
 
 
   async function loadMatrix(force = false) {
@@ -295,6 +296,16 @@ export function ResearchBenchmarkPage() {
         >
           Phase 7 Adversarial Robustness
         </button>
+        <button
+          onClick={() => setActiveTab("ai_analyst")}
+          className={`focus-ring -mb-px border-b-2 px-4 py-2.5 font-medium transition ${
+            activeTab === "ai_analyst"
+              ? "border-purple-400 text-purple-400"
+              : "border-transparent text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          Phase 8 AI Analyst Assistance
+        </button>
       </div>
 
       {/* Tab 1: Comparison Matrix */}
@@ -507,6 +518,9 @@ export function ResearchBenchmarkPage() {
 
       {/* Tab 4: Phase 7 Adversarial Robustness */}
       {activeTab === "adversarial" && <AdversarialRobustnessView />}
+
+      {/* Tab 5: Phase 8 AI Analyst Assistance */}
+      {activeTab === "ai_analyst" && <AIAnalystEvaluationView />}
     </div>
   );
 }

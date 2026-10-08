@@ -318,6 +318,24 @@ export async function fetchAdversarialRobustness() {
   return data;
 }
 
+// Phase 8 Evidence-Grounded AI Analyst Assistant
+export async function fetchIncidentAIAnalysis(incidentId: number, forceRefresh: boolean = false) {
+  const { data } = await api.post<any>(`/ai/assistant/incident/${incidentId}`, null, {
+    params: { force_refresh: forceRefresh }
+  });
+  return data;
+}
+
+export async function askIncidentAIQuestion(incidentId: number, question: string) {
+  const { data } = await api.post<any>(`/ai/assistant/incident/${incidentId}/question`, { question });
+  return data;
+}
+
+export async function fetchAIAnalystEvaluation() {
+  const { data } = await api.get<any>("/ai/assistant/evaluation");
+  return data;
+}
+
 function compact<T extends Record<string, unknown>>(params: T) {
   return Object.fromEntries(Object.entries(params).filter(([, value]) => value !== undefined && value !== ""));
 }

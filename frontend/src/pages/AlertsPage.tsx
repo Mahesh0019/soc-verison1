@@ -31,6 +31,7 @@ import { useAuth } from "../components/AuthProvider";
 import { useToast } from "../components/Toast";
 import { IncidentGraphView } from "../components/IncidentGraphView";
 import { IncidentTimelineView } from "../components/IncidentTimelineView";
+import { AIAnalystAssistantPanel } from "../components/AIAnalystAssistantPanel";
 import {
   addAlertNote,
   fetchAlert,
@@ -1015,7 +1016,7 @@ function IncidentModal({
   onSelectAlert?: (alertId: number) => void;
   onRefresh?: () => Promise<void>;
 }) {
-  const [modalTab, setModalTab] = useState<"graph" | "timeline" | "evidence" | "alerts">("graph");
+  const [modalTab, setModalTab] = useState<"graph" | "timeline" | "evidence" | "alerts" | "ai_assistant">("graph");
 
   const scorePct = incident.correlation_score ? Math.round(incident.correlation_score * 100) : 50;
 
@@ -1129,6 +1130,19 @@ function IncidentModal({
             <ShieldAlert className="h-4 w-4" />
             <span>Correlated Alerts ({incident.alerts?.length || 0})</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setModalTab("ai_assistant")}
+            className={`flex items-center gap-2 border-b-2 py-3 px-4 transition ${
+              modalTab === "ai_assistant"
+                ? "border-emerald-400 text-emerald-400 font-bold"
+                : "border-transparent text-zinc-400 hover:text-zinc-200"
+            }`}
+          >
+            <Bot className="h-4 w-4 text-emerald-400" />
+            <span>AI Analyst Assistant</span>
+          </button>
         </div>
 
         {/* Modal Tab Body */}
@@ -1239,6 +1253,13 @@ function IncidentModal({
                 </div>
               )}
             </div>
+          )}
+
+          {modalTab === "ai_assistant" && (
+            <AIAnalystAssistantPanel
+              incidentId={incident.incident_id}
+              onSelectEvidence={(_evId) => setModalTab("evidence")}
+            />
           )}
         </div>
       </div>
