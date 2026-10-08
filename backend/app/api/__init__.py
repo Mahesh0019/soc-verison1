@@ -20,6 +20,7 @@ from app.api import (
     threat_intel,
     validation,
     experiments,
+    telemetry,
 )
 
 
@@ -43,3 +44,4 @@ api_router.include_router(detection_quality.router)
 api_router.include_router(admin.router)
 api_router.include_router(demo.router)
 api_router.include_router(experiments.router)
+api_router.include_router(telemetry.router)

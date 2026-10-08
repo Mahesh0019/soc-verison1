@@ -17,7 +17,14 @@ from app.schemas.case import (
 )
 from app.schemas.common import DashboardSummary, Message, Page
 from app.schemas.detection_quality import DetectionQualityOut, DetectionQualitySummaryOut
-from app.schemas.event import EventCreate, EventOut, IngestRequest, IngestResponse
+from app.schemas.event import (
+    EventCreate,
+    EventOut,
+    IngestRequest,
+    IngestResponse,
+    ZeekReplayRequest,
+    ZeekReplayResponse,
+)
 from app.schemas.evidence import EvidenceOut, EvidencePackageOut
 from app.schemas.experiment import (
     BenchmarkComparisonResponse,
@@ -86,6 +93,8 @@ __all__ = [
     "IncidentStatusUpdate",
     "IngestRequest",
     "IngestResponse",
+    "ZeekReplayRequest",
+    "ZeekReplayResponse",
     "LoginRequest",
     "Message",
     "ModelStatusResponse",

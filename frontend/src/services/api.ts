@@ -19,6 +19,8 @@ import type {
   ValidationSummary,
   RuleHealthRecord,
   RuleHealthSummary,
+  TelemetrySourcesResponse,
+  ZeekReplayResponse,
 } from "../types";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
@@ -253,6 +255,30 @@ export async function fetchBehavioralStatus() {
 
 export async function trainBehavioralModel() {
   const { data } = await api.post("/behavioral/train", {});
+  return data;
+}
+
+// Phase 3 Multi-Source Telemetry & Zeek Replay
+export async function fetchTelemetrySources() {
+  const { data } = await api.get<TelemetrySourcesResponse>("/telemetry/sources");
+  return data;
+}
+
+export async function replayZeekTelemetry(payload: { raw_content: string; log_type?: string; mode?: string }) {
+  const { data } = await api.post<ZeekReplayResponse>("/telemetry/zeek/replay", payload);
+  return data;
+}
+
+export async function uploadZeekLog(file: File, logType?: string, mode?: string) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const params: Record<string, string> = {};
+  if (logType) params.log_type = logType;
+  if (mode) params.mode = mode;
+  const { data } = await api.post<ZeekReplayResponse>("/telemetry/zeek/upload", formData, {
+    params,
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return data;
 }
 

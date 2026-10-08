@@ -1,0 +1,5 @@
+{"ts":1728374400.100000,"uid":"C_JSON_001","id.orig_h":"192.168.1.50","id.orig_p":49152,"id.resp_h":"10.0.0.1","id.resp_p":80,"proto":"tcp","service":"http","duration":0.045231,"orig_bytes":152,"resp_bytes":1024,"conn_state":"SF"}
+{"ts":1728374401.200000,"uid":"C_JSON_002","id.orig_h":"192.168.1.51","id.orig_p":49153,"id.resp_h":"10.0.0.2","id.resp_p":443,"proto":"tcp","service":"ssl","duration":1.250000,"orig_bytes":2048,"resp_bytes":8192,"conn_state":"SF"}
+{"ts":1728374402.300000,"uid":"C_JSON_003","id.orig_h":"192.168.1.52","id.orig_p":49154,"id.resp_h":"10.0.0.1","id.resp_p":22,"proto":"tcp","service":"ssh","conn_state":"REJ"}
+{"ts":1728374400.100000,"uid":"C_JSON_001","id.orig_h":"192.168.1.50","id.orig_p":49152,"id.resp_h":"10.0.0.1","id.resp_p":80,"proto":"tcp","service":"http","duration":0.045231,"orig_bytes":152,"resp_bytes":1024,"conn_state":"SF"}
+{"malformed_json_corrupted: true

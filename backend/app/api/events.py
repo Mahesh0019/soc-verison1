@@ -23,6 +23,7 @@ def list_events(
     source_ip: str | None = None,
     username: str | None = None,
     hostname: str | None = None,
+    source_type: str | None = None,
     date_from: datetime | None = None,
     date_to: datetime | None = None,
     sort_by: str | None = "timestamp",
@@ -31,19 +32,21 @@ def list_events(
     db: Session = Depends(get_db),
 ) -> dict:
     query = db.query(NormalizedEvent)
-    query = apply_keyword_search(query, NormalizedEvent, q, ["message", "source_ip", "username", "hostname", "event_type", "request_path", "raw_log"])
+    query = apply_keyword_search(query, NormalizedEvent, q, ["message", "source_ip", "destination_ip", "username", "hostname", "event_type", "source_type", "dns_query", "request_path", "raw_log"])
     query = apply_date_range(query, NormalizedEvent.timestamp, date_from, date_to)
     if severity:
         query = query.filter(NormalizedEvent.severity == severity)
     if event_type:
         query = query.filter(NormalizedEvent.event_type == event_type)
+    if source_type:
+        query = query.filter(NormalizedEvent.source_type == source_type.upper())
     if source_ip:
         query = query.filter(NormalizedEvent.source_ip == source_ip)
     if username:
         query = query.filter(NormalizedEvent.username == username)
     if hostname:
         query = query.filter(NormalizedEvent.hostname == hostname)
-    query = apply_sort(query, NormalizedEvent, sort_by, sort_order, {"timestamp", "severity", "event_type", "source_ip", "username", "created_at"}, "timestamp")
+    query = apply_sort(query, NormalizedEvent, sort_by, sort_order, {"timestamp", "severity", "event_type", "source_type", "source_ip", "username", "created_at"}, "timestamp")
     items, total = paginate(query, page, page_size)
     return {"items": items, "total": total, "page": page, "page_size": page_size}
 

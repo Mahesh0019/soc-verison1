@@ -29,18 +29,42 @@ export interface LoginTrend {
   successful: number;
 }
 
+export type TelemetrySource = "WEB" | "AUTH" | "FIREWALL" | "ZEEK" | "SYSMON" | "THREAT_INTEL" | "OTHER";
+
+export interface TelemetrySourcesResponse {
+  sources: TelemetrySource[];
+  status_map: Record<string, string>;
+  active_sources: string[];
+  planned_sources: string[];
+}
+
 export interface NormalizedEvent {
   id: number;
   raw_log_id: number | null;
+  event_id?: string | null;
   timestamp: string;
+  source_type?: TelemetrySource | string;
+  source_name?: string | null;
   source_ip: string | null;
   destination_ip: string | null;
+  source_port?: number | null;
+  destination_port?: number | null;
+  protocol?: string | null;
+  connection_state?: string | null;
+  bytes_in?: number | null;
+  bytes_out?: number | null;
+  response_time_ms?: number | null;
+  dns_query?: string | null;
+  dns_response?: string | null;
   username: string | null;
   hostname: string | null;
+  process?: string | null;
+  parent_process?: string | null;
   event_type: string;
   event_category: string;
   severity: Severity;
   message: string;
+  raw_reference?: string | null;
   raw_log: string | null;
   user_agent: string | null;
   request_path: string | null;
@@ -48,6 +72,22 @@ export interface NormalizedEvent {
   status_code: number | null;
   geo_country: string | null;
   created_at: string;
+}
+
+export interface ZeekReplayResponse {
+  raw_log_id: number;
+  log_type: string;
+  mode: string;
+  events_processed: number;
+  events_accepted: number;
+  events_rejected: number;
+  events_duplicated: number;
+  throughput_eps: number;
+  average_latency_ms: number;
+  maximum_latency_ms: number;
+  alert_count: number;
+  errors: string[];
+  preview: NormalizedEvent[];
 }
 
 export interface Alert {

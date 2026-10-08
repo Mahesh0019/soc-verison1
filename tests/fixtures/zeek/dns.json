@@ -1,0 +1,2 @@
+{"ts":1728374400.100000,"uid":"D_JSON_001","id.orig_h":"192.168.1.50","id.orig_p":54321,"id.resp_h":"10.0.0.5","id.resp_p":53,"proto":"udp","query":"api.example.com","qtype_name":"A","rcode_name":"NOERROR","answers":["93.184.216.34"]}
+{"ts":1728374401.200000,"uid":"D_JSON_002","id.orig_h":"192.168.1.51","id.orig_p":54322,"id.resp_h":"10.0.0.5","id.resp_p":53,"proto":"udp","query":"c2.malicious.xyz","qtype_name":"A","rcode_name":"NXDOMAIN"}

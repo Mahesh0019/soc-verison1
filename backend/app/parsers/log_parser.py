@@ -31,6 +31,10 @@ def sanitize_text(content: str) -> str:
 
 def parse_content(source_type: str, content: str) -> tuple[list[dict[str, Any]], list[str]]:
     content = sanitize_text(content)
+    if source_type.lower() in ("zeek", "conn", "http", "dns") or content.startswith("#separator") or "\n#fields" in content or content.startswith("#fields"):
+        from app.parsers.zeek_parser import parse_zeek_content
+        events, errors, _ = parse_zeek_content(content, forced_type=source_type if source_type.lower() in ("conn", "http", "dns") else None)
+        return events, errors
     if source_type == "json" or content.lstrip().startswith(("{", "[")):
         return parse_json_content(content)
     if source_type == "csv":
@@ -206,15 +210,30 @@ def normalize_object(item: dict[str, Any], raw: str | None = None) -> dict[str, 
     severity = str(first(item, "severity", "level") or infer_severity(event_type, status_code, path, user_agent)).lower()
 
     return {
+        "event_id": first(item, "event_id", "uid"),
         "timestamp": parse_timestamp(first(item, "timestamp", "time", "@timestamp", "date")),
+        "source_type": str(first(item, "source_type") or "WEB").upper(),
+        "source_name": first(item, "source_name"),
         "source_ip": source_ip,
         "destination_ip": destination_ip,
+        "source_port": as_int(first(item, "source_port", "src_port", "id.orig_p", "id_orig_p")),
+        "destination_port": as_int(first(item, "destination_port", "dst_port", "id.resp_p", "id_resp_p")),
+        "protocol": first(item, "protocol", "proto"),
+        "connection_state": first(item, "connection_state", "conn_state"),
+        "bytes_in": as_int(first(item, "bytes_in", "orig_bytes", "request_body_len")),
+        "bytes_out": as_int(first(item, "bytes_out", "resp_bytes", "response_body_len")),
+        "response_time_ms": as_float(first(item, "response_time_ms", "duration_ms")),
+        "dns_query": first(item, "dns_query", "query"),
+        "dns_response": first(item, "dns_response", "answers"),
         "username": username,
         "hostname": first(item, "hostname", "host", "server"),
+        "process": first(item, "process", "process_name"),
+        "parent_process": first(item, "parent_process"),
         "event_type": normalize_event_type(event_type),
         "event_category": event_category or "generic",
         "severity": normalize_severity(severity),
         "message": message[:4000],
+        "raw_reference": first(item, "raw_reference", "uid"),
         "raw_log": raw,
         "user_agent": user_agent,
         "request_path": path,
@@ -338,6 +357,13 @@ def normalize_severity(value: str) -> str:
 def as_int(value: Any) -> int | None:
     try:
         return int(value) if value not in (None, "") else None
+    except (TypeError, ValueError):
+        return None
+
+
+def as_float(value: Any) -> float | None:
+    try:
+        return float(value) if value not in (None, "") else None
     except (TypeError, ValueError):
         return None
 

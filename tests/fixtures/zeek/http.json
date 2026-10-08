@@ -1,0 +1,3 @@
+{"ts":1728374400.100000,"uid":"H_JSON_001","id.orig_h":"192.168.1.50","id.orig_p":49152,"id.resp_h":"10.0.0.1","id.resp_p":80,"method":"GET","host":"example.com","uri":"/index.html","status_code":200,"user_agent":"Mozilla/5.0"}
+{"ts":1728374401.200000,"uid":"H_JSON_002","id.orig_h":"192.168.1.51","id.orig_p":49153,"id.resp_h":"10.0.0.1","id.resp_p":80,"method":"POST","host":"example.com","uri":"/rest/user/login","status_code":200,"request_body_len":64,"response_body_len":128}
+{"ts":1728374402.300000,"uid":"H_JSON_003","id.orig_h":"192.168.1.52","id.orig_p":49154,"id.resp_h":"10.0.0.1","id.resp_p":80,"method":"GET","host":"example.com","uri":"/nonexistent.html","status_code":404}
