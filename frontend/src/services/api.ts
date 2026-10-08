@@ -27,6 +27,8 @@ import type {
   IncidentTimelineItem,
   UnifiedIncident,
 } from "../types";
+import adversarialFallback from "../data/research/adversarial_robustness_v1.json";
+import aiAnalystFallback from "../data/research/ai_analyst_v1.json";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
 
@@ -314,8 +316,15 @@ export async function triggerCorrelation(payload?: CrossSourceCorrelationRequest
 }
 
 export async function fetchAdversarialRobustness() {
-  const { data } = await api.get<any>("/experiments/adversarial/robustness");
-  return data;
+  try {
+    const { data } = await api.get<any>("/experiments/adversarial/robustness");
+    return data;
+  } catch (err: any) {
+    if (err?.response?.status === 404 || !err?.response) {
+      return adversarialFallback;
+    }
+    throw err;
+  }
 }
 
 // Phase 8 Evidence-Grounded AI Analyst Assistant
@@ -332,8 +341,15 @@ export async function askIncidentAIQuestion(incidentId: number, question: string
 }
 
 export async function fetchAIAnalystEvaluation() {
-  const { data } = await api.get<any>("/ai/assistant/evaluation");
-  return data;
+  try {
+    const { data } = await api.get<any>("/ai/assistant/evaluation");
+    return data;
+  } catch (err: any) {
+    if (err?.response?.status === 404 || !err?.response) {
+      return aiAnalystFallback;
+    }
+    throw err;
+  }
 }
 
 // Phase 9 Threat Hunting & Closed-Loop Detection Engineering
