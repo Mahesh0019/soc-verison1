@@ -29,13 +29,15 @@ import {
 
 import { fetchBenchmarkMatrix, runBenchmarkExperiment } from "../services/api";
 import type { BenchmarkComparisonResponse, BenchmarkComparisonRow } from "../types";
+import { AdversarialRobustnessView } from "../components/AdversarialRobustnessView";
 
 export function ResearchBenchmarkPage() {
   const [data, setData] = useState<BenchmarkComparisonResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"overview" | "metrics" | "architecture">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "metrics" | "architecture" | "adversarial">("overview");
+
 
   async function loadMatrix(force = false) {
     try {
@@ -283,6 +285,16 @@ export function ResearchBenchmarkPage() {
         >
           M0–M6 Architecture Breakdown
         </button>
+        <button
+          onClick={() => setActiveTab("adversarial")}
+          className={`focus-ring -mb-px border-b-2 px-4 py-2.5 font-medium transition ${
+            activeTab === "adversarial"
+              ? "border-cyan-400 text-cyan-400"
+              : "border-transparent text-zinc-400 hover:text-zinc-200"
+          }`}
+        >
+          Phase 7 Adversarial Robustness
+        </button>
       </div>
 
       {/* Tab 1: Comparison Matrix */}
@@ -492,6 +504,9 @@ export function ResearchBenchmarkPage() {
           ))}
         </div>
       )}
+
+      {/* Tab 4: Phase 7 Adversarial Robustness */}
+      {activeTab === "adversarial" && <AdversarialRobustnessView />}
     </div>
   );
 }

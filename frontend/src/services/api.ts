@@ -313,8 +313,14 @@ export async function triggerCorrelation(payload?: CrossSourceCorrelationRequest
   return data;
 }
 
+export async function fetchAdversarialRobustness() {
+  const { data } = await api.get<any>("/experiments/adversarial/robustness");
+  return data;
+}
+
 function compact<T extends Record<string, unknown>>(params: T) {
   return Object.fromEntries(Object.entries(params).filter(([, value]) => value !== undefined && value !== ""));
 }
+
 
 

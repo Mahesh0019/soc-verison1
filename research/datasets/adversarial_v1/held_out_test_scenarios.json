@@ -1,0 +1,1353 @@
+[
+  {
+    "scenario_id": "ADV-TEST-001",
+    "scenario_class": "CLASS_A_MISSING_WEB_EVENT",
+    "title": "Multi-Source Attack with Dropped Web Ingestion",
+    "description": "Web ingress log dropped; Zeek connection and Sysmon process events remain intact.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-003"
+    ],
+    "expected_failure_mode": "PARTIAL_CORRELATION_MISSING_WEB_STAGE",
+    "perturbation": {
+      "type": "remove_event",
+      "log": [
+        {
+          "original_event_id": "base_web_198.51.100.1",
+          "transformed_event_id": null,
+          "transformation_type": "remove_event",
+          "transformation_parameters": {
+            "target_source": "WEB",
+            "target_index": null
+          },
+          "seed": 303
+        }
+      ]
+    },
+    "events": [
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "198.51.100.1",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "protocol": "tcp",
+        "connection_state": "SF",
+        "bytes_in": 1024,
+        "bytes_out": 4096,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "high",
+        "message": "Outbound connection on unauthorized port 4444 from 198.51.100.1",
+        "timestamp": "2026-10-08T12:00:20+00:00",
+        "raw_reference": "base_zeek_198.51.100.1"
+      },
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "source_ip": "10.0.0.10",
+        "destination_ip": "198.51.100.1",
+        "hostname": "srv-1",
+        "username": "SYSTEM",
+        "process": "powershell.exe",
+        "parent_process": "w3wp.exe",
+        "command_line": "powershell.exe -enc aW52b2tlLW1pbWlrYXR6",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "critical",
+        "message": "Suspicious child powershell spawned under w3wp on srv-1",
+        "timestamp": "2026-10-08T12:00:45+00:00",
+        "raw_reference": "base_sys_198.51.100.1"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-002",
+    "scenario_class": "CLASS_B_MISSING_ZEEK_EVENT",
+    "title": "Web-to-Host Attack with Dropped Network Sensor",
+    "description": "Network wire data dropped; Web exploit and host process creation remain.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-002"
+    ],
+    "expected_failure_mode": "PARTIAL_CORRELATION_MISSING_NETWORK_STAGE",
+    "perturbation": {
+      "type": "remove_event",
+      "log": [
+        {
+          "original_event_id": "base_zeek_198.51.100.2",
+          "transformed_event_id": null,
+          "transformation_type": "remove_event",
+          "transformation_parameters": {
+            "target_source": "ZEEK",
+            "target_index": null
+          },
+          "seed": 303
+        }
+      ]
+    },
+    "events": [
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.2",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-2",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "GET /rest/products/search?q=' OR 1=1 -- on srv-2",
+        "request_path": "/rest/products/search?q=' OR 1=1 --",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "base_web_198.51.100.2"
+      },
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "source_ip": "10.0.0.10",
+        "destination_ip": "198.51.100.2",
+        "hostname": "srv-2",
+        "username": "SYSTEM",
+        "process": "powershell.exe",
+        "parent_process": "w3wp.exe",
+        "command_line": "powershell.exe -enc aW52b2tlLW1pbWlrYXR6",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "critical",
+        "message": "Suspicious child powershell spawned under w3wp on srv-2",
+        "timestamp": "2026-10-08T12:00:45+00:00",
+        "raw_reference": "base_sys_198.51.100.2"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-003",
+    "scenario_class": "CLASS_C_MISSING_SYSMON_EVENT",
+    "title": "Attacker Terminates Sysmon Service Before Execution",
+    "description": "Endpoint sensor disabled; Web and Zeek telemetry remain.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-001"
+    ],
+    "expected_failure_mode": "PARTIAL_CORRELATION_MISSING_ENDPOINT_STAGE",
+    "perturbation": {
+      "type": "remove_event",
+      "log": [
+        {
+          "original_event_id": "base_sys_198.51.100.3",
+          "transformed_event_id": null,
+          "transformation_type": "remove_event",
+          "transformation_parameters": {
+            "target_source": "SYSMON",
+            "target_index": null
+          },
+          "seed": 303
+        }
+      ]
+    },
+    "events": [
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.3",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-3",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "GET /rest/products/search?q=' OR 1=1 -- on srv-3",
+        "request_path": "/rest/products/search?q=' OR 1=1 --",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "base_web_198.51.100.3"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "198.51.100.3",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "protocol": "tcp",
+        "connection_state": "SF",
+        "bytes_in": 1024,
+        "bytes_out": 4096,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "high",
+        "message": "Outbound connection on unauthorized port 4444 from 198.51.100.3",
+        "timestamp": "2026-10-08T12:00:20+00:00",
+        "raw_reference": "base_zeek_198.51.100.3"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-004",
+    "scenario_class": "CLASS_D_MISSING_MULTIPLE_SOURCES",
+    "title": "Severe Multi-Source Blind Spot (Web Only)",
+    "description": "Network and endpoint loggers down; only Web SQLi alert survives.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_failure_mode": "MISSED_CORRELATION_SINGLE_SOURCE_REMAINS",
+    "perturbation": {
+      "type": "remove_event_multiple",
+      "log": [
+        {
+          "original_event_id": "base_zeek_198.51.100.4",
+          "transformed_event_id": null,
+          "transformation_type": "remove_event",
+          "transformation_parameters": {
+            "target_source": "ZEEK",
+            "target_index": null
+          },
+          "seed": 303
+        },
+        {
+          "original_event_id": "base_sys_198.51.100.4",
+          "transformed_event_id": null,
+          "transformation_type": "remove_event",
+          "transformation_parameters": {
+            "target_source": "SYSMON",
+            "target_index": null
+          },
+          "seed": 303
+        }
+      ]
+    },
+    "events": [
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.4",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-4",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "GET /rest/products/search?q=' OR 1=1 -- on srv-4",
+        "request_path": "/rest/products/search?q=' OR 1=1 --",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "base_web_198.51.100.4"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-005",
+    "scenario_class": "CLASS_E_DELAYED_TELEMETRY",
+    "title": "Delayed Endpoint Log Delivery Exceeding 300s Window",
+    "description": "Endpoint event delayed by 450s due to agent offline buffer; exceeds default correlation window.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_failure_mode": "MISSED_CORRELATION_WINDOW_EXPIRY",
+    "perturbation": {
+      "type": "delay_timestamp",
+      "log": [
+        {
+          "original_event_id": "base_sys_198.51.100.5",
+          "transformed_event_id": "base_sys_198.51.100.5_delay_40f4448e",
+          "transformation_type": "delay_timestamp",
+          "transformation_parameters": {
+            "delay_seconds": 450.0
+          },
+          "seed": 303
+        }
+      ]
+    },
+    "events": [
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.5",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-5",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "GET /rest/products/search?q=' OR 1=1 -- on srv-5",
+        "request_path": "/rest/products/search?q=' OR 1=1 --",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "base_web_198.51.100.5"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "198.51.100.5",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "protocol": "tcp",
+        "connection_state": "SF",
+        "bytes_in": 1024,
+        "bytes_out": 4096,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "high",
+        "message": "Outbound connection on unauthorized port 4444 from 198.51.100.5",
+        "timestamp": "2026-10-08T12:00:20+00:00",
+        "raw_reference": "base_zeek_198.51.100.5"
+      },
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "source_ip": "10.0.0.10",
+        "destination_ip": "198.51.100.5",
+        "hostname": "srv-5",
+        "username": "SYSTEM",
+        "process": "powershell.exe",
+        "parent_process": "w3wp.exe",
+        "command_line": "powershell.exe -enc aW52b2tlLW1pbWlrYXR6",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "critical",
+        "message": "Suspicious child powershell spawned under w3wp on srv-5",
+        "timestamp": "2026-10-08T12:08:15+00:00",
+        "raw_reference": "base_sys_198.51.100.5_delay_40f4448e"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-006",
+    "scenario_class": "CLASS_F_REORDERED_TELEMETRY",
+    "title": "Out-of-Order Log Ingestion (Reverse Arrival)",
+    "description": "Sysmon event arrives before Web exploit in ingestion queue.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-001",
+      "CORR-002"
+    ],
+    "expected_failure_mode": "ROBUST_CHRONOLOGICAL_REORDERING",
+    "perturbation": {
+      "type": "reorder_events",
+      "log": [
+        {
+          "original_event_id": "base_sys_198.51.100.6",
+          "transformed_event_id": "base_sys_198.51.100.6",
+          "transformation_type": "reorder_events",
+          "transformation_parameters": {
+            "reverse": true,
+            "new_index": 0
+          },
+          "seed": 303
+        },
+        {
+          "original_event_id": "base_zeek_198.51.100.6",
+          "transformed_event_id": "base_zeek_198.51.100.6",
+          "transformation_type": "reorder_events",
+          "transformation_parameters": {
+            "reverse": true,
+            "new_index": 1
+          },
+          "seed": 303
+        },
+        {
+          "original_event_id": "base_web_198.51.100.6",
+          "transformed_event_id": "base_web_198.51.100.6",
+          "transformation_type": "reorder_events",
+          "transformation_parameters": {
+            "reverse": true,
+            "new_index": 2
+          },
+          "seed": 303
+        }
+      ]
+    },
+    "events": [
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "source_ip": "10.0.0.10",
+        "destination_ip": "198.51.100.6",
+        "hostname": "srv-6",
+        "username": "SYSTEM",
+        "process": "powershell.exe",
+        "parent_process": "w3wp.exe",
+        "command_line": "powershell.exe -enc aW52b2tlLW1pbWlrYXR6",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "critical",
+        "message": "Suspicious child powershell spawned under w3wp on srv-6",
+        "timestamp": "2026-10-08T12:00:45+00:00",
+        "raw_reference": "base_sys_198.51.100.6"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "198.51.100.6",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "protocol": "tcp",
+        "connection_state": "SF",
+        "bytes_in": 1024,
+        "bytes_out": 4096,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "high",
+        "message": "Outbound connection on unauthorized port 4444 from 198.51.100.6",
+        "timestamp": "2026-10-08T12:00:20+00:00",
+        "raw_reference": "base_zeek_198.51.100.6"
+      },
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.6",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-6",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "GET /rest/products/search?q=' OR 1=1 -- on srv-6",
+        "request_path": "/rest/products/search?q=' OR 1=1 --",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "base_web_198.51.100.6"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-007",
+    "scenario_class": "CLASS_G_DUPLICATE_TELEMETRY",
+    "title": "Duplicate Forwarder Delivery (Web Event Duplicated)",
+    "description": "Syslog forwarder resends Web exploit event with 2s jitter.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-001",
+      "CORR-002"
+    ],
+    "expected_failure_mode": "ROBUST_DUPLICATE_DEDUPLICATION",
+    "perturbation": {
+      "type": "duplicate_event",
+      "log": [
+        {
+          "original_event_id": "base_web_198.51.100.7",
+          "transformed_event_id": "base_web_198.51.100.7_dup_df3f42fa",
+          "transformation_type": "duplicate_event",
+          "transformation_parameters": {
+            "time_offset_seconds": 2.0
+          },
+          "seed": 303
+        }
+      ]
+    },
+    "events": [
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.7",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-7",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "GET /rest/products/search?q=' OR 1=1 -- on srv-7",
+        "request_path": "/rest/products/search?q=' OR 1=1 --",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "base_web_198.51.100.7"
+      },
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.7",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-7",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "GET /rest/products/search?q=' OR 1=1 -- on srv-7",
+        "request_path": "/rest/products/search?q=' OR 1=1 --",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:02+00:00",
+        "raw_reference": "base_web_198.51.100.7_dup_df3f42fa"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "198.51.100.7",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "protocol": "tcp",
+        "connection_state": "SF",
+        "bytes_in": 1024,
+        "bytes_out": 4096,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "high",
+        "message": "Outbound connection on unauthorized port 4444 from 198.51.100.7",
+        "timestamp": "2026-10-08T12:00:20+00:00",
+        "raw_reference": "base_zeek_198.51.100.7"
+      },
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "source_ip": "10.0.0.10",
+        "destination_ip": "198.51.100.7",
+        "hostname": "srv-7",
+        "username": "SYSTEM",
+        "process": "powershell.exe",
+        "parent_process": "w3wp.exe",
+        "command_line": "powershell.exe -enc aW52b2tlLW1pbWlrYXR6",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "critical",
+        "message": "Suspicious child powershell spawned under w3wp on srv-7",
+        "timestamp": "2026-10-08T12:00:45+00:00",
+        "raw_reference": "base_sys_198.51.100.7"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-008",
+    "scenario_class": "CLASS_H_TIMESTAMP_DRIFT",
+    "title": "Sub-Window Host Clock Skew (+180s NTP Drift)",
+    "description": "Windows host clock drifted by 180s; still within 300s window but decays score.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-001",
+      "CORR-002"
+    ],
+    "expected_failure_mode": "SCORE_DEGRADATION_TIME_DECAY",
+    "perturbation": {
+      "type": "delay_timestamp",
+      "log": [
+        {
+          "original_event_id": "base_sys_198.51.100.8",
+          "transformed_event_id": "base_sys_198.51.100.8_delay_520ff1f7",
+          "transformation_type": "delay_timestamp",
+          "transformation_parameters": {
+            "delay_seconds": 180.0
+          },
+          "seed": 303
+        }
+      ]
+    },
+    "events": [
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.8",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-8",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "GET /rest/products/search?q=' OR 1=1 -- on srv-8",
+        "request_path": "/rest/products/search?q=' OR 1=1 --",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "base_web_198.51.100.8"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "198.51.100.8",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "protocol": "tcp",
+        "connection_state": "SF",
+        "bytes_in": 1024,
+        "bytes_out": 4096,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "high",
+        "message": "Outbound connection on unauthorized port 4444 from 198.51.100.8",
+        "timestamp": "2026-10-08T12:00:20+00:00",
+        "raw_reference": "base_zeek_198.51.100.8"
+      },
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "source_ip": "10.0.0.10",
+        "destination_ip": "198.51.100.8",
+        "hostname": "srv-8",
+        "username": "SYSTEM",
+        "process": "powershell.exe",
+        "parent_process": "w3wp.exe",
+        "command_line": "powershell.exe -enc aW52b2tlLW1pbWlrYXR6",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "critical",
+        "message": "Suspicious child powershell spawned under w3wp on srv-8",
+        "timestamp": "2026-10-08T12:03:45+00:00",
+        "raw_reference": "base_sys_198.51.100.8_delay_520ff1f7"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-009",
+    "scenario_class": "CLASS_I_SHARED_NAT_IP",
+    "title": "Unrelated Concurrent Traffic Behind Egress NAT Proxy",
+    "description": "External threat actor and innocent user share same egress IP; test false correlation.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_failure_mode": "FALSE_CORRELATION_NAT_COLLISION",
+    "perturbation": {
+      "type": "shared_entity",
+      "entity": "source_ip",
+      "val": "198.51.100.9"
+    },
+    "events": [
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.9",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-nat-01",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "SQL Injection attempt from corporate proxy IP",
+        "request_path": "/rest/products/search?q=' OR 1=1 --",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "nat_web_9"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "198.51.100.9",
+        "destination_ip": "10.0.0.99",
+        "destination_port": 6667,
+        "protocol": "tcp",
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "medium",
+        "message": "IRC traffic from employee behind corporate proxy IP",
+        "timestamp": "2026-10-08T12:00:10+00:00",
+        "raw_reference": "nat_zeek_9"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-010",
+    "scenario_class": "CLASS_J_SHARED_HOSTNAME",
+    "title": "Concurrent Benign Backup on Targeted Web Server",
+    "description": "Legitimate backup process executes while server receives web probe.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_failure_mode": "CORRECT_NON_CORRELATION_PARENT_CHECK",
+    "perturbation": {
+      "type": "shared_entity",
+      "entity": "hostname",
+      "val": "srv-shared-10"
+    },
+    "events": [
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "203.0.113.88",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-shared-10",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "Path traversal attempt on web host",
+        "request_path": "/../../etc/passwd",
+        "http_method": "GET",
+        "status_code": 403,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "host_web_10"
+      },
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "hostname": "srv-shared-10",
+        "username": "svc_backup",
+        "process": "robocopy.exe",
+        "parent_process": "services.exe",
+        "command_line": "robocopy.exe C:\\data D:\\backup /MIR",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "low",
+        "message": "Routine backup service running robocopy",
+        "timestamp": "2026-10-08T12:00:15+00:00",
+        "raw_reference": "host_sys_10"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-011",
+    "scenario_class": "CLASS_K_SHARED_USERNAME",
+    "title": "Admin User Active Across Distinct Hosts",
+    "description": "User bob logs in on workstation while separate host runs admin script.",
+    "ground_truth": "BENIGN",
+    "expected_detection": false,
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_failure_mode": "BENIGN_NO_ALERTS",
+    "perturbation": {
+      "type": "none"
+    },
+    "events": [
+      {
+        "source_type": "AUTH",
+        "source_name": "auth_log",
+        "source_ip": "10.0.0.5",
+        "username": "admin_bob",
+        "hostname": "workstation-01",
+        "event_type": "auth_login",
+        "event_category": "security",
+        "severity": "low",
+        "message": "Legitimate admin workstation login",
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "auth_user_11"
+      },
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "hostname": "finance-srv-09",
+        "username": "admin_bob",
+        "process": "cmd.exe",
+        "parent_process": "explorer.exe",
+        "command_line": "cmd.exe /c whoami",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "low",
+        "message": "Admin running whoami on separate finance server",
+        "timestamp": "2026-10-08T12:00:30+00:00",
+        "raw_reference": "sys_user_11"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-012",
+    "scenario_class": "CLASS_L_SHARED_DESTINATION_IP",
+    "title": "Unrelated Systems Contacting Public DNS Server (1.1.1.1)",
+    "description": "Shared destination IP (public DNS) between unrelated internal hosts.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_failure_mode": "CORRECT_NON_CORRELATION_DEST_IS_PUBLIC_INFRA",
+    "perturbation": {
+      "type": "none"
+    },
+    "events": [
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "10.0.0.15",
+        "destination_ip": "1.1.1.1",
+        "destination_port": 53,
+        "protocol": "udp",
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "low",
+        "message": "DNS lookup to Cloudflare DNS",
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "dest_zeek_12"
+      },
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "hostname": "workstation-88",
+        "source_ip": "10.0.0.88",
+        "destination_ip": "1.1.1.1",
+        "destination_port": 53,
+        "event_type": "sysmon_dns_query",
+        "event_category": "endpoint",
+        "dns_query": "beacon.evilcorp.net",
+        "severity": "high",
+        "message": "Suspicious domain query sent to 1.1.1.1",
+        "timestamp": "2026-10-08T12:00:12+00:00",
+        "raw_reference": "dest_sys_12"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-013",
+    "scenario_class": "CLASS_M_BENIGN_POWERSHELL",
+    "title": "Legitimate Developer PowerShell Build Script",
+    "description": "VSCode spawned build script without encoded commands; should not alert.",
+    "ground_truth": "BENIGN",
+    "expected_detection": false,
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_failure_mode": "TRUE_NEGATIVE_BENIGN_ACTIVITY",
+    "perturbation": {
+      "type": "none"
+    },
+    "events": [
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "hostname": "ws-dev-01",
+        "username": "developer",
+        "process": "powershell.exe",
+        "parent_process": "code.exe",
+        "command_line": "powershell.exe -ExecutionPolicy Bypass -File build.ps1",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "low",
+        "message": "Developer VSCode terminal running local build script",
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "benign_ps_13"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-014",
+    "scenario_class": "CLASS_N_BENIGN_ADMIN_TOOLS",
+    "title": "Legitimate CA Inspection with Certutil",
+    "description": "Certutil used for configuration check rather than URL payload download.",
+    "ground_truth": "BENIGN",
+    "expected_detection": false,
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_failure_mode": "TRUE_NEGATIVE_BENIGN_ADMIN",
+    "perturbation": {
+      "type": "none"
+    },
+    "events": [
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "hostname": "dc-srv-01",
+        "username": "sysadmin",
+        "process": "certutil.exe",
+        "parent_process": "explorer.exe",
+        "command_line": "certutil.exe -getconfig",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "low",
+        "message": "Admin inspecting CA configuration",
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "benign_admin_14"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-015",
+    "scenario_class": "CLASS_O_HIGH_VOLUME_LEGIT_NETWORK",
+    "title": "High-Volume Load Balancer Health Check Probes",
+    "description": "Repeated HTTP SYN/ACK flows on port 80; benign high volume.",
+    "ground_truth": "BENIGN",
+    "expected_detection": false,
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_failure_mode": "TRUE_NEGATIVE_BENIGN_HIGH_VOLUME",
+    "perturbation": {
+      "type": "none"
+    },
+    "events": [
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "10.0.1.100",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "bytes_in": 256,
+        "bytes_out": 512,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "low",
+        "message": "Routine load balancer health check #0",
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "health_chk_15_0"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "10.0.1.100",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "bytes_in": 256,
+        "bytes_out": 512,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "low",
+        "message": "Routine load balancer health check #1",
+        "timestamp": "2026-10-08T12:00:02+00:00",
+        "raw_reference": "health_chk_15_1"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "10.0.1.100",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "bytes_in": 256,
+        "bytes_out": 512,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "low",
+        "message": "Routine load balancer health check #2",
+        "timestamp": "2026-10-08T12:00:04+00:00",
+        "raw_reference": "health_chk_15_2"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "10.0.1.100",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "bytes_in": 256,
+        "bytes_out": 512,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "low",
+        "message": "Routine load balancer health check #3",
+        "timestamp": "2026-10-08T12:00:06+00:00",
+        "raw_reference": "health_chk_15_3"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "10.0.1.100",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "bytes_in": 256,
+        "bytes_out": 512,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "low",
+        "message": "Routine load balancer health check #4",
+        "timestamp": "2026-10-08T12:00:08+00:00",
+        "raw_reference": "health_chk_15_4"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "10.0.1.100",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "bytes_in": 256,
+        "bytes_out": 512,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "low",
+        "message": "Routine load balancer health check #5",
+        "timestamp": "2026-10-08T12:00:10+00:00",
+        "raw_reference": "health_chk_15_5"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "10.0.1.100",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "bytes_in": 256,
+        "bytes_out": 512,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "low",
+        "message": "Routine load balancer health check #6",
+        "timestamp": "2026-10-08T12:00:12+00:00",
+        "raw_reference": "health_chk_15_6"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "10.0.1.100",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "bytes_in": 256,
+        "bytes_out": 512,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "low",
+        "message": "Routine load balancer health check #7",
+        "timestamp": "2026-10-08T12:00:14+00:00",
+        "raw_reference": "health_chk_15_7"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "10.0.1.100",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "bytes_in": 256,
+        "bytes_out": 512,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "low",
+        "message": "Routine load balancer health check #8",
+        "timestamp": "2026-10-08T12:00:16+00:00",
+        "raw_reference": "health_chk_15_8"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "10.0.1.100",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "bytes_in": 256,
+        "bytes_out": 512,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "low",
+        "message": "Routine load balancer health check #9",
+        "timestamp": "2026-10-08T12:00:18+00:00",
+        "raw_reference": "health_chk_15_9"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-016",
+    "scenario_class": "CLASS_P_NEAR_MATCH_PROCESS_NAME",
+    "title": "Typo-Squatted Impersonation Process (svch0st.exe)",
+    "description": "Adversary disguises malware using zero instead of letter o in svchost.",
+    "ground_truth": "ATTACK",
+    "expected_detection": false,
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_failure_mode": "MISSED_DETECTION_SUBTLE_IMPERSONATION",
+    "perturbation": {
+      "type": "none"
+    },
+    "events": [
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "hostname": "workstation-03",
+        "process": "svch0st.exe",
+        "parent_process": "services.exe",
+        "command_line": "svch0st.exe -k netsvcs",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "medium",
+        "message": "Typo-squatted process name disguised as service host",
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "typo_proc_16"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-017",
+    "scenario_class": "CLASS_Q_CASE_VARIATION",
+    "title": "Adversarial Case Inversion on PowerShell Command",
+    "description": "Adversary invokes PoWeRsHeLl.ExE with mixed casing on arguments.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-001",
+      "CORR-002"
+    ],
+    "expected_failure_mode": "ROBUST_CASE_INSENSITIVE_MATCH",
+    "perturbation": {
+      "type": "mutate_case",
+      "log": [
+        {
+          "original_event_id": "base_sys_198.51.100.17",
+          "transformed_event_id": "base_sys_198.51.100.17_case_8743b75a",
+          "transformation_type": "mutate_case",
+          "transformation_parameters": {
+            "target_fields": [
+              "process",
+              "command_line"
+            ]
+          },
+          "seed": 303
+        }
+      ]
+    },
+    "events": [
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.17",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-17",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "GET /rest/products/search?q=' OR 1=1 -- on srv-17",
+        "request_path": "/rest/products/search?q=' OR 1=1 --",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "base_web_198.51.100.17"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "198.51.100.17",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "protocol": "tcp",
+        "connection_state": "SF",
+        "bytes_in": 1024,
+        "bytes_out": 4096,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "high",
+        "message": "Outbound connection on unauthorized port 4444 from 198.51.100.17",
+        "timestamp": "2026-10-08T12:00:20+00:00",
+        "raw_reference": "base_zeek_198.51.100.17"
+      },
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "source_ip": "10.0.0.10",
+        "destination_ip": "198.51.100.17",
+        "hostname": "srv-17",
+        "username": "SYSTEM",
+        "process": "PoWeRsHeLl.eXe",
+        "parent_process": "w3wp.exe",
+        "command_line": "PoWeRsHeLl.eXe -EnC Aw52B2TlLw1pBwLrYxR6",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "critical",
+        "message": "Suspicious child powershell spawned under w3wp on srv-17",
+        "timestamp": "2026-10-08T12:00:45+00:00",
+        "raw_reference": "base_sys_198.51.100.17_case_8743b75a"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-018",
+    "scenario_class": "CLASS_R_PATH_ENCODING_VARIATION",
+    "title": "URL Encoded SQL Injection Payload (%27%20OR%201%3D1)",
+    "description": "Web SQLi probe submitted with full percent-encoding evasion.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-001",
+      "CORR-002"
+    ],
+    "expected_failure_mode": "ROBUST_URL_DECODED_DETECTION",
+    "perturbation": {
+      "type": "mutate_payload",
+      "log": [
+        {
+          "original_event_id": "base_web_198.51.100.18",
+          "transformed_event_id": "base_web_198.51.100.18_mut_url_encode_e9d6c113",
+          "transformation_type": "mutate_payload",
+          "transformation_parameters": {
+            "mutation_style": "url_encode"
+          },
+          "seed": 303
+        }
+      ]
+    },
+    "events": [
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.18",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-18",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "GET /rest/products/search?q=' OR 1=1 -- on srv-18",
+        "request_path": "/rest/products/search?q%3D%27%20OR%201%3D1%20--",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "base_web_198.51.100.18_mut_url_encode_e9d6c113"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "198.51.100.18",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "protocol": "tcp",
+        "connection_state": "SF",
+        "bytes_in": 1024,
+        "bytes_out": 4096,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "high",
+        "message": "Outbound connection on unauthorized port 4444 from 198.51.100.18",
+        "timestamp": "2026-10-08T12:00:20+00:00",
+        "raw_reference": "base_zeek_198.51.100.18"
+      },
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "source_ip": "10.0.0.10",
+        "destination_ip": "198.51.100.18",
+        "hostname": "srv-18",
+        "username": "SYSTEM",
+        "process": "powershell.exe",
+        "parent_process": "w3wp.exe",
+        "command_line": "powershell.exe -enc aW52b2tlLW1pbWlrYXR6",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "critical",
+        "message": "Suspicious child powershell spawned under w3wp on srv-18",
+        "timestamp": "2026-10-08T12:00:45+00:00",
+        "raw_reference": "base_sys_198.51.100.18"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-019",
+    "scenario_class": "CLASS_S_SQL_PAYLOAD_MUTATION",
+    "title": "SQL Injection Obfuscation via Inline Comments (union/**/select)",
+    "description": "Attacker splits SQL keywords with C-style comments to bypass naive substring matches.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": true,
+    "expected_correlation_rules": [
+      "CORR-001",
+      "CORR-002"
+    ],
+    "expected_failure_mode": "PARTIAL_DETECTION_SENSITIVITY",
+    "perturbation": {
+      "type": "mutate_payload",
+      "log": []
+    },
+    "events": [
+      {
+        "source_type": "WEB",
+        "source_name": "nginx_access",
+        "source_ip": "198.51.100.19",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 80,
+        "protocol": "tcp",
+        "hostname": "srv-19",
+        "event_type": "web_access",
+        "event_category": "security",
+        "severity": "high",
+        "message": "GET /rest/products/search?q=' OR 1=1 -- on srv-19",
+        "request_path": "/rest/products/search?q=' OR 1=1 --",
+        "http_method": "GET",
+        "status_code": 200,
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "base_web_198.51.100.19"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_conn",
+        "source_ip": "198.51.100.19",
+        "destination_ip": "10.0.0.10",
+        "destination_port": 4444,
+        "protocol": "tcp",
+        "connection_state": "SF",
+        "bytes_in": 1024,
+        "bytes_out": 4096,
+        "event_type": "conn",
+        "event_category": "network",
+        "severity": "high",
+        "message": "Outbound connection on unauthorized port 4444 from 198.51.100.19",
+        "timestamp": "2026-10-08T12:00:20+00:00",
+        "raw_reference": "base_zeek_198.51.100.19"
+      },
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "source_ip": "10.0.0.10",
+        "destination_ip": "198.51.100.19",
+        "hostname": "srv-19",
+        "username": "SYSTEM",
+        "process": "powershell.exe",
+        "parent_process": "w3wp.exe",
+        "command_line": "powershell.exe -enc aW52b2tlLW1pbWlrYXR6",
+        "event_type": "sysmon_process_create",
+        "event_category": "endpoint",
+        "severity": "critical",
+        "message": "Suspicious child powershell spawned under w3wp on srv-19",
+        "timestamp": "2026-10-08T12:00:45+00:00",
+        "raw_reference": "base_sys_198.51.100.19"
+      }
+    ]
+  },
+  {
+    "scenario_id": "ADV-TEST-020",
+    "scenario_class": "CLASS_T_DNS_MUTATION",
+    "title": "Mismatched TLD in Endpoint vs Network DNS Query",
+    "description": "Sysmon records .org while Zeek records .net; test deterministic string match boundary.",
+    "ground_truth": "ATTACK",
+    "expected_detection": true,
+    "expected_correlation": false,
+    "expected_correlation_rules": [],
+    "expected_failure_mode": "MISSED_CORRELATION_STRING_MISMATCH",
+    "perturbation": {
+      "type": "none"
+    },
+    "events": [
+      {
+        "source_type": "SYSMON",
+        "source_name": "sysmon_win",
+        "hostname": "workstation-77",
+        "dns_query": "beacon.evilcorp.org",
+        "event_type": "sysmon_dns_query",
+        "event_category": "endpoint",
+        "severity": "medium",
+        "message": "DNS resolution for beacon.evilcorp.org",
+        "timestamp": "2026-10-08T12:00:00+00:00",
+        "raw_reference": "dns_mut_sys_20"
+      },
+      {
+        "source_type": "ZEEK",
+        "source_name": "zeek_dns",
+        "hostname": "workstation-77",
+        "dns_query": "beacon.evilcorp.net",
+        "event_type": "dns",
+        "event_category": "network",
+        "severity": "medium",
+        "message": "Zeek observed query for beacon.evilcorp.net",
+        "timestamp": "2026-10-08T12:00:02+00:00",
+        "raw_reference": "dns_mut_zk_20"
+      }
+    ]
+  }
+]

@@ -12,6 +12,8 @@ REST API Endpoints for Phase 11 Research & Evaluation Engine:
 
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -156,3 +158,19 @@ def get_experiment_details(
             detail=f"Experiment with ID {experiment_id} not found.",
         )
     return exp
+
+
+@router.get("/adversarial/robustness")
+def get_adversarial_robustness_evaluation(
+    current_user: User = Depends(get_current_user),
+) -> dict:
+    """Retrieve Phase 7 Adversarial Robustness evaluation results and curves."""
+    from pathlib import Path
+    results_path = Path(__file__).resolve().parent.parent.parent.parent / "research" / "results" / "adversarial_robustness_v1.json"
+    if not results_path.exists():
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Adversarial robustness evaluation results not found.",
+        )
+    return json.loads(results_path.read_text(encoding="utf-8"))
+
