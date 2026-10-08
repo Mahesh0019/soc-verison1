@@ -79,17 +79,63 @@ export interface AlertDetail extends Alert {
   notes: AlertNote[];
 }
 
+export type RuleStatus = "DRAFT" | "TESTING" | "ACTIVE" | "DISABLED" | "DEPRECATED";
+
 export interface DetectionRule {
   id: number;
+  rule_id?: string | null;
   name: string;
   description: string;
   severity: Severity;
+  category?: string;
+  version?: string;
+  status?: RuleStatus;
+  source?: string;
+  owner?: string;
+  mitre_technique?: string;
+  confidence?: number;
+  false_positive_notes?: string | null;
+  expected_data_source?: string;
   enabled: boolean;
   conditions_json: Record<string, unknown>;
+  test_cases_json?: Record<string, unknown> | null;
   time_window_minutes: number;
   threshold: number;
   created_at: string;
   updated_at: string;
+}
+
+export interface RuleHealthRecord {
+  id: number;
+  rule_id: number | null;
+  rule_name: string;
+  version: string;
+  dataset_target: string;
+  evaluated_at: string | null;
+  true_positives: number | null;
+  false_positives: number | null;
+  false_negatives: number | null;
+  true_negatives: number | null;
+  precision: number | null;
+  recall: number | null;
+  f1_score: number | null;
+  false_positive_rate: number | null;
+  alert_volume: number;
+  detection_latency_ms: number | null;
+  coverage_score: number | null;
+  confidence: number | null;
+  regression_status: string;
+  health_score: number | null;
+  health_tier: string;
+  details_json?: Record<string, unknown> | null;
+}
+
+export interface RuleHealthSummary {
+  total_rules: number;
+  evaluated_rules: number;
+  average_health_score: number | null;
+  tier_distribution: Record<string, number>;
+  rule_records: RuleHealthRecord[];
 }
 
 export interface ThreatIndicator {

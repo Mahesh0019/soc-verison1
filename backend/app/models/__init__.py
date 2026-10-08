@@ -11,6 +11,7 @@ from app.models.incident import Incident, IncidentAlert
 from app.models.raw_log import RawLog
 from app.models.risk_assessment import RiskAssessment
 from app.models.rule import DetectionRule
+from app.models.rule_health import RuleHealthRecord
 from app.models.threat_indicator import ThreatIndicator
 from app.models.user import User
 from app.models.validation_test import ValidationTest
@@ -34,6 +35,7 @@ __all__ = [
     "NormalizedEvent",
     "RawLog",
     "RiskAssessment",
+    "RuleHealthRecord",
     "ThreatIndicator",
     "User",
     "ValidationTest",

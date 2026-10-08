@@ -16,10 +16,28 @@ DEMO_USERS = [
 
 
 def ensure_builtin_rules(db: Session) -> None:
-    existing = {rule.name for rule in db.query(DetectionRule).all()}
+    existing_rules = {rule.name: rule for rule in db.query(DetectionRule).all()}
     for item in builtin_rules():
-        if item["name"] not in existing:
+        rule = existing_rules.get(item["name"])
+        if not rule:
             db.add(DetectionRule(**item))
+        else:
+            # Backfill any metadata fields that were newly introduced or are empty
+            for field in [
+                "rule_id",
+                "category",
+                "version",
+                "status",
+                "source",
+                "owner",
+                "mitre_technique",
+                "confidence",
+                "false_positive_notes",
+                "expected_data_source",
+                "test_cases_json",
+            ]:
+                if getattr(rule, field, None) in (None, "", "NOT_MAPPED") and field in item:
+                    setattr(rule, field, item[field])
     db.commit()
 
 

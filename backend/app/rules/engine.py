@@ -13,7 +13,14 @@ ACTIVE_ALERT_STATUSES = ("open", "investigating")
 def evaluate_rules_for_events(db: Session, events: list[NormalizedEvent], auto_correlate: bool = True) -> int:
     if not events:
         return 0
-    rules = db.query(DetectionRule).filter(DetectionRule.enabled.is_(True)).all()
+    rules = (
+        db.query(DetectionRule)
+        .filter(
+            DetectionRule.enabled.is_(True),
+            or_(DetectionRule.status.is_(None), DetectionRule.status == "ACTIVE"),
+        )
+        .all()
+    )
     touched_alert_ids: set[int] = set()
     for rule in rules:
         rule_type = rule.conditions_json.get("type", "threshold")

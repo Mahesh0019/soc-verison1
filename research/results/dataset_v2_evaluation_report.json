@@ -1,0 +1,355 @@
+{
+  "evaluation_name": "Dataset V2 Detection Engine Evaluation",
+  "evaluated_at": "2026-10-08T00:46:02.839472+00:00",
+  "phase": "PHASE_2",
+  "benchmark_rules_evaluated": 14,
+  "test_set_status": "UNTOUCHED_AND_HELD_OUT",
+  "splits": {
+    "dev_set": {
+      "split": "development",
+      "scenarios_evaluated": 100,
+      "confusion_matrix": {
+        "true_positives": 46,
+        "false_positives": 0,
+        "false_negatives": 4,
+        "true_negatives": 50
+      },
+      "metrics": {
+        "precision": 1.0,
+        "recall": 0.92,
+        "f1_score": 0.9583,
+        "false_positive_rate": 0.0,
+        "average_latency_ms": 43.13,
+        "total_alerts": 58
+      },
+      "category_breakdown": {
+        "Normal browsing": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 9,
+          "total": 9
+        },
+        "Normal authentication": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 6,
+          "total": 6
+        },
+        "Failed authentication": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 5,
+          "total": 5
+        },
+        "Repeated authentication failures": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 4
+        },
+        "SQL injection": {
+          "tp": 5,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 5
+        },
+        "XSS": {
+          "tp": 5,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 5
+        },
+        "Path traversal": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 1,
+          "tn": 0,
+          "total": 4
+        },
+        "Suspicious HTTP requests": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 3,
+          "tn": 0,
+          "total": 4
+        },
+        "Reconnaissance": {
+          "tp": 4,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 4
+        },
+        "Abnormal request rate": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 3
+        },
+        "Suspicious user-agent behavior": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 3
+        },
+        "Suspicious source-IP behavior": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 3
+        },
+        "Multi-step attacks": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 3
+        },
+        "Privilege-related behavior": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 3
+        },
+        "Account-related anomalies": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 3
+        },
+        "Mixed attack/benign sequences": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 3
+        },
+        "Benign behavior resembling attacks": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 11,
+          "total": 11
+        },
+        "Missing/partial telemetry": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 6,
+          "total": 6
+        },
+        "Duplicate telemetry": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 7,
+          "total": 7
+        },
+        "Timing variations": {
+          "tp": 3,
+          "fp": 0,
+          "fn": 0,
+          "tn": 6,
+          "total": 9
+        }
+      },
+      "rule_detections": {
+        "Multiple failed login attempts from same IP": 4,
+        "Repeated sensitive path access": 5,
+        "SQL injection attempt detected": 11,
+        "Cross-site scripting probe detected": 5,
+        "Path traversal attempt detected": 6,
+        "Blacklisted indicator matched": 4,
+        "High number of 404 responses": 4,
+        "Suspicious user agent": 7,
+        "Large request volume burst": 3,
+        "Suspicious admin login": 6,
+        "Login attempt from unusual country": 3
+      }
+    },
+    "val_set": {
+      "split": "validation",
+      "scenarios_evaluated": 40,
+      "confusion_matrix": {
+        "true_positives": 18,
+        "false_positives": 0,
+        "false_negatives": 2,
+        "true_negatives": 20
+      },
+      "metrics": {
+        "precision": 1.0,
+        "recall": 0.9,
+        "f1_score": 0.9474,
+        "false_positive_rate": 0.0,
+        "average_latency_ms": 42.23,
+        "total_alerts": 24
+      },
+      "category_breakdown": {
+        "Normal browsing": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 4,
+          "total": 4
+        },
+        "Normal authentication": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 2,
+          "total": 2
+        },
+        "Failed authentication": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 2,
+          "total": 2
+        },
+        "Repeated authentication failures": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 2
+        },
+        "SQL injection": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 2
+        },
+        "XSS": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 2
+        },
+        "Path traversal": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "tn": 0,
+          "total": 2
+        },
+        "Suspicious HTTP requests": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 1,
+          "tn": 0,
+          "total": 2
+        },
+        "Reconnaissance": {
+          "tp": 2,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 2
+        },
+        "Abnormal request rate": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 1
+        },
+        "Suspicious user-agent behavior": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 1
+        },
+        "Suspicious source-IP behavior": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 1
+        },
+        "Multi-step attacks": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 1
+        },
+        "Privilege-related behavior": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 1
+        },
+        "Account-related anomalies": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 1
+        },
+        "Mixed attack/benign sequences": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 0,
+          "total": 1
+        },
+        "Benign behavior resembling attacks": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 5,
+          "total": 5
+        },
+        "Missing/partial telemetry": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 2,
+          "total": 2
+        },
+        "Duplicate telemetry": {
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 3,
+          "total": 3
+        },
+        "Timing variations": {
+          "tp": 1,
+          "fp": 0,
+          "fn": 0,
+          "tn": 2,
+          "total": 3
+        }
+      },
+      "rule_detections": {
+        "Multiple failed login attempts from same IP": 2,
+        "Repeated sensitive path access": 3,
+        "Blacklisted indicator matched": 2,
+        "SQL injection attempt detected": 4,
+        "Cross-site scripting probe detected": 2,
+        "Path traversal attempt detected": 2,
+        "High number of 404 responses": 2,
+        "Suspicious user agent": 3,
+        "Large request volume burst": 1,
+        "Suspicious admin login": 2,
+        "Login attempt from unusual country": 1
+      }
+    }
+  }
+}

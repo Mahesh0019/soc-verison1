@@ -17,6 +17,8 @@ import type {
   ThreatIndicator,
   User,
   ValidationSummary,
+  RuleHealthRecord,
+  RuleHealthSummary,
 } from "../types";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL ?? "/api";
@@ -93,6 +95,21 @@ export async function toggleRule(id: number, enabled: boolean) {
 
 export async function createRule(payload: Partial<DetectionRule>) {
   const { data } = await api.post<DetectionRule>("/rules", payload);
+  return data;
+}
+
+export async function fetchRulesHealthSummary() {
+  const { data } = await api.get<RuleHealthSummary>("/rules/health/summary");
+  return data;
+}
+
+export async function evaluateRule(ruleId: number) {
+  const { data } = await api.post<{ message: string; health_score: number | null; health_tier: string }>(`/rules/${ruleId}/evaluate`);
+  return data;
+}
+
+export async function evaluateAllRules() {
+  const { data } = await api.post<{ message: string; evaluated_count: number }>("/rules/health/evaluate-all");
   return data;
 }
 

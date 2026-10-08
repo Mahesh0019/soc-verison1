@@ -37,7 +37,7 @@ from app.schemas.feedback import (
 )
 from app.schemas.incident import IncidentDetail, IncidentOut, IncidentStatusUpdate
 from app.schemas.risk import RiskAssessmentOut, RiskSummaryOut
-from app.schemas.rule import RuleCreate, RuleOut, RuleToggle
+from app.schemas.rule import RuleCreate, RuleHealthOut, RuleHealthSummaryOut, RuleOut, RuleToggle, RuleUpdate
 from app.schemas.threat import ThreatIndicatorCreate, ThreatIndicatorOut
 from app.schemas.user import LoginRequest, Token, UserCreate, UserOut, UserUpdate
 from app.schemas.validation import (
@@ -95,8 +95,11 @@ __all__ = [
     "RiskAssessmentOut",
     "RiskSummaryOut",
     "RuleCreate",
+    "RuleHealthOut",
+    "RuleHealthSummaryOut",
     "RuleOut",
     "RuleToggle",
+    "RuleUpdate",
     "RuleTuningApplyRequest",
     "RuleTuningProposal",
     "RunExperimentRequest",
