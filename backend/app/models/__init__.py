@@ -13,6 +13,13 @@ from app.models.risk_assessment import RiskAssessment
 from app.models.rule import DetectionRule
 from app.models.rule_health import RuleHealthRecord
 from app.models.source_types import SOURCE_TYPE_STATUS, TelemetrySourceType, normalize_source_type
+from app.models.threat_hunting import (
+    CandidateRule,
+    DetectionGap,
+    RegressionEvaluationRecord,
+    RuleVersionHistory,
+    ThreatHunt,
+)
 from app.models.threat_indicator import ThreatIndicator
 from app.models.user import User
 from app.models.validation_test import ValidationTest
@@ -24,7 +31,9 @@ __all__ = [
     "AlertNote",
     "AnalystFeedback",
     "AuditLog",
+    "CandidateRule",
     "Case",
+    "DetectionGap",
     "DetectionQuality",
     "DetectionRule",
     "Evidence",
@@ -35,10 +44,13 @@ __all__ = [
     "IncidentAlert",
     "NormalizedEvent",
     "RawLog",
+    "RegressionEvaluationRecord",
     "RiskAssessment",
     "RuleHealthRecord",
+    "RuleVersionHistory",
     "SOURCE_TYPE_STATUS",
     "TelemetrySourceType",
+    "ThreatHunt",
     "normalize_source_type",
     "ThreatIndicator",
     "User",

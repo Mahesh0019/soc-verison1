@@ -21,6 +21,7 @@ from app.api import (
     validation,
     experiments,
     telemetry,
+    threat_hunting,
     ai_analyst,
 )
 
@@ -47,3 +48,4 @@ api_router.include_router(admin.router)
 api_router.include_router(demo.router)
 api_router.include_router(experiments.router)
 api_router.include_router(telemetry.router)
+api_router.include_router(threat_hunting.router)

@@ -1,0 +1,286 @@
+{
+  "coverage_matrix": {
+    "coverage_percentage": 83.3,
+    "full_coverage_count": 10,
+    "items": [
+      {
+        "behavior": "SQL Injection exploitation probe",
+        "confidence": 0.95,
+        "coverage": "FULL",
+        "existing_rule": "RULE-012",
+        "known_gap": null,
+        "mitre_technique": "T1190",
+        "technique_name": "Exploit Public-Facing Application",
+        "telemetry_source": "WEB"
+      },
+      {
+        "behavior": "Cross-Site Scripting (XSS) payload probe",
+        "confidence": 0.9,
+        "coverage": "FULL",
+        "existing_rule": "RULE-014",
+        "known_gap": null,
+        "mitre_technique": "T1059.007",
+        "technique_name": "JavaScript",
+        "telemetry_source": "WEB"
+      },
+      {
+        "behavior": "Path Traversal file disclosure attempt",
+        "confidence": 0.92,
+        "coverage": "FULL",
+        "existing_rule": "RULE-013",
+        "known_gap": null,
+        "mitre_technique": "T1083",
+        "technique_name": "File and Directory Discovery",
+        "telemetry_source": "WEB"
+      },
+      {
+        "behavior": "Authentication brute force (repeated failed logins)",
+        "confidence": 0.8,
+        "coverage": "FULL",
+        "existing_rule": "RULE-001",
+        "known_gap": null,
+        "mitre_technique": "T1110.001",
+        "technique_name": "Password Guessing",
+        "telemetry_source": "AUTH"
+      },
+      {
+        "behavior": "Successful login after consecutive authentication failures",
+        "confidence": 0.9,
+        "coverage": "FULL",
+        "existing_rule": "RULE-002",
+        "known_gap": null,
+        "mitre_technique": "T1110.001",
+        "technique_name": "Password Guessing",
+        "telemetry_source": "AUTH"
+      },
+      {
+        "behavior": "C2 communication on backdoor/trojan destination ports",
+        "confidence": 0.85,
+        "coverage": "FULL",
+        "existing_rule": "NETWORK-001",
+        "known_gap": null,
+        "mitre_technique": "T1571",
+        "technique_name": "Non-Standard Port",
+        "telemetry_source": "ZEEK"
+      },
+      {
+        "behavior": "Reconnaissance via repeated connection rejection",
+        "confidence": 0.8,
+        "coverage": "FULL",
+        "existing_rule": "NETWORK-002",
+        "known_gap": null,
+        "mitre_technique": "T1595.001",
+        "technique_name": "Port Scanning",
+        "telemetry_source": "ZEEK"
+      },
+      {
+        "behavior": "Suspicious PowerShell obfuscation and shadow copy deletion",
+        "confidence": 0.88,
+        "coverage": "FULL",
+        "existing_rule": "ENDPOINT-001",
+        "known_gap": null,
+        "mitre_technique": "T1059.001",
+        "technique_name": "PowerShell",
+        "telemetry_source": "SYSMON"
+      },
+      {
+        "behavior": "Suspicious parent-child process relationship (web shell spawning cmd)",
+        "confidence": 0.92,
+        "coverage": "FULL",
+        "existing_rule": "ENDPOINT-002",
+        "known_gap": null,
+        "mitre_technique": "T1059.003",
+        "technique_name": "Windows Command Shell",
+        "telemetry_source": "SYSMON"
+      },
+      {
+        "behavior": "PowerShell outbound download cradle to external IP (HUNT-001)",
+        "confidence": 0.3,
+        "coverage": "MISSING",
+        "existing_rule": null,
+        "known_gap": "GAP-HUNT-001: Missing correlation of unobfuscated script downloading external socket.",
+        "mitre_technique": "T1071.001",
+        "technique_name": "Web Protocols",
+        "telemetry_source": "SYSMON/ZEEK"
+      },
+      {
+        "behavior": "Process execution out of user/system temporary directories (HUNT-006)",
+        "confidence": 0.88,
+        "coverage": "FULL",
+        "existing_rule": "CAND-GAP-HUNT-006",
+        "known_gap": null,
+        "mitre_technique": "T1036.005",
+        "technique_name": "Match Legitimate Location",
+        "telemetry_source": "SYSMON"
+      },
+      {
+        "behavior": "Egress communication to rare dynamic high ports (HUNT-003)",
+        "confidence": 0.3,
+        "coverage": "MISSING",
+        "existing_rule": null,
+        "known_gap": "GAP-HUNT-003: Existing port rule only covers static list (1337, 31337, 4444, 6667).",
+        "mitre_technique": "T1571",
+        "technique_name": "Non-Standard Port",
+        "telemetry_source": "ZEEK"
+      }
+    ],
+    "missing_coverage_count": 2,
+    "partial_coverage_count": 0,
+    "total_behaviors_evaluated": 12
+  },
+  "hypotheses_evaluation": {
+    "H1_detection_gap_identification": {
+      "empirical_evidence": "Identified 1 gaps. System A recall improved from 0.7273 to 1.0.",
+      "hypothesis": "Threat hunting identifies detection gaps not covered by the existing active rule set.",
+      "status": "ACCEPTED"
+    },
+    "H2_validated_coverage_improvement": {
+      "empirical_evidence": "Recall delta: +0.2727, FPR delta: 0.0 <= 0.02 threshold.",
+      "hypothesis": "Validated detection engineering can improve coverage without unacceptable false-positive degradation.",
+      "status": "ACCEPTED"
+    },
+    "H3_versioned_rule_regression_safety": {
+      "empirical_evidence": "All activated rules passed positive, negative, mutation, and historical corpus regression assertions.",
+      "hypothesis": "Versioned rule validation reduces regression risk compared with direct rule activation.",
+      "status": "ACCEPTED"
+    },
+    "H4_dual_gap_and_false_lead_identification": {
+      "empirical_evidence": "False lead rate: 0.1, Gap yield: 0.1.",
+      "hypothesis": "The hunting feedback loop can identify both genuine detection gaps and false leads.",
+      "status": "ACCEPTED"
+    },
+    "H5_adversarial_blindspot_exposure": {
+      "empirical_evidence": "Adversarial mutation scenarios bypassed nominal rules but were captured by validated candidate rules.",
+      "hypothesis": "Adversarial evaluation exposes weaknesses that are not visible in nominal detection benchmarks.",
+      "status": "ACCEPTED"
+    }
+  },
+  "metadata": {
+    "evaluated_at": "2026-10-08T11:54:14.867082+00:00",
+    "experiment": "Closed-Loop Threat Hunting & Detection Engineering Benchmark V1",
+    "manifest_file": "C:\\Users\\User\\OneDrive\\Desktop\\mini-siem-dashboard\\research\\datasets\\threat_hunting_v1\\manifest.json",
+    "phase": "Phase 9",
+    "target_datasets_evaluated": [
+      "Dataset V2",
+      "Network V1",
+      "Sysmon V1",
+      "Cross-Source V1",
+      "Adversarial V1",
+      "Threat Hunting V1"
+    ]
+  },
+  "scenarios": {
+    "dev_count": 30,
+    "held_out_test_count": 15,
+    "total_scenarios": 60,
+    "val_count": 15
+  },
+  "system_comparison": {
+    "deltas_dev_val": {
+      "coverage_delta_pct": 8.3,
+      "f1_delta": 0.1579,
+      "fn_delta": -6,
+      "fp_delta": 0,
+      "fpr_delta": 0.0,
+      "precision_delta": 0.0,
+      "recall_delta": 0.2727,
+      "tn_delta": 0,
+      "tp_delta": 6
+    },
+    "deltas_held_out_test": {
+      "f1_delta": 0.2308,
+      "fn_delta": -3,
+      "fp_delta": 0,
+      "fpr_delta": 0.0,
+      "precision_delta": 0.0,
+      "recall_delta": 0.375,
+      "tn_delta": 0,
+      "tp_delta": 3
+    },
+    "system_a_baseline": {
+      "coverage_percentage": 75.0,
+      "dev_val": {
+        "f1": 0.8421,
+        "fn": 6,
+        "fp": 0,
+        "fpr": 0.0,
+        "mean_latency_ms": 5.63,
+        "precision": 1.0,
+        "recall": 0.7273,
+        "scenarios_evaluated": 45,
+        "system": "System A (DEV + VAL)",
+        "tn": 23,
+        "tp": 16
+      },
+      "full_coverage_rules": 9,
+      "held_out_test": {
+        "f1": 0.7692,
+        "fn": 3,
+        "fp": 0,
+        "fpr": 0.0,
+        "mean_latency_ms": 5.167,
+        "precision": 1.0,
+        "recall": 0.625,
+        "scenarios_evaluated": 15,
+        "system": "System A (HELD_OUT_TEST)",
+        "tn": 7,
+        "tp": 5
+      }
+    },
+    "system_b_closed_loop": {
+      "coverage_percentage": 83.3,
+      "dev_val": {
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "fpr": 0.0,
+        "mean_latency_ms": 8.586,
+        "precision": 1.0,
+        "recall": 1.0,
+        "scenarios_evaluated": 45,
+        "system": "System B (DEV + VAL)",
+        "tn": 23,
+        "tp": 22
+      },
+      "full_coverage_rules": 10,
+      "held_out_test": {
+        "f1": 1.0,
+        "fn": 0,
+        "fp": 0,
+        "fpr": 0.0,
+        "mean_latency_ms": 6.55,
+        "precision": 1.0,
+        "recall": 1.0,
+        "scenarios_evaluated": 15,
+        "system": "System B (HELD_OUT_TEST)",
+        "tn": 7,
+        "tp": 8
+      }
+    }
+  },
+  "threat_hunting_metrics": {
+    "candidate_acceptance_rate": 1.0,
+    "candidate_regression_failure_rate": 0.0,
+    "candidates_accepted": [
+      "CAND-GAP-HUNT-006"
+    ],
+    "candidates_generated": [
+      "CAND-GAP-HUNT-006"
+    ],
+    "candidates_rejected": [],
+    "completed_hunts": 10,
+    "detection_gap_yield": 0.1,
+    "duplicate_candidates_prevented": 1,
+    "false_lead_rate": 0.1,
+    "gaps_discovered": [
+      "GAP-HUNT-006"
+    ],
+    "hunt_precision": 1.0,
+    "insufficient_data_rate": 0.4,
+    "regression_failures": 0,
+    "time_from_candidate_to_validation_sec": 0.0076,
+    "time_from_hunt_to_candidate_sec": 0.0286,
+    "time_from_validation_to_activation_sec": 0.0121,
+    "total_hunts": 10
+  }
+}

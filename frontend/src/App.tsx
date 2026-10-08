@@ -10,6 +10,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { OverviewPage } from "./pages/OverviewPage";
 import { ResearchBenchmarkPage } from "./pages/ResearchBenchmarkPage";
 import { RulesPage } from "./pages/RulesPage";
+import { ThreatHuntingPage } from "./pages/ThreatHuntingPage";
 import { ThreatIntelPage } from "./pages/ThreatIntelPage";
 import { UploadLogsPage } from "./pages/UploadLogsPage";
 
@@ -22,6 +23,7 @@ export default function App() {
           <Route index element={<OverviewPage />} />
           <Route path="events" element={<EventsPage />} />
           <Route path="alerts" element={<AlertsPage />} />
+          <Route path="threat-hunting" element={<ThreatHuntingPage />} />
           <Route path="research" element={<ResearchBenchmarkPage />} />
           <Route path="detection-lab" element={<DetectionLabPage />} />
           <Route path="rules" element={<RulesPage />} />

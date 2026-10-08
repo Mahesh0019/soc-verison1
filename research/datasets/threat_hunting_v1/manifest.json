@@ -1,0 +1,36 @@
+{
+  "categories_covered": [
+    "1: covered_behavior",
+    "2: genuine_detection_gap",
+    "3: false_lead",
+    "4: insufficient_telemetry",
+    "5: benign_lookalike",
+    "6: multi_source_sequence",
+    "7: adversarial_mutation",
+    "8: existing_rule_duplication",
+    "9: weak_evidence",
+    "10: conflicting_telemetry"
+  ],
+  "dataset_name": "Threat Hunting & Closed-Loop Detection Benchmark Dataset V1",
+  "generated_at": "2026-10-08T11:53:56.801589+00:00",
+  "splits": {
+    "dev": {
+      "file": "dev_scenarios.json",
+      "scenarios_count": 30,
+      "sha256": "3753b9e25f9112997cbf67ce2167978087127d7b56f5d92795ac7e5c163206ac"
+    },
+    "held_out_test": {
+      "file": "held_out_test_scenarios.json",
+      "scenarios_count": 15,
+      "sha256": "51e13ee3df47f1e3229bd9e498203249e7c34bba03eeaea591e0f5bf27c7ab10",
+      "status": "HELD_OUT_FROZEN"
+    },
+    "validation": {
+      "file": "validation_scenarios.json",
+      "scenarios_count": 15,
+      "sha256": "d5398d4eb700299466ac6bf8866c7c55cac998171797cf7034c2698b2bd27e06"
+    }
+  },
+  "total_scenarios": 60,
+  "version": "1.0.0"
+}

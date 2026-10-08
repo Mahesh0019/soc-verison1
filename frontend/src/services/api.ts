@@ -336,6 +336,69 @@ export async function fetchAIAnalystEvaluation() {
   return data;
 }
 
+// Phase 9 Threat Hunting & Closed-Loop Detection Engineering
+export async function fetchThreatHunts(status?: string) {
+  const { data } = await api.get<any[]>("/threat-hunting/hunts", {
+    params: status ? { status } : undefined,
+  });
+  return data;
+}
+
+export async function executeThreatHunt(huntId: string, overrideFilters?: any) {
+  const { data } = await api.post<any>(`/threat-hunting/hunts/${huntId}/execute`, overrideFilters || {});
+  return data;
+}
+
+export async function generateDetectionGap(huntId: string) {
+  const { data } = await api.post<any>(`/threat-hunting/hunts/${huntId}/generate-gap`);
+  return data;
+}
+
+export async function fetchDetectionGaps() {
+  const { data } = await api.get<any[]>("/threat-hunting/gaps");
+  return data;
+}
+
+export async function generateCandidateRule(gapId: string) {
+  const { data } = await api.post<any>(`/threat-hunting/gaps/${gapId}/generate-candidate`);
+  return data;
+}
+
+export async function fetchCandidateRules(status?: string) {
+  const { data } = await api.get<any[]>("/threat-hunting/candidates", {
+    params: status ? { status } : undefined,
+  });
+  return data;
+}
+
+export async function validateCandidateRule(candidateId: string) {
+  const { data } = await api.post<any>(`/threat-hunting/candidates/${candidateId}/validate`);
+  return data;
+}
+
+export async function runCandidateRegression(candidateId: string) {
+  const { data } = await api.post<any>(`/threat-hunting/candidates/${candidateId}/regression-check`);
+  return data;
+}
+
+export async function transitionCandidateRule(candidateId: string, targetStatus: string, changeReason: string) {
+  const { data } = await api.post<any>(`/threat-hunting/candidates/${candidateId}/transition`, {
+    target_status: targetStatus,
+    change_reason: changeReason,
+  });
+  return data;
+}
+
+export async function fetchDetectionCoverageMatrix() {
+  const { data } = await api.get<any>("/threat-hunting/coverage-matrix");
+  return data;
+}
+
+export async function fetchThreatHuntingMetrics() {
+  const { data } = await api.get<any>("/threat-hunting/metrics");
+  return data;
+}
+
 function compact<T extends Record<string, unknown>>(params: T) {
   return Object.fromEntries(Object.entries(params).filter(([, value]) => value !== undefined && value !== ""));
 }

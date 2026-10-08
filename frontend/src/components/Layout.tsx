@@ -1,6 +1,7 @@
 import {
   Activity,
   Bell,
+  Crosshair,
   Database,
   FileUp,
   FlaskConical,
@@ -23,6 +24,7 @@ const nav = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
   { to: "/events", label: "Events", icon: Activity },
   { to: "/alerts", label: "Alerts", icon: Bell },
+  { to: "/threat-hunting", label: "Threat Hunting", icon: Crosshair },
   { to: "/research", label: "Research & Benchmarks", icon: FlaskConical },
   { to: "/detection-lab", label: "Detection & ML Lab", icon: Sparkles },
   { to: "/rules", label: "Rules", icon: SlidersHorizontal },
