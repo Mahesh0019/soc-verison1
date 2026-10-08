@@ -60,6 +60,11 @@ export interface NormalizedEvent {
   hostname: string | null;
   process?: string | null;
   parent_process?: string | null;
+  process_id?: number | null;
+  parent_process_id?: number | null;
+  command_line?: string | null;
+  image_path?: string | null;
+  file_hash?: string | null;
   event_type: string;
   event_category: string;
   severity: Severity;
@@ -77,6 +82,29 @@ export interface NormalizedEvent {
 export interface ZeekReplayResponse {
   raw_log_id: number;
   log_type: string;
+  mode: string;
+  events_processed: number;
+  events_accepted: number;
+  events_rejected: number;
+  events_duplicated: number;
+  throughput_eps: number;
+  average_latency_ms: number;
+  maximum_latency_ms: number;
+  parse_time_ms?: number;
+  db_persistence_time_ms?: number;
+  detection_latency_ms?: number;
+  parser_throughput_eps?: number;
+  ingestion_throughput_eps?: number;
+  detection_throughput_eps?: number;
+  total_soc_throughput_eps?: number;
+  alert_count: number;
+  errors: string[];
+  preview: NormalizedEvent[];
+}
+
+export interface SysmonReplayResponse {
+  raw_log_id: number;
+  source_type: string;
   mode: string;
   events_processed: number;
   events_accepted: number;

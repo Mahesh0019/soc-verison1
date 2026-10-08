@@ -1,0 +1,6 @@
+{"EventID": 1, "Computer": "CORP-WKSTN-01", "UtcTime": "2026-10-08 08:15:00", "Image": "C:\\Windows\\System32\\cmd.exe", "CommandLine": "cmd.exe /c echo hello", "ProcessId": 5000, "ParentImage": "C:\\Windows\\explorer.exe", "ParentProcessId": 1024, "User": "CORP\\jsmith"}
+{"EventID": 3, "Computer": "CORP-WKSTN-01", "UtcTime": "2026-10-08 08:16:00", "Image": "C:\\Program Files\\Edge\\msedge.exe", "ProcessId": 5100, "SourceIp": "10.0.0.15", "SourcePort": 50000, "DestinationIp": "198.51.100.1", "DestinationPort": 443, "Protocol": "tcp"}
+{"EventID": 5, "Computer": "CORP-WKSTN-01", "UtcTime": "2026-10-08 08:17:00", "Image": "C:\\Windows\\System32\\cmd.exe", "ProcessId": 5000}
+{"EventID": 7, "Computer": "CORP-WKSTN-01", "UtcTime": "2026-10-08 08:18:00", "Image": "C:\\Windows\\explorer.exe", "ProcessId": 1024, "ImageLoaded": "C:\\Windows\\System32\\shell32.dll"}
+{"EventID": 11, "Computer": "CORP-WKSTN-01", "UtcTime": "2026-10-08 08:19:00", "Image": "C:\\Windows\\System32\\msiexec.exe", "ProcessId": 3200, "TargetFilename": "C:\\Program Files\\App\\app.exe"}
+{"EventID": 22, "Computer": "CORP-WKSTN-01", "UtcTime": "2026-10-08 08:20:00", "Image": "C:\\Program Files\\Edge\\msedge.exe", "ProcessId": 5100, "QueryName": "microsoft.com", "QueryStatus": "0", "QueryResults": "20.190.159.0"}

@@ -34,11 +34,16 @@ class NormalizedEvent(Base):
     dns_query: Mapped[Optional[str]] = mapped_column(String(512), nullable=True, index=True)
     dns_response: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    # Identity, Host & EDR / Process Placeholders
+    # Identity, Host & Endpoint / Sysmon Fields
     username: Mapped[Optional[str]] = mapped_column(String(128), nullable=True, index=True)
     hostname: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)
-    process: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
-    parent_process: Mapped[Optional[str]] = mapped_column(String(255), nullable=True)
+    process: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)
+    parent_process: Mapped[Optional[str]] = mapped_column(String(255), nullable=True, index=True)
+    process_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True, index=True)
+    parent_process_id: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    command_line: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    image_path: Mapped[Optional[str]] = mapped_column(String(1024), nullable=True)
+    file_hash: Mapped[Optional[str]] = mapped_column(String(256), nullable=True, index=True)
 
     # Core Event Attributes
     event_type: Mapped[str] = mapped_column(String(80), index=True)

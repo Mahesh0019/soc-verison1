@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.auth.security import hash_password
 from app.models import Alert, AlertEvent, AlertNote, DetectionRule, NormalizedEvent, RawLog, ThreatIndicator, User
-from app.rules import builtin_rules, evaluate_rules_for_events, network_rules
+from app.rules import builtin_rules, endpoint_rules, evaluate_rules_for_events, network_rules
 
 
 DEMO_USERS = [
@@ -17,7 +17,7 @@ DEMO_USERS = [
 
 def ensure_builtin_rules(db: Session) -> None:
     existing_rules = {rule.name: rule for rule in db.query(DetectionRule).all()}
-    for item in builtin_rules() + network_rules():
+    for item in builtin_rules() + network_rules() + endpoint_rules():
         rule = existing_rules.get(item["name"])
         if not rule:
             db.add(DetectionRule(**item))

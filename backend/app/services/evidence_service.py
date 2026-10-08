@@ -161,6 +161,22 @@ def build_evidence_package(db: Session, alert: Alert) -> list[Evidence]:
             trig_data["dns_response"] = anchor_event.dns_response
         if getattr(anchor_event, "raw_reference", None):
             trig_data["raw_reference"] = anchor_event.raw_reference
+        if getattr(anchor_event, "process", None):
+            trig_data["process"] = anchor_event.process
+        if getattr(anchor_event, "parent_process", None):
+            trig_data["parent_process"] = anchor_event.parent_process
+        if getattr(anchor_event, "process_id", None) is not None:
+            trig_data["process_id"] = anchor_event.process_id
+        if getattr(anchor_event, "parent_process_id", None) is not None:
+            trig_data["parent_process_id"] = anchor_event.parent_process_id
+        if getattr(anchor_event, "command_line", None):
+            trig_data["command_line"] = anchor_event.command_line
+        if getattr(anchor_event, "image_path", None):
+            trig_data["image_path"] = anchor_event.image_path
+        if getattr(anchor_event, "file_hash", None):
+            trig_data["file_hash"] = anchor_event.file_hash
+        if getattr(anchor_event, "hostname", None):
+            trig_data["hostname"] = anchor_event.hostname
 
         evidence_records.append(
             Evidence(

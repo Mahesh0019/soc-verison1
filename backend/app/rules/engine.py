@@ -1,7 +1,7 @@
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
-from sqlalchemy import or_
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session
 
 from app.models import Alert, AlertEvent, DetectionRule, NormalizedEvent, ThreatIndicator
@@ -210,8 +210,27 @@ def event_matches_filters(event: NormalizedEvent, filters: dict[str, Any]) -> bo
             if not any(str(token).lower() in haystack for token in expected):
                 return False
         elif key == "pattern_any":
-            haystack = f"{event.request_path or ''} {event.message or ''} {event.raw_log or ''}".lower()
+            haystack = f"{event.request_path or ''} {event.message or ''} {event.raw_log or ''} {getattr(event, 'raw_reference', None) or ''} {getattr(event, 'command_line', None) or ''}".lower()
             if not any(str(token).lower() in haystack for token in expected):
+                return False
+        elif key == "command_line_contains_any":
+            haystack = (getattr(event, "command_line", None) or "").lower()
+            if not any(str(token).lower() in haystack for token in expected):
+                return False
+        elif key == "dns_query_contains_any":
+            haystack = (getattr(event, "dns_query", None) or "").lower()
+            if not any(str(token).lower() in haystack for token in expected):
+                return False
+        elif key == "process_in":
+            val = (getattr(event, "process", None) or "").lower()
+            if val not in {str(item).lower() for item in expected}:
+                return False
+        elif key == "parent_process_in":
+            val = (getattr(event, "parent_process", None) or "").lower()
+            if val not in {str(item).lower() for item in expected}:
+                return False
+        elif key == "destination_port_in":
+            if getattr(event, "destination_port", None) not in expected:
                 return False
         elif key == "geo_country_not_in":
             if event.geo_country in expected:
@@ -243,7 +262,21 @@ def apply_filters(query, filters: dict[str, Any]):
             for token in expected:
                 clauses.append(NormalizedEvent.request_path.ilike(f"%{token}%"))
                 clauses.append(NormalizedEvent.message.ilike(f"%{token}%"))
+                clauses.append(NormalizedEvent.raw_reference.ilike(f"%{token}%"))
+                clauses.append(NormalizedEvent.command_line.ilike(f"%{token}%"))
             query = query.filter(or_(*clauses))
+        elif key == "command_line_contains_any":
+            clauses = [NormalizedEvent.command_line.ilike(f"%{token}%") for token in expected]
+            query = query.filter(or_(*clauses))
+        elif key == "dns_query_contains_any":
+            clauses = [NormalizedEvent.dns_query.ilike(f"%{token}%") for token in expected]
+            query = query.filter(or_(*clauses))
+        elif key == "process_in":
+            query = query.filter(func.lower(NormalizedEvent.process).in_([str(item).lower() for item in expected]))
+        elif key == "parent_process_in":
+            query = query.filter(func.lower(NormalizedEvent.parent_process).in_([str(item).lower() for item in expected]))
+        elif key == "destination_port_in":
+            query = query.filter(NormalizedEvent.destination_port.in_(expected))
         elif key == "geo_country_not_in":
             query = query.filter(~NormalizedEvent.geo_country.in_(expected))
         elif key == "username_in":

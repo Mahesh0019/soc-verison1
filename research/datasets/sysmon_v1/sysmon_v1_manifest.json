@@ -1,0 +1,31 @@
+{
+  "dataset_name": "RESEARCH_SYSMON_DATASET_V1",
+  "dataset_version": "v1.0",
+  "created_at": "2026-10-08T07:38:53.427259+00:00",
+  "total_scenarios": 50,
+  "attack_count": 25,
+  "benign_count": 25,
+  "total_telemetry_events": 50,
+  "split_distribution": {
+    "development": {
+      "total": 26,
+      "attack": 13,
+      "benign": 13,
+      "sha256": "aaa76dd490b2d84663403e21e0e0a74af2180957bc1b0f8734d41f422d3c6aa7"
+    },
+    "validation": {
+      "total": 10,
+      "attack": 5,
+      "benign": 5,
+      "sha256": "c6768489db45ebcebf3e0d3b74259e24722b28c121075e042f23dc3269697385"
+    },
+    "test": {
+      "total": 14,
+      "attack": 7,
+      "benign": 7,
+      "sha256": "9ec9ff499f036096cdec56a3a6e447c38a10bf28345e7fd3ac6e195a6118b9aa",
+      "status": "HELD_OUT_UNTOUCHED"
+    }
+  },
+  "full_dataset_sha256": "3a4be6c25b28faa672a21703218cb84ed64830aa296c1f51c277a2bb744dba93"
+}

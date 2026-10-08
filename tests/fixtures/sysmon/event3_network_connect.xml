@@ -1,0 +1,23 @@
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Sysmon" Guid="{5770385F-C22A-43E0-BF4C-06F5698FFBD9}" />
+    <EventID>3</EventID>
+    <Version>5</Version>
+    <Level>4</Level>
+    <TimeCreated SystemTime="2026-10-08T08:05:00.000000000Z" />
+    <EventRecordID>1002</EventRecordID>
+    <Computer>CORP-WKSTN-01.corp.local</Computer>
+  </System>
+  <EventData>
+    <Data Name="UtcTime">2026-10-08 08:05:00.000</Data>
+    <Data Name="ProcessGuid">{A1B2C3D4-0001-0000-0000-000000000001}</Data>
+    <Data Name="ProcessId">4128</Data>
+    <Data Name="Image">C:\Windows\System32\certutil.exe</Data>
+    <Data Name="User">CORP\jsmith</Data>
+    <Data Name="Protocol">tcp</Data>
+    <Data Name="SourceIp">10.0.0.15</Data>
+    <Data Name="SourcePort">49152</Data>
+    <Data Name="DestinationIp">198.51.100.80</Data>
+    <Data Name="DestinationPort">8080</Data>
+  </EventData>
+</Event>

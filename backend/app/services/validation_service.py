@@ -793,6 +793,229 @@ BUILTIN_SCENARIOS: list[dict[str, Any]] = [
             }
         ],
     },
+    # 21. Suspicious process execution (ENDPOINT-001)
+    {
+        "rule_keyword": "suspicious process execution",
+        "scenario_id": "SCEN-EP-PROC-POS",
+        "test_name": "PowerShell execution with base64 encoded command",
+        "expected_result": True,
+        "burst_count": 1,
+        "events": [
+            {
+                "source_type": "SYSMON",
+                "source_name": "Microsoft-Windows-Sysmon",
+                "hostname": "CORP-WKSTN-01",
+                "username": "CORP\\jsmith",
+                "process": "powershell.exe",
+                "command_line": "powershell.exe -enc SQBFAFgA... -nop",
+                "event_type": "sysmon_process_create",
+                "event_category": "endpoint",
+                "severity": "high",
+                "message": "Process Create: powershell.exe -enc SQBFAFgA...",
+            }
+        ],
+    },
+    {
+        "rule_keyword": "suspicious process execution",
+        "scenario_id": "SCEN-EP-PROC-NEG",
+        "test_name": "Standard administrative PowerShell execution",
+        "expected_result": False,
+        "burst_count": 1,
+        "events": [
+            {
+                "source_type": "SYSMON",
+                "source_name": "Microsoft-Windows-Sysmon",
+                "hostname": "CORP-WKSTN-01",
+                "username": "CORP\\jsmith",
+                "process": "powershell.exe",
+                "command_line": "powershell.exe Get-Service -Name Spooler",
+                "event_type": "sysmon_process_create",
+                "event_category": "endpoint",
+                "severity": "low",
+                "message": "Process Create: powershell.exe Get-Service",
+            }
+        ],
+    },
+    # 22. Suspicious parent-child relationship (ENDPOINT-002)
+    {
+        "rule_keyword": "suspicious parent-child process relationship",
+        "scenario_id": "SCEN-EP-PARENT-POS",
+        "test_name": "IIS web server spawning cmd.exe shell",
+        "expected_result": True,
+        "burst_count": 1,
+        "events": [
+            {
+                "source_type": "SYSMON",
+                "source_name": "Microsoft-Windows-Sysmon",
+                "hostname": "CORP-WEB-01",
+                "username": "IIS APPPOOL\\DefaultAppPool",
+                "process": "cmd.exe",
+                "parent_process": "w3wp.exe",
+                "event_type": "sysmon_process_create",
+                "event_category": "endpoint",
+                "severity": "critical",
+                "message": "Process Create: cmd.exe by w3wp.exe",
+            }
+        ],
+    },
+    {
+        "rule_keyword": "suspicious parent-child process relationship",
+        "scenario_id": "SCEN-EP-PARENT-NEG",
+        "test_name": "Windows explorer spawning cmd.exe shell",
+        "expected_result": False,
+        "burst_count": 1,
+        "events": [
+            {
+                "source_type": "SYSMON",
+                "source_name": "Microsoft-Windows-Sysmon",
+                "hostname": "CORP-WKSTN-02",
+                "username": "CORP\\jsmith",
+                "process": "cmd.exe",
+                "parent_process": "explorer.exe",
+                "event_type": "sysmon_process_create",
+                "event_category": "endpoint",
+                "severity": "low",
+                "message": "Process Create: cmd.exe by explorer.exe",
+            }
+        ],
+    },
+    # 23. Suspicious process network connection (ENDPOINT-003)
+    {
+        "rule_keyword": "suspicious process network connection",
+        "scenario_id": "SCEN-EP-NET-POS",
+        "test_name": "certutil.exe outbound connection to external port 8080",
+        "expected_result": True,
+        "burst_count": 1,
+        "events": [
+            {
+                "source_type": "SYSMON",
+                "source_name": "Microsoft-Windows-Sysmon",
+                "hostname": "CORP-WKSTN-01",
+                "username": "CORP\\jsmith",
+                "process": "certutil.exe",
+                "source_ip": "10.0.0.15",
+                "destination_ip": "198.51.100.77",
+                "source_port": 49201,
+                "destination_port": 8080,
+                "protocol": "tcp",
+                "event_type": "sysmon_network_connection",
+                "event_category": "endpoint",
+                "severity": "high",
+                "message": "Network Connection: certutil.exe to 198.51.100.77:8080",
+            }
+        ],
+    },
+    {
+        "rule_keyword": "suspicious process network connection",
+        "scenario_id": "SCEN-EP-NET-NEG",
+        "test_name": "Browser outbound connection to port 443",
+        "expected_result": False,
+        "burst_count": 1,
+        "events": [
+            {
+                "source_type": "SYSMON",
+                "source_name": "Microsoft-Windows-Sysmon",
+                "hostname": "CORP-WKSTN-01",
+                "username": "CORP\\jsmith",
+                "process": "msedge.exe",
+                "source_ip": "10.0.0.15",
+                "destination_ip": "198.51.100.1",
+                "source_port": 49202,
+                "destination_port": 443,
+                "protocol": "tcp",
+                "event_type": "sysmon_network_connection",
+                "event_category": "endpoint",
+                "severity": "low",
+                "message": "Network Connection: msedge.exe to 198.51.100.1:443",
+            }
+        ],
+    },
+    # 24. Suspicious DNS activity (ENDPOINT-004)
+    {
+        "rule_keyword": "suspicious dns activity",
+        "scenario_id": "SCEN-EP-DNS-POS",
+        "test_name": "Dynamic DNS resolution query for duckdns.org",
+        "expected_result": True,
+        "burst_count": 1,
+        "events": [
+            {
+                "source_type": "SYSMON",
+                "source_name": "Microsoft-Windows-Sysmon",
+                "hostname": "CORP-WKSTN-01",
+                "username": "CORP\\jsmith",
+                "process": "powershell.exe",
+                "dns_query": "beacon-payload.duckdns.org",
+                "event_type": "sysmon_dns_query",
+                "event_category": "endpoint",
+                "severity": "medium",
+                "message": "DNS Query: beacon-payload.duckdns.org by powershell.exe",
+            }
+        ],
+    },
+    {
+        "rule_keyword": "suspicious dns activity",
+        "scenario_id": "SCEN-EP-DNS-NEG",
+        "test_name": "Standard corporate DNS resolution query",
+        "expected_result": False,
+        "burst_count": 1,
+        "events": [
+            {
+                "source_type": "SYSMON",
+                "source_name": "Microsoft-Windows-Sysmon",
+                "hostname": "CORP-WKSTN-01",
+                "username": "CORP\\jsmith",
+                "process": "msedge.exe",
+                "dns_query": "login.microsoftonline.com",
+                "event_type": "sysmon_dns_query",
+                "event_category": "endpoint",
+                "severity": "low",
+                "message": "DNS Query: login.microsoftonline.com by msedge.exe",
+            }
+        ],
+    },
+    # 25. Suspicious executable/file creation (ENDPOINT-005)
+    {
+        "rule_keyword": "suspicious executable/file creation",
+        "scenario_id": "SCEN-EP-FILE-POS",
+        "test_name": "PowerShell writing executable to AppData Temp directory",
+        "expected_result": True,
+        "burst_count": 1,
+        "events": [
+            {
+                "source_type": "SYSMON",
+                "source_name": "Microsoft-Windows-Sysmon",
+                "hostname": "CORP-WKSTN-01",
+                "username": "CORP\\jsmith",
+                "process": "powershell.exe",
+                "raw_reference": "C:\\Users\\jsmith\\AppData\\Local\\Temp\\dropper.exe",
+                "event_type": "sysmon_file_create",
+                "event_category": "endpoint",
+                "severity": "high",
+                "message": "File Create: C:\\Users\\jsmith\\AppData\\Local\\Temp\\dropper.exe by powershell.exe",
+            }
+        ],
+    },
+    {
+        "rule_keyword": "suspicious executable/file creation",
+        "scenario_id": "SCEN-EP-FILE-NEG",
+        "test_name": "Trusted developer installer creating file in Program Files",
+        "expected_result": False,
+        "burst_count": 1,
+        "events": [
+            {
+                "source_type": "SYSMON",
+                "source_name": "Microsoft-Windows-Sysmon",
+                "hostname": "CORP-WKSTN-01",
+                "username": "CORP\\Administrator",
+                "process": "msiexec.exe",
+                "raw_reference": "C:\\Program Files\\App\\application.dll",
+                "event_type": "sysmon_file_create",
+                "event_category": "endpoint",
+                "severity": "low",
+                "message": "File Create: C:\\Program Files\\App\\application.dll by msiexec.exe",
+            }
+        ],
+    },
 ]
 
 
@@ -851,6 +1074,14 @@ def run_validation_test(
                 dns_response=raw.get("dns_response"),
                 raw_reference=raw.get("raw_reference"),
                 username=raw.get("username", "test_user"),
+                hostname=raw.get("hostname"),
+                process=raw.get("process"),
+                parent_process=raw.get("parent_process"),
+                process_id=raw.get("process_id"),
+                parent_process_id=raw.get("parent_process_id"),
+                command_line=raw.get("command_line"),
+                image_path=raw.get("image_path"),
+                file_hash=raw.get("file_hash"),
                 event_type=raw.get("event_type", "web_request"),
                 event_category=raw.get("event_category", "web"),
                 severity=raw.get("severity", "medium"),
@@ -886,6 +1117,14 @@ def run_validation_test(
                     dns_response=raw.get("dns_response"),
                     raw_reference=raw.get("raw_reference"),
                     username=raw.get("username", "test_user"),
+                    hostname=raw.get("hostname"),
+                    process=raw.get("process"),
+                    parent_process=raw.get("parent_process"),
+                    process_id=raw.get("process_id"),
+                    parent_process_id=raw.get("parent_process_id"),
+                    command_line=raw.get("command_line"),
+                    image_path=raw.get("image_path"),
+                    file_hash=raw.get("file_hash"),
                     event_type=raw.get("event_type", "web_request"),
                     event_category=raw.get("event_category", "web"),
                     severity=raw.get("severity", "medium"),

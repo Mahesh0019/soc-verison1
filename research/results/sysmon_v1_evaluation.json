@@ -1,0 +1,482 @@
+{
+  "evaluation_timestamp": "2026-10-08T07:49:22.633412+00:00",
+  "benchmark_dataset": "RESEARCH_SYSMON_DATASET_V1",
+  "development_split": {
+    "split": "development",
+    "scenarios_evaluated": 26,
+    "tp": 13,
+    "fp": 0,
+    "fn": 0,
+    "tn": 13,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "false_positive_rate": 0.0,
+    "total_alerts": 13,
+    "avg_detection_latency_ms": 5.958,
+    "max_detection_latency_ms": 14.474,
+    "rule_detections": {
+      "Multiple failed login attempts from same IP": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Successful login after failed attempts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Suspicious admin login": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Login attempt from unusual country": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "High number of 404 responses": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Possible directory brute force": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Repeated sensitive path access": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Large request volume burst": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Suspicious user agent": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Firewall denied traffic spike": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Repeated access from blacklisted indicator": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "SQL injection attempt detected": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Path traversal attempt detected": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Cross-site scripting probe detected": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Suspicious destination port connection": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Repeated rejected connections": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Abnormal network connection burst": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Suspicious HTTP activity from Zeek": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "DNS resolution anomaly": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Potential reconnaissance pattern": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 13,
+        "tn": 13,
+        "alerts": 0
+      },
+      "Suspicious process execution": {
+        "tp": 4,
+        "fp": 0,
+        "fn": 9,
+        "tn": 13,
+        "alerts": 4
+      },
+      "Suspicious parent-child process relationship": {
+        "tp": 3,
+        "fp": 0,
+        "fn": 10,
+        "tn": 13,
+        "alerts": 3
+      },
+      "Suspicious process network connection": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 11,
+        "tn": 13,
+        "alerts": 2
+      },
+      "Suspicious DNS activity": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 11,
+        "tn": 13,
+        "alerts": 2
+      },
+      "Suspicious executable/file creation": {
+        "tp": 2,
+        "fp": 0,
+        "fn": 11,
+        "tn": 13,
+        "alerts": 2
+      }
+    }
+  },
+  "validation_split": {
+    "split": "validation",
+    "scenarios_evaluated": 10,
+    "tp": 5,
+    "fp": 0,
+    "fn": 0,
+    "tn": 5,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "false_positive_rate": 0.0,
+    "total_alerts": 5,
+    "avg_detection_latency_ms": 4.597,
+    "max_detection_latency_ms": 7.769,
+    "rule_detections": {
+      "Multiple failed login attempts from same IP": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Successful login after failed attempts": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Suspicious admin login": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Login attempt from unusual country": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "High number of 404 responses": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Possible directory brute force": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Repeated sensitive path access": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Large request volume burst": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Suspicious user agent": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Firewall denied traffic spike": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Repeated access from blacklisted indicator": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "SQL injection attempt detected": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Path traversal attempt detected": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Cross-site scripting probe detected": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Suspicious destination port connection": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Repeated rejected connections": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Abnormal network connection burst": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Suspicious HTTP activity from Zeek": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "DNS resolution anomaly": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Potential reconnaissance pattern": {
+        "tp": 0,
+        "fp": 0,
+        "fn": 5,
+        "tn": 5,
+        "alerts": 0
+      },
+      "Suspicious process execution": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 4,
+        "tn": 5,
+        "alerts": 1
+      },
+      "Suspicious parent-child process relationship": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 4,
+        "tn": 5,
+        "alerts": 1
+      },
+      "Suspicious process network connection": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 4,
+        "tn": 5,
+        "alerts": 1
+      },
+      "Suspicious DNS activity": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 4,
+        "tn": 5,
+        "alerts": 1
+      },
+      "Suspicious executable/file creation": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 4,
+        "tn": 5,
+        "alerts": 1
+      }
+    }
+  },
+  "combined_dev_val": {
+    "scenarios": 36,
+    "tp": 18,
+    "fp": 0,
+    "fn": 0,
+    "tn": 18,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0,
+    "false_positive_rate": 0.0
+  },
+  "per_rule_report": {
+    "ENDPOINT-001": {
+      "name": "Suspicious process execution",
+      "rule_id": "ENDPOINT-001",
+      "category": "endpoint",
+      "severity": "high",
+      "tp": 5,
+      "fp": 0,
+      "fn": 13,
+      "tn": 18,
+      "precision": 1.0,
+      "recall": 0.2778,
+      "f1_score": 0.4348,
+      "health_score": 98.1,
+      "health_status": "EXCELLENT"
+    },
+    "ENDPOINT-002": {
+      "name": "Suspicious parent-child process relationship",
+      "rule_id": "ENDPOINT-002",
+      "category": "endpoint",
+      "severity": "critical",
+      "tp": 4,
+      "fp": 0,
+      "fn": 14,
+      "tn": 18,
+      "precision": 1.0,
+      "recall": 0.2222,
+      "f1_score": 0.3636,
+      "health_score": 98.7,
+      "health_status": "EXCELLENT"
+    },
+    "ENDPOINT-003": {
+      "name": "Suspicious process network connection",
+      "rule_id": "ENDPOINT-003",
+      "category": "endpoint",
+      "severity": "high",
+      "tp": 3,
+      "fp": 0,
+      "fn": 15,
+      "tn": 18,
+      "precision": 1.0,
+      "recall": 0.1667,
+      "f1_score": 0.2858,
+      "health_score": 98.0,
+      "health_status": "EXCELLENT"
+    },
+    "ENDPOINT-004": {
+      "name": "Suspicious DNS activity",
+      "rule_id": "ENDPOINT-004",
+      "category": "endpoint",
+      "severity": "medium",
+      "tp": 3,
+      "fp": 0,
+      "fn": 15,
+      "tn": 18,
+      "precision": 1.0,
+      "recall": 0.1667,
+      "f1_score": 0.2858,
+      "health_score": 97.8,
+      "health_status": "EXCELLENT"
+    },
+    "ENDPOINT-005": {
+      "name": "Suspicious executable/file creation",
+      "rule_id": "ENDPOINT-005",
+      "category": "endpoint",
+      "severity": "high",
+      "tp": 3,
+      "fp": 0,
+      "fn": 15,
+      "tn": 18,
+      "precision": 1.0,
+      "recall": 0.1667,
+      "f1_score": 0.2858,
+      "health_score": 98.1,
+      "health_status": "EXCELLENT"
+    }
+  },
+  "test_split_status": {
+    "scenarios": 14,
+    "status": "HELD_OUT_UNTOUCHED",
+    "sha256": "9ec9ff499f036096cdec56a3a6e447c38a10bf28345e7fd3ac6e195a6118b9aa",
+    "note": "Per strict research protocol, test split is held out and was not accessed during development or tuning."
+  }
+}

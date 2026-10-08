@@ -22,6 +22,8 @@ from app.schemas.event import (
     EventOut,
     IngestRequest,
     IngestResponse,
+    SysmonReplayRequest,
+    SysmonReplayResponse,
     ZeekReplayRequest,
     ZeekReplayResponse,
 )
@@ -93,6 +95,8 @@ __all__ = [
     "IncidentStatusUpdate",
     "IngestRequest",
     "IngestResponse",
+    "SysmonReplayRequest",
+    "SysmonReplayResponse",
     "ZeekReplayRequest",
     "ZeekReplayResponse",
     "LoginRequest",
