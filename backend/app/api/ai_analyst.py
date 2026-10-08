@@ -112,12 +112,13 @@ def get_ai_analyst_evaluation(
     Returns empirical Phase 8 evaluation metrics: System A vs. System B,
     unsupported claim rates, citation coverage, abstention precision/recall, and injection resistance.
     """
-    results_path = (
-        Path(__file__).resolve().parent.parent.parent.parent
-        / "research"
-        / "results"
-        / "ai_analyst_v1.json"
-    )
+    candidates = [
+        Path(__file__).resolve().parent.parent.parent.parent / "research" / "results" / "ai_analyst_v1.json",
+        Path(__file__).resolve().parent.parent.parent / "research" / "results" / "ai_analyst_v1.json",
+        Path.cwd() / "research" / "results" / "ai_analyst_v1.json",
+        Path("/app/research/results/ai_analyst_v1.json"),
+    ]
+    results_path = next((p for p in candidates if p.exists()), candidates[0])
     if not results_path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

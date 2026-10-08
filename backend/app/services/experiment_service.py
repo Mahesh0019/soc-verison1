@@ -762,8 +762,8 @@ def compute_relative_metrics(
         else:
             # Reduction in false positive tickets vs M1
             fp_reduction_pct = round(((m1_fp - fp) / m1_fp) * 100.0, 2)
-            # Genuine attack retention vs M1 (min capped at 0.0)
-            attack_retention_pct = round((tp / m1_tp) * 100.0, 2)
+            # Genuine attack retention vs M1 (capped at 100.0% max)
+            attack_retention_pct = round(min(100.0, (tp / m1_tp) * 100.0), 2)
 
         comparison_rows.append(
             BenchmarkComparisonRow(

@@ -166,7 +166,13 @@ def get_adversarial_robustness_evaluation(
 ) -> dict:
     """Retrieve Phase 7 Adversarial Robustness evaluation results and curves."""
     from pathlib import Path
-    results_path = Path(__file__).resolve().parent.parent.parent.parent / "research" / "results" / "adversarial_robustness_v1.json"
+    candidates = [
+        Path(__file__).resolve().parent.parent.parent.parent / "research" / "results" / "adversarial_robustness_v1.json",
+        Path(__file__).resolve().parent.parent.parent / "research" / "results" / "adversarial_robustness_v1.json",
+        Path.cwd() / "research" / "results" / "adversarial_robustness_v1.json",
+        Path("/app/research/results/adversarial_robustness_v1.json"),
+    ]
+    results_path = next((p for p in candidates if p.exists()), candidates[0])
     if not results_path.exists():
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

@@ -84,7 +84,7 @@ export function ResearchBenchmarkPage() {
     recall: Math.round(r.recall * 100),
     f1_score: Math.round(r.f1_score * 100),
     fp_reduction: r.fp_reduction_pct,
-    attack_retention: r.attack_retention_pct,
+    attack_retention: Math.min(100, r.attack_retention_pct),
     mtti: r.mtti_minutes,
     latency_ms: r.evidence_retrieval_ms,
   }));
@@ -194,7 +194,7 @@ export function ResearchBenchmarkPage() {
           </div>
           <div className="mt-3 flex items-baseline gap-2">
             <span className="text-3xl font-extrabold text-cyan-400">
-              {m6?.attack_retention_pct != null ? `${m6.attack_retention_pct}%` : "—"}
+              {m6?.attack_retention_pct != null ? `${Math.min(100, m6.attack_retention_pct)}%` : "—"}
             </span>
             <span className="text-xs font-semibold text-emerald-400">Target ≥98% Passed</span>
           </div>
@@ -374,7 +374,7 @@ export function ResearchBenchmarkPage() {
                       {row.mode === "M1" ? "0.0% (Base)" : `${row.fp_reduction_pct}%`}
                     </td>
                     <td className="px-3 py-3 text-center font-mono font-bold text-cyan-400">
-                      {row.attack_retention_pct}%
+                      {Math.min(100, row.attack_retention_pct)}%
                     </td>
                     <td className="px-3 py-3 text-center font-mono text-zinc-300">
                       {row.mtti_minutes}m
@@ -504,7 +504,7 @@ export function ResearchBenchmarkPage() {
                 </div>
                 <div>
                   <span className="text-zinc-500 block">Attack Retention</span>
-                  <span className="font-semibold text-cyan-400">{row.attack_retention_pct}%</span>
+                  <span className="font-semibold text-cyan-400">{Math.min(100, row.attack_retention_pct)}%</span>
                 </div>
                 <div>
                   <span className="text-zinc-500 block">Investigation (MTTI)</span>
