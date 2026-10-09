@@ -1,16 +1,34 @@
-import { useEffect, useState } from "react";
-import { Activity, ArrowRight, Eye, Play, Search, Shield, UploadCloud, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  Activity,
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  EyeOff,
+  Play,
+  RefreshCw,
+  Search,
+  Shield,
+  UploadCloud,
+  X,
+} from "lucide-react";
 
 import { SeverityBadge, SourceBadge } from "../components/Badge";
 import { EmptyState, LoadingState } from "../components/State";
 import { fetchEvents, replayZeekTelemetry } from "../services/api";
 import type { NormalizedEvent, Page, ZeekReplayResponse } from "../types";
 import { formatDate } from "../utils/format";
+import { calculatePagination, clampPage, filterEvents } from "../utils/eventsFiltering";
 
 export function EventsPage() {
   const [data, setData] = useState<Page<NormalizedEvent> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [selected, setSelected] = useState<NormalizedEvent | null>(null);
+  const [page, setPage] = useState(1);
+  const pageSize = 30;
+  const [hidePollingNoise, setHidePollingNoise] = useState(true);
   const [filters, setFilters] = useState({
     q: "",
     source_type: "",
@@ -22,17 +40,62 @@ export function EventsPage() {
   });
   const [showReplayModal, setShowReplayModal] = useState(false);
   const [replayResult, setReplayResult] = useState<ZeekReplayResponse | null>(null);
+  const requestIdRef = useRef(0);
 
-  const loadEvents = () => {
-    setLoading(true);
-    fetchEvents({ ...filters, page_size: 30 })
-      .then(setData)
-      .finally(() => setLoading(false));
+  const loadEvents = (targetPage: number = page, isManualRefresh: boolean = false) => {
+    const reqId = ++requestIdRef.current;
+    if (isManualRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
+    }
+    fetchEvents({ ...filters, page: targetPage, page_size: pageSize })
+      .then((res) => {
+        if (reqId !== requestIdRef.current) return;
+
+        const maxPage = Math.max(1, Math.ceil(res.total / pageSize));
+        // If targetPage exceeds total pages due to a count reduction and total > 0, clamp to maxPage
+        if (targetPage > maxPage && res.total > 0) {
+          loadEvents(maxPage, isManualRefresh);
+          return;
+        }
+
+        setData(res);
+        setPage(targetPage);
+      })
+      .catch((err) => {
+        if (reqId === requestIdRef.current) {
+          console.error("Failed to load events:", err);
+        }
+      })
+      .finally(() => {
+        if (reqId === requestIdRef.current) {
+          setLoading(false);
+          setRefreshing(false);
+        }
+      });
   };
 
+  // Reset to page 1 whenever any filter changes
   useEffect(() => {
-    loadEvents();
+    setPage(1);
+    loadEvents(1);
   }, [filters]);
+
+  const handleRefresh = () => {
+    loadEvents(page, true);
+  };
+
+  const handlePageChange = (newPage: number) => {
+    loadEvents(newPage);
+  };
+
+  const rawEvents = data?.items || [];
+  const { displayed: displayedEvents, excludedCount } = filterEvents(
+    rawEvents,
+    hidePollingNoise
+  );
+  const pagination = calculatePagination(data?.total || 0, page, pageSize);
 
   return (
     <div className="space-y-4">
@@ -42,7 +105,37 @@ export function EventsPage() {
           <h1 className="text-xl font-bold tracking-tight text-zinc-100">Telemetry & Events</h1>
           <p className="text-xs text-zinc-400">Multi-source event store (Web, Auth, Firewall, Zeek Network Telemetry)</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Manual Refresh Button */}
+          <button
+            onClick={handleRefresh}
+            disabled={loading || refreshing}
+            title="Refresh events while preserving current search term, filters, and page"
+            className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-surface-border bg-surface-raised px-3 py-2 text-xs font-medium text-zinc-300 transition hover:bg-surface-inset hover:text-zinc-100 disabled:opacity-50"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin text-cyan-400" : ""}`} />
+            Refresh
+          </button>
+
+          {/* UI-Only Noise Filter Toggle */}
+          <button
+            onClick={() => setHidePollingNoise((prev) => !prev)}
+            title={
+              hidePollingNoise
+                ? "Page-level display filter: Currently hiding Socket.IO background polling within the current page window. Click to show all."
+                : "Showing all events including Socket.IO background polling. Click to hide background polling on this page."
+            }
+            className={`focus-ring inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition ${
+              hidePollingNoise
+                ? "border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20"
+                : "border-surface-border bg-surface-raised text-zinc-400 hover:bg-surface-inset hover:text-zinc-200"
+            }`}
+          >
+            {hidePollingNoise ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+            {hidePollingNoise ? "Polling Hidden (Page Filter)" : "All Polling Shown"}
+          </button>
+
+          {/* Zeek Replay Action */}
           <button
             onClick={() => setShowReplayModal(true)}
             className="focus-ring inline-flex items-center gap-2 rounded-lg border border-purple-500/40 bg-purple-500/10 px-3 py-2 text-xs font-semibold text-purple-300 transition hover:bg-purple-500/20"
@@ -96,14 +189,128 @@ export function EventsPage() {
         </div>
       </div>
 
-      {/* Events Table */}
+      {/* Information Banner when Polling Events are Excluded */}
+      {hidePollingNoise && excludedCount > 0 ? (
+        <div className="flex items-center justify-between rounded-lg border border-amber-500/25 bg-amber-950/20 px-3.5 py-2 text-xs text-amber-300">
+          <div className="flex items-center gap-2">
+            <EyeOff className="h-3.5 w-3.5 flex-shrink-0 text-amber-400" />
+            <span>
+              Excluding <strong>{excludedCount}</strong> background Socket.IO polling event{excludedCount === 1 ? "" : "s"} on current page window (showing {displayedEvents.length} substantive events).
+            </span>
+          </div>
+          <button
+            onClick={() => setHidePollingNoise(false)}
+            className="underline hover:text-amber-200 font-medium ml-2 focus-ring"
+          >
+            Show All on Page
+          </button>
+        </div>
+      ) : null}
+
+      {/* Events Table / State Rendering */}
       {loading ? (
         <LoadingState label="Loading telemetry events" />
-      ) : data && data.items.length > 0 ? (
-        <EventsTable events={data.items} onSelect={setSelected} />
+      ) : displayedEvents.length > 0 ? (
+        <EventsTable events={displayedEvents} onSelect={setSelected} />
+      ) : rawEvents.length > 0 && displayedEvents.length === 0 ? (
+        <div className="rounded-lg border border-surface-border bg-surface-raised p-8 text-center space-y-3">
+          <EyeOff className="mx-auto h-8 w-8 text-amber-400" />
+          <h3 className="text-sm font-semibold text-zinc-100">
+            All {rawEvents.length} events on this page are background Socket.IO polling
+          </h3>
+          <p className="text-xs text-zinc-400 max-w-md mx-auto">
+            These routine heartbeats are hidden by the page-level display filter.
+            {data && data.total > rawEvents.length ? (
+              <> There are <strong>{data.total.toLocaleString()}</strong> total events matching your query across {pagination.totalPages} pages.</>
+            ) : null}
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+            <button
+              onClick={() => setHidePollingNoise(false)}
+              className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-xs font-medium text-amber-300 hover:bg-amber-500/20"
+            >
+              <Eye className="h-3.5 w-3.5" />
+              Show Polling Events on This Page
+            </button>
+            {pagination.hasNext && (
+              <button
+                onClick={() => handlePageChange(pagination.currentPage + 1)}
+                className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-surface-border bg-surface-inset px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-800"
+              >
+                Go to Next Page ({pagination.currentPage + 1})
+                <ChevronRight className="h-3.5 w-3.5" />
+              </button>
+            )}
+            {pagination.hasPrev && (
+              <button
+                onClick={() => handlePageChange(pagination.currentPage - 1)}
+                className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-surface-border bg-surface-inset px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-800"
+              >
+                <ChevronLeft className="h-3.5 w-3.5" />
+                Go to Previous Page ({pagination.currentPage - 1})
+              </button>
+            )}
+          </div>
+        </div>
+      ) : data && data.total > 0 && rawEvents.length === 0 ? (
+        <div className="rounded-lg border border-surface-border bg-surface-raised p-8 text-center space-y-3">
+          <h3 className="text-sm font-semibold text-zinc-100">
+            No events on page {page}
+          </h3>
+          <p className="text-xs text-zinc-400 max-w-md mx-auto">
+            There are {data.total.toLocaleString()} matching events in the database across {pagination.totalPages} pages.
+          </p>
+          <button
+            onClick={() => handlePageChange(1)}
+            className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-surface-border bg-surface-inset px-3 py-1.5 text-xs font-medium text-zinc-200 hover:bg-zinc-800"
+          >
+            Go to Page 1
+          </button>
+        </div>
       ) : (
         <EmptyState title="No events found for current filters" />
       )}
+
+      {/* Pagination Footer */}
+      {data && data.total > 0 ? (
+        <div className="flex flex-col gap-2 rounded-lg border border-surface-border bg-surface-raised px-4 py-3 sm:flex-row sm:items-center sm:justify-between text-xs text-zinc-400">
+          <div>
+            Showing <span className="font-medium text-zinc-200">{pagination.startIndex}</span> –{" "}
+            <span className="font-medium text-zinc-200">{pagination.endIndex}</span> of{" "}
+            <span className="font-medium text-zinc-200">{data.total.toLocaleString()}</span> events
+            {hidePollingNoise && excludedCount > 0 ? (
+              <span className="text-amber-400 ml-1.5">
+                ({displayedEvents.length} substantive displayed, {excludedCount} polling excluded on this page)
+              </span>
+            ) : null}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="mr-1">
+              Page <span className="font-medium text-zinc-200">{pagination.currentPage}</span> of{" "}
+              <span className="font-medium text-zinc-200">{pagination.totalPages}</span>
+            </span>
+            <button
+              onClick={() => handlePageChange(pagination.currentPage - 1)}
+              disabled={!pagination.hasPrev || loading || refreshing}
+              className="focus-ring inline-flex items-center gap-1 rounded-lg border border-surface-border bg-surface-inset px-2.5 py-1.5 font-medium text-zinc-300 hover:bg-zinc-800 disabled:opacity-40 disabled:hover:bg-surface-inset"
+              title="Previous page"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+              Prev
+            </button>
+            <button
+              onClick={() => handlePageChange(pagination.currentPage + 1)}
+              disabled={!pagination.hasNext || loading || refreshing}
+              className="focus-ring inline-flex items-center gap-1 rounded-lg border border-surface-border bg-surface-inset px-2.5 py-1.5 font-medium text-zinc-300 hover:bg-zinc-800 disabled:opacity-40 disabled:hover:bg-surface-inset"
+              title="Next page"
+            >
+              Next
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       {/* Event Drawer */}
       {selected ? <EventDrawer event={selected} onClose={() => setSelected(null)} /> : null}
@@ -112,9 +319,10 @@ export function EventsPage() {
       {showReplayModal ? (
         <ZeekReplayModal
           onClose={() => setShowReplayModal(false)}
+
           onSuccess={(res) => {
             setReplayResult(res);
-            loadEvents();
+            loadEvents(page);
           }}
           lastResult={replayResult}
         />
