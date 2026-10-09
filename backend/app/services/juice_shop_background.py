@@ -44,12 +44,31 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from datetime import UTC, datetime
 from typing import Any
 
 logger = logging.getLogger("JuiceShopBackground")
 
 # Module-level sentinel so we never spawn a second task in the same process.
 _task: asyncio.Task[None] | None = None
+
+_connector_metrics: dict[str, Any] = {
+    "enabled": False,
+    "running": False,
+    "upstream_url": "",
+    "poll_interval_seconds": 10.0,
+    "last_poll_attempt": None,
+    "last_successful_ingestion": None,
+    "last_status": "IDLE",
+    "consecutive_failures": 0,
+    "total_events_ingested": 0,
+    "last_error": None,
+}
+
+
+def get_connector_status() -> dict[str, Any]:
+    """Returns a snapshot of real-time connector metrics and health."""
+    return dict(_connector_metrics)
 
 
 # ---------------------------------------------------------------------------
@@ -176,8 +195,9 @@ async def _poll_loop(
     try:
         while True:
             cycle_count += 1
+            _connector_metrics["last_poll_attempt"] = datetime.now(UTC).isoformat()
             try:
-                await asyncio.to_thread(
+                ingested = await asyncio.to_thread(
                     _poll_once,
                     telemetry_url,
                     telemetry_api_key,
@@ -186,18 +206,34 @@ async def _poll_loop(
                     checkpoint_path,
                 )
                 backoff = 1.0  # reset on success
+                _connector_metrics["last_status"] = "HEALTHY"
+                _connector_metrics["consecutive_failures"] = 0
+                _connector_metrics["last_error"] = None
+                if ingested > 0:
+                    _connector_metrics["last_successful_ingestion"] = datetime.now(UTC).isoformat()
+                    _connector_metrics["total_events_ingested"] += ingested
                 if cycle_count % 60 == 0:
                     logger.info("[CONNECTOR] Heartbeat: telemetry collector active and polling.")
             except asyncio.CancelledError:
                 raise
             except Exception as exc:
                 err_str = str(exc)
+                _connector_metrics["consecutive_failures"] += 1
+                _connector_metrics["last_error"] = err_str
                 if "502" in err_str or "503" in err_str or "504" in err_str:
+                    _connector_metrics["last_status"] = "UPSTREAM_UNAVAILABLE_502"
                     logger.warning(
                         f"[CONNECTOR] Upstream telemetry waking up / temporarily unavailable. "
                         f"Retrying in {backoff:.1f}s..."
                     )
+                elif "401" in err_str or "403" in err_str:
+                    _connector_metrics["last_status"] = "UPSTREAM_UNAUTHORIZED_401"
+                    logger.warning(
+                        f"[CONNECTOR] Upstream telemetry authentication required ({err_str}). "
+                        f"Ensure JUICE_SHOP_TELEMETRY_API_KEY is configured. Retrying in {backoff:.1f}s..."
+                    )
                 else:
+                    _connector_metrics["last_status"] = "ERROR"
                     logger.error(
                         f"[CONNECTOR] cycle error: {exc}. "
                         f"Retrying in {backoff:.1f}s..."
@@ -217,6 +253,7 @@ async def _poll_loop(
     except asyncio.CancelledError:
         pass  # normal shutdown
     finally:
+        _connector_metrics["running"] = False
         print("[CONNECTOR] background telemetry collector stopped")
 
 
@@ -241,6 +278,11 @@ def start_background_collector() -> None:
 
     settings = get_settings()
 
+    _connector_metrics["enabled"] = True
+    _connector_metrics["running"] = True
+    _connector_metrics["upstream_url"] = settings.juice_shop_telemetry_url
+    _connector_metrics["poll_interval_seconds"] = settings.poll_interval_seconds
+
     _task = asyncio.create_task(
         _poll_loop(
             telemetry_url=settings.juice_shop_telemetry_url,
@@ -259,6 +301,7 @@ def stop_background_collector() -> None:
     Cancels the running background task.  Called from the lifespan shutdown.
     """
     global _task
+    _connector_metrics["running"] = False
     if _task is not None and not _task.done():
         _task.cancel()
         logger.info("[CONNECTOR] Background task cancellation requested.")

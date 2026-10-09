@@ -1,15 +1,17 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+from app.models.source_types import TelemetrySourceType, normalize_source_type
 
 
 class EventBase(BaseModel):
     event_id: Optional[str] = None
     timestamp: datetime
 
-    # Multi-Source Classification
-    source_type: Optional[str] = "WEB"
+    # Multi-Source Classification (WEB, AUTH, FIREWALL, ZEEK, SYSMON, THREAT_INTEL, OTHER)
+    source_type: Optional[str] = Field(default=TelemetrySourceType.OTHER.value)
     source_name: Optional[str] = None
 
     # Network Telemetry
@@ -55,30 +57,74 @@ class EventBase(BaseModel):
     raw_reference: Optional[str] = None
     raw_log: Optional[str] = None
 
+    @model_validator(mode="before")
+    @classmethod
+    def derive_and_normalize_source(cls, data: Any) -> Any:
+        """Derive missing source_type from trustworthy metadata or classify as OTHER."""
+        if isinstance(data, dict):
+            src = data.get("source_type")
+            if not src:
+                if data.get("request_path") or data.get("http_method") or data.get("status_code"):
+                    data["source_type"] = TelemetrySourceType.WEB.value
+                elif data.get("event_category") == "authentication" or data.get("event_type") in ("failed_login", "successful_login"):
+                    data["source_type"] = TelemetrySourceType.AUTH.value
+                elif data.get("event_category") == "firewall":
+                    data["source_type"] = TelemetrySourceType.FIREWALL.value
+                elif data.get("dns_query") or data.get("connection_state") or data.get("protocol"):
+                    data["source_type"] = TelemetrySourceType.ZEEK.value
+                elif data.get("process") or data.get("image_path") or data.get("command_line"):
+                    data["source_type"] = TelemetrySourceType.SYSMON.value
+                else:
+                    data["source_type"] = TelemetrySourceType.OTHER.value
+            else:
+                data["source_type"] = normalize_source_type(str(src))
+            return data
+
+        if hasattr(data, "source_type"):
+            src = getattr(data, "source_type", None)
+            if not src:
+                if getattr(data, "request_path", None) or getattr(data, "http_method", None) or getattr(data, "status_code", None):
+                    setattr(data, "source_type", TelemetrySourceType.WEB.value)
+                elif getattr(data, "event_category", None) == "authentication" or getattr(data, "event_type", None) in ("failed_login", "successful_login"):
+                    setattr(data, "source_type", TelemetrySourceType.AUTH.value)
+                elif getattr(data, "event_category", None) == "firewall":
+                    setattr(data, "source_type", TelemetrySourceType.FIREWALL.value)
+                elif getattr(data, "dns_query", None) or getattr(data, "connection_state", None) or getattr(data, "protocol", None):
+                    setattr(data, "source_type", TelemetrySourceType.ZEEK.value)
+                elif getattr(data, "process", None) or getattr(data, "image_path", None) or getattr(data, "command_line", None):
+                    setattr(data, "source_type", TelemetrySourceType.SYSMON.value)
+                else:
+                    setattr(data, "source_type", TelemetrySourceType.OTHER.value)
+            else:
+                setattr(data, "source_type", normalize_source_type(str(src)))
+        return data
+
     @field_validator("source_type", mode="before")
     @classmethod
-    def ensure_source_type(cls, v: Any) -> str:
-        return v if v else "WEB"
+    def ensure_source_type(cls, v: Any) -> Optional[str]:
+        if v is not None and str(v).strip():
+            return normalize_source_type(str(v).strip())
+        return TelemetrySourceType.OTHER.value
 
     @field_validator("event_type", mode="before")
     @classmethod
     def ensure_event_type(cls, v: Any) -> str:
-        return v if v else "generic"
+        return str(v) if v else "generic"
 
     @field_validator("event_category", mode="before")
     @classmethod
     def ensure_event_category(cls, v: Any) -> str:
-        return v if v else "general"
+        return str(v) if v else "general"
 
     @field_validator("severity", mode="before")
     @classmethod
     def ensure_severity(cls, v: Any) -> str:
-        return v if v else "low"
+        return str(v) if v else "low"
 
     @field_validator("message", mode="before")
     @classmethod
     def ensure_message(cls, v: Any) -> str:
-        return v if v else ""
+        return str(v) if v is not None else ""
 
 
 class EventCreate(EventBase):

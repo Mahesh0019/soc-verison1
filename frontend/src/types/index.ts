@@ -43,7 +43,7 @@ export interface NormalizedEvent {
   raw_log_id: number | null;
   event_id?: string | null;
   timestamp: string;
-  source_type?: TelemetrySource | string;
+  source_type?: TelemetrySource | string | null;
   source_name?: string | null;
   source_ip: string | null;
   destination_ip: string | null;

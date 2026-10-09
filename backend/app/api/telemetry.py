@@ -110,3 +110,11 @@ async def upload_sysmon_log(
         file_name=file.filename or "sysmon.xml",
         user_id=user.id,
     )
+
+
+@router.get("/connector/status")
+def get_telemetry_connector_status(_: User = Depends(get_current_user)) -> dict[str, Any]:
+    """Returns real-time operational status, health, and metrics for the telemetry connector."""
+    from app.services.juice_shop_background import get_connector_status
+
+    return get_connector_status()

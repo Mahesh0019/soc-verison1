@@ -81,9 +81,14 @@ def sync_db_schema(engine: Engine) -> None:
                     except Exception as e:
                         logger.warning("Note on column '%s' for '%s': %s", col.name, table_name, e)
 
-        # Backfill default values for any legacy rows that have NULL in newly added columns
+        # Controlled semantic backfill for legacy rows that have NULL in newly added columns
         backfill_statements = [
-            "UPDATE normalized_events SET source_type = 'WEB' WHERE source_type IS NULL",
+            "UPDATE normalized_events SET source_type = 'WEB' WHERE source_type IS NULL AND (request_path IS NOT NULL OR http_method IS NOT NULL OR user_agent IS NOT NULL)",
+            "UPDATE normalized_events SET source_type = 'AUTH' WHERE source_type IS NULL AND event_category = 'authentication'",
+            "UPDATE normalized_events SET source_type = 'FIREWALL' WHERE source_type IS NULL AND event_category = 'firewall'",
+            "UPDATE normalized_events SET source_type = 'ZEEK' WHERE source_type IS NULL AND (dns_query IS NOT NULL OR connection_state IS NOT NULL OR protocol IS NOT NULL)",
+            "UPDATE normalized_events SET source_type = 'SYSMON' WHERE source_type IS NULL AND (process IS NOT NULL OR image_path IS NOT NULL OR command_line IS NOT NULL)",
+            "UPDATE normalized_events SET source_type = 'OTHER' WHERE source_type IS NULL",
             "UPDATE detection_rules SET source = 'BUILTIN' WHERE source IS NULL",
             "UPDATE detection_rules SET category = 'web_attack' WHERE category IS NULL",
             "UPDATE detection_rules SET status = 'ACTIVE' WHERE status IS NULL",

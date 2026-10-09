@@ -16,7 +16,7 @@ class NormalizedEvent(Base):
     timestamp: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
 
     # Multi-Source Classification (WEB, AUTH, FIREWALL, ZEEK, SYSMON, THREAT_INTEL, OTHER)
-    source_type: Mapped[str] = mapped_column(String(32), default="WEB", index=True)
+    source_type: Mapped[Optional[str]] = mapped_column(String(32), default="WEB", index=True, nullable=True)
     source_name: Mapped[Optional[str]] = mapped_column(String(64), nullable=True, index=True)
 
     # Network Telemetry

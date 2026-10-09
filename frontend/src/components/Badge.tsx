@@ -2,16 +2,16 @@ import clsx from "clsx";
 
 import { severityClass, statusClass } from "../utils/format";
 
-export function SeverityBadge({ value }: { value?: string }) {
-  return <span className={clsx("inline-flex items-center rounded-md px-2 py-1 text-xs font-medium capitalize", severityClass(value))}>{value ?? "unknown"}</span>;
+export function SeverityBadge({ value }: { value?: string | null }) {
+  return <span className={clsx("inline-flex items-center rounded-md px-2 py-1 text-xs font-medium capitalize", severityClass(value ?? undefined))}>{value ?? "unknown"}</span>;
 }
 
-export function StatusBadge({ value }: { value?: string }) {
-  return <span className={clsx("inline-flex items-center rounded-md px-2 py-1 text-xs font-medium capitalize", statusClass(value))}>{value?.replace("_", " ") ?? "unknown"}</span>;
+export function StatusBadge({ value }: { value?: string | null }) {
+  return <span className={clsx("inline-flex items-center rounded-md px-2 py-1 text-xs font-medium capitalize", statusClass(value ?? undefined))}>{value?.replace("_", " ") ?? "unknown"}</span>;
 }
 
-export function SourceBadge({ value }: { value?: string }) {
-  const v = (value || "WEB").toUpperCase();
+export function SourceBadge({ value }: { value?: string | null }) {
+  const v = (value || "OTHER").toUpperCase();
   const cls = clsx(
     "inline-flex items-center border px-2 py-0.5 text-xs font-mono rounded font-medium",
     v === "ZEEK" && "border-purple-500/30 bg-purple-500/15 text-purple-300",
