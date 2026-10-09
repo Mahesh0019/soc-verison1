@@ -13,18 +13,37 @@ if db_url.startswith("postgres://"):
 elif db_url.startswith("postgresql://") and not db_url.startswith("postgresql+"):
     db_url = db_url.replace("postgresql://", "postgresql+psycopg://", 1)
 
+import logging
+import time
+
+logger = logging.getLogger("uvicorn.error")
+
 connect_args = {}
 if db_url.startswith("sqlite"):
     connect_args = {"check_same_thread": False}
     engine = create_engine(db_url, connect_args=connect_args)
 else:
-    try:
-        engine = create_engine(db_url, pool_pre_ping=True)
-        # test connection
-        with engine.connect() as conn:
-            pass
-    except Exception:
-        # Fallback to local SQLite if PostgreSQL is not running
+    connected = False
+    last_err: Exception | None = None
+    for attempt in range(1, 4):
+        try:
+            candidate_engine = create_engine(db_url, pool_pre_ping=True)
+            with candidate_engine.connect() as conn:
+                pass
+            engine = candidate_engine
+            connected = True
+            logger.info("Connected successfully to PostgreSQL database.")
+            break
+        except Exception as exc:
+            last_err = exc
+            if attempt < 3:
+                time.sleep(1.0)
+
+    if not connected:
+        logger.warning(
+            "PostgreSQL connection failed after 3 attempts (%s). Falling back to SQLite.",
+            last_err,
+        )
         db_url = "sqlite:///./mini_siem.db"
         connect_args = {"check_same_thread": False}
         engine = create_engine(db_url, connect_args=connect_args)

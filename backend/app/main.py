@@ -1,3 +1,4 @@
+import logging
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
@@ -15,37 +16,59 @@ from app.services.seed import ensure_builtin_rules, ensure_indicators, ensure_us
 settings = get_settings()
 
 
+logger = logging.getLogger("uvicorn.error")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # ── Startup ──────────────────────────────────────────────────────────────
     if settings.auto_create_tables:
-        Base.metadata.create_all(bind=engine)
+        try:
+            logger.info("Initializing and synchronizing database schema...")
+            from app.database.schema_sync import sync_db_schema
 
-    from app.database.session import SessionLocal
+            sync_db_schema(engine)
+            logger.info("Database schema synchronized successfully.")
+        except Exception as exc:
+            logger.exception("Error synchronizing database schema on startup: %s", exc)
 
-    db = SessionLocal()
     try:
-        ensure_users(db)
-        ensure_builtin_rules(db)
-        ensure_indicators(db)
-    finally:
-        db.close()
+        from app.database.session import SessionLocal
+
+        db = SessionLocal()
+        try:
+            logger.info("Ensuring builtin users, rules, and indicators...")
+            ensure_users(db)
+            ensure_builtin_rules(db)
+            ensure_indicators(db)
+            logger.info("Database initial seeding complete.")
+        finally:
+            db.close()
+    except Exception as exc:
+        logger.exception("Warning during database seed initialization: %s", exc)
 
     # Start the Juice Shop connector background task only when explicitly enabled.
     # Default is False so existing local/CI behaviour is unchanged.
     if settings.enable_juice_shop_connector:
-        from app.services.juice_shop_background import start_background_collector
+        try:
+            from app.services.juice_shop_background import start_background_collector
 
-        start_background_collector()
+            start_background_collector()
+            logger.info("Juice Shop connector background task started.")
+        except Exception as exc:
+            logger.exception("Warning starting Juice Shop background collector: %s", exc)
 
     # ── Hand control to FastAPI ───────────────────────────────────────────────
     yield
 
     # ── Shutdown ─────────────────────────────────────────────────────────────
     if settings.enable_juice_shop_connector:
-        from app.services.juice_shop_background import stop_background_collector
+        try:
+            from app.services.juice_shop_background import stop_background_collector
 
-        stop_background_collector()
+            stop_background_collector()
+        except Exception as exc:
+            logger.exception("Warning stopping Juice Shop background collector: %s", exc)
 
 
 def create_app() -> FastAPI:
