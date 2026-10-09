@@ -50,18 +50,12 @@ class ThreatHuntOut(BaseModel):
     related_events_json: list[int] = Field(default_factory=list)
     evidence_refs_json: list[dict[str, Any]] = Field(default_factory=list)
     mitre_context_json: list[dict[str, Any]] = Field(default_factory=list)
-    result: Literal["CONFIRMED", "NEGATED", "INCONCLUSIVE", "INSUFFICIENT_DATA"]
-    confidence: float
-    classification: Literal[
-        "TRUE_POSITIVE_DISCOVERY",
-        "FALSE_LEAD",
-        "INSUFFICIENT_DATA",
-        "ALREADY_COVERED_BY_EXISTING_RULE",
-        "DETECTION_GAP",
-    ]
+    result: Optional[str] = "INCONCLUSIVE"
+    confidence: Optional[float] = 0.5
+    classification: Optional[str] = "INSUFFICIENT_DATA"
     detection_gap_id: Optional[int] = None
     candidate_rule_id: Optional[int] = None
-    status: str
+    status: Optional[str] = "COMPLETED"
 
 
 class DetectionGapCreate(BaseModel):

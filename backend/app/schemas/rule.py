@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class RuleBase(BaseModel):
@@ -9,20 +9,63 @@ class RuleBase(BaseModel):
     name: str = Field(min_length=3, max_length=160)
     description: str = Field(min_length=1, max_length=1000)
     severity: str = Field(pattern="^(low|medium|high|critical)$")
-    category: str = Field(default="web_attack", pattern=r"^[a-z0-9_\-]{2,64}$")
-    version: str = Field(default="1.0", pattern=r"^\d+\.\d+(\.\d+)?$")
-    status: str = Field(default="ACTIVE", pattern="^(DRAFT|TESTING|ACTIVE|DISABLED|DEPRECATED)$")
-    source: str = Field(default="custom", max_length=64)
-    owner: str = Field(default="secops-team", max_length=64)
-    mitre_technique: str = Field(default="NOT_MAPPED", pattern=r"^(T\d{4}(\.\d{3})?|NOT_MAPPED)$")
-    confidence: float = Field(default=0.80, ge=0.0, le=1.0)
+    category: Optional[str] = Field(default="web_attack", pattern=r"^[a-z0-9_\-]{2,64}$")
+    version: Optional[str] = Field(default="1.0", pattern=r"^\d+\.\d+(\.\d+)?$")
+    status: Optional[str] = Field(default="ACTIVE", pattern="^(DRAFT|TESTING|ACTIVE|DISABLED|DEPRECATED)$")
+    source: Optional[str] = Field(default="custom", max_length=64)
+    owner: Optional[str] = Field(default="secops-team", max_length=64)
+    mitre_technique: Optional[str] = Field(default="NOT_MAPPED", pattern=r"^(T\d{4}(\.\d{3})?|NOT_MAPPED)$")
+    confidence: Optional[float] = Field(default=0.80, ge=0.0, le=1.0)
     false_positive_notes: Optional[str] = None
-    expected_data_source: str = Field(default="web_telemetry", max_length=64)
+    expected_data_source: Optional[str] = Field(default="web_telemetry", max_length=64)
     enabled: bool = True
     conditions_json: dict[str, Any]
     test_cases_json: Optional[dict[str, Any]] = None
     time_window_minutes: int = Field(default=10, ge=1, le=1440)
     threshold: int = Field(default=1, ge=1, le=10000)
+
+    @field_validator("category", mode="before")
+    @classmethod
+    def ensure_category(cls, v: Any) -> str:
+        return v if v else "web_attack"
+
+    @field_validator("version", mode="before")
+    @classmethod
+    def ensure_version(cls, v: Any) -> str:
+        return v if v else "1.0"
+
+    @field_validator("status", mode="before")
+    @classmethod
+    def ensure_status(cls, v: Any) -> str:
+        return v if v else "ACTIVE"
+
+    @field_validator("source", mode="before")
+    @classmethod
+    def ensure_source(cls, v: Any) -> str:
+        return v if v else "custom"
+
+    @field_validator("owner", mode="before")
+    @classmethod
+    def ensure_owner(cls, v: Any) -> str:
+        return v if v else "secops-team"
+
+    @field_validator("mitre_technique", mode="before")
+    @classmethod
+    def ensure_mitre_technique(cls, v: Any) -> str:
+        return v if v else "NOT_MAPPED"
+
+    @field_validator("expected_data_source", mode="before")
+    @classmethod
+    def ensure_expected_data_source(cls, v: Any) -> str:
+        return v if v else "web_telemetry"
+
+    @field_validator("confidence", mode="before")
+    @classmethod
+    def ensure_confidence(cls, v: Any) -> float:
+        try:
+            return float(v) if v is not None else 0.80
+        except (ValueError, TypeError):
+            return 0.80
 
 
 class RuleCreate(RuleBase):

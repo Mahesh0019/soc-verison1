@@ -40,10 +40,10 @@ class IncidentOut(BaseModel):
 
 class IncidentTimelineItem(BaseModel):
     timestamp: datetime
-    source_type: str
-    stage: str
-    title: str
-    description: str
+    source_type: Optional[str] = "WEB"
+    stage: Optional[str] = "initial_access"
+    title: Optional[str] = "Activity"
+    description: Optional[str] = ""
     event_id: Optional[str] = None
     alert_id: Optional[int] = None
     raw_reference: Optional[str] = None

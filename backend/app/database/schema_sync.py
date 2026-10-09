@@ -80,3 +80,19 @@ def sync_db_schema(engine: Engine) -> None:
                         logger.info("Schema sync: added column '%s' to '%s'", col.name, table_name)
                     except Exception as e:
                         logger.warning("Note on column '%s' for '%s': %s", col.name, table_name, e)
+
+        # Backfill default values for any legacy rows that have NULL in newly added columns
+        backfill_statements = [
+            "UPDATE normalized_events SET source_type = 'WEB' WHERE source_type IS NULL",
+            "UPDATE detection_rules SET source = 'BUILTIN' WHERE source IS NULL",
+            "UPDATE detection_rules SET category = 'web_attack' WHERE category IS NULL",
+            "UPDATE detection_rules SET status = 'ACTIVE' WHERE status IS NULL",
+            "UPDATE detection_rules SET owner = 'secops-team' WHERE owner IS NULL",
+            "UPDATE detection_rules SET mitre_technique = 'NOT_MAPPED' WHERE mitre_technique IS NULL",
+            "UPDATE detection_rules SET expected_data_source = 'web_telemetry' WHERE expected_data_source IS NULL",
+        ]
+        for stmt in backfill_statements:
+            try:
+                conn.execute(text(stmt))
+            except Exception as e:
+                logger.debug("Backfill statement note: %s", e)

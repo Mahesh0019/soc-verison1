@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class EventBase(BaseModel):
@@ -9,7 +9,7 @@ class EventBase(BaseModel):
     timestamp: datetime
 
     # Multi-Source Classification
-    source_type: str = "WEB"
+    source_type: Optional[str] = "WEB"
     source_name: Optional[str] = None
 
     # Network Telemetry
@@ -39,10 +39,10 @@ class EventBase(BaseModel):
     file_hash: Optional[str] = None
 
     # Core Event Fields
-    event_type: str
-    event_category: str
-    severity: str
-    message: str
+    event_type: Optional[str] = "generic"
+    event_category: Optional[str] = "general"
+    severity: Optional[str] = "low"
+    message: Optional[str] = ""
 
     # Web Telemetry
     user_agent: Optional[str] = None
@@ -55,6 +55,31 @@ class EventBase(BaseModel):
     raw_reference: Optional[str] = None
     raw_log: Optional[str] = None
 
+    @field_validator("source_type", mode="before")
+    @classmethod
+    def ensure_source_type(cls, v: Any) -> str:
+        return v if v else "WEB"
+
+    @field_validator("event_type", mode="before")
+    @classmethod
+    def ensure_event_type(cls, v: Any) -> str:
+        return v if v else "generic"
+
+    @field_validator("event_category", mode="before")
+    @classmethod
+    def ensure_event_category(cls, v: Any) -> str:
+        return v if v else "general"
+
+    @field_validator("severity", mode="before")
+    @classmethod
+    def ensure_severity(cls, v: Any) -> str:
+        return v if v else "low"
+
+    @field_validator("message", mode="before")
+    @classmethod
+    def ensure_message(cls, v: Any) -> str:
+        return v if v else ""
+
 
 class EventCreate(EventBase):
     raw_log_id: Optional[int] = None
@@ -63,7 +88,7 @@ class EventCreate(EventBase):
 class EventOut(EventBase):
     id: int
     raw_log_id: Optional[int] = None
-    created_at: datetime
+    created_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
 

@@ -19,10 +19,10 @@ class EvidenceCitation(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     evidence_id: Optional[int] = Field(None, description="Database ID of authoritative Evidence record")
-    source_type: str = Field(..., description="Telemetry plane: WEB, ZEEK, SYSMON, AUTH, FIREWALL")
+    source_type: Optional[str] = Field("WEB", description="Telemetry plane: WEB, ZEEK, SYSMON, AUTH, FIREWALL")
     event_id: Optional[int] = Field(None, description="Database ID of NormalizedEvent")
-    field: str = Field(..., description="Telemetry attribute referenced (e.g. process, source_ip, request_path)")
-    value: str = Field(..., description="Observed value from authoritative database record")
+    field: Optional[str] = Field("", description="Telemetry attribute referenced (e.g. process, source_ip, request_path)")
+    value: Optional[str] = Field("", description="Observed value from authoritative database record")
     timestamp: Optional[datetime] = Field(None, description="Authoritative event timestamp")
     provenance: str = Field("database_event", description="Cryptographic provenance origin")
 
@@ -43,8 +43,8 @@ class AttackChainStep(BaseModel):
 
     stage_order: int
     stage_name: str
-    description: str
-    source_type: str
+    description: Optional[str] = ""
+    source_type: Optional[str] = "WEB"
     evidence_ids: list[int] = Field(default_factory=list)
     timestamp: Optional[datetime] = None
 
