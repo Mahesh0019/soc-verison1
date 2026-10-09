@@ -33,6 +33,28 @@ def sync_db_schema(engine: Engine) -> None:
     existing_tables = set(inspector.get_table_names())
     is_postgres = "postgres" in engine.dialect.name.lower()
 
+    # Fast-path for critical detection_rules columns in PostgreSQL
+    if is_postgres:
+        with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
+            critical_ddls = [
+                "ALTER TABLE detection_rules ADD COLUMN IF NOT EXISTS rule_id VARCHAR(32)",
+                "ALTER TABLE detection_rules ADD COLUMN IF NOT EXISTS category VARCHAR(64) DEFAULT 'web_attack'",
+                "ALTER TABLE detection_rules ADD COLUMN IF NOT EXISTS version VARCHAR(32) DEFAULT '1.0'",
+                "ALTER TABLE detection_rules ADD COLUMN IF NOT EXISTS status VARCHAR(32) DEFAULT 'ACTIVE'",
+                "ALTER TABLE detection_rules ADD COLUMN IF NOT EXISTS source VARCHAR(64) DEFAULT 'builtin'",
+                "ALTER TABLE detection_rules ADD COLUMN IF NOT EXISTS owner VARCHAR(64) DEFAULT 'secops-team'",
+                "ALTER TABLE detection_rules ADD COLUMN IF NOT EXISTS mitre_technique VARCHAR(32) DEFAULT 'NOT_MAPPED'",
+                "ALTER TABLE detection_rules ADD COLUMN IF NOT EXISTS confidence FLOAT DEFAULT 0.80",
+                "ALTER TABLE detection_rules ADD COLUMN IF NOT EXISTS false_positive_notes TEXT",
+                "ALTER TABLE detection_rules ADD COLUMN IF NOT EXISTS expected_data_source VARCHAR(64) DEFAULT 'web_telemetry'",
+                "ALTER TABLE detection_rules ADD COLUMN IF NOT EXISTS test_cases_json JSON",
+            ]
+            for ddl in critical_ddls:
+                try:
+                    conn.execute(text(ddl))
+                except Exception:
+                    pass
+
     # Use AUTOCOMMIT so each DDL statement executes immediately without a shared transaction block
     with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
         for table_name, table in Base.metadata.tables.items():

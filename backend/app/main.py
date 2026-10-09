@@ -22,15 +22,14 @@ logger = logging.getLogger("uvicorn.error")
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # ── Startup ──────────────────────────────────────────────────────────────
-    if settings.auto_create_tables:
-        try:
-            logger.info("Initializing and synchronizing database schema...")
-            from app.database.schema_sync import sync_db_schema
+    try:
+        logger.info("Initializing and synchronizing database schema...")
+        from app.database.schema_sync import sync_db_schema
 
-            sync_db_schema(engine)
-            logger.info("Database schema synchronized successfully.")
-        except Exception as exc:
-            logger.exception("Error synchronizing database schema on startup: %s", exc)
+        sync_db_schema(engine)
+        logger.info("Database schema synchronized successfully.")
+    except Exception as exc:
+        logger.exception("Error synchronizing database schema on startup: %s", exc)
 
     try:
         from app.database.session import SessionLocal
