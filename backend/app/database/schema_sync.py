@@ -22,6 +22,8 @@ def sync_db_schema(engine: Engine) -> None:
     """
     1. Runs Base.metadata.create_all(bind=engine) to create any missing tables.
     2. Inspects existing tables and adds any missing columns defined in the models.
+       Uses autocommit isolation and per-statement execution so Postgres never
+       enters an aborted transaction state.
     """
     # 1. Create missing tables
     Base.metadata.create_all(bind=engine)
@@ -29,8 +31,10 @@ def sync_db_schema(engine: Engine) -> None:
     # 2. Add missing columns to existing tables
     inspector = inspect(engine)
     existing_tables = set(inspector.get_table_names())
+    is_postgres = "postgres" in engine.dialect.name.lower()
 
-    with engine.begin() as conn:
+    # Use AUTOCOMMIT so each DDL statement executes immediately without a shared transaction block
+    with engine.connect().execution_options(isolation_level="AUTOCOMMIT") as conn:
         for table_name, table in Base.metadata.tables.items():
             if table_name not in existing_tables:
                 continue
@@ -45,7 +49,12 @@ def sync_db_schema(engine: Engine) -> None:
                 if col.name not in current_cols:
                     try:
                         col_type = col.type.compile(engine.dialect)
-                        conn.execute(text(f"ALTER TABLE {table_name} ADD COLUMN {col.name} {col_type}"))
-                        logger.info("Schema sync: added missing column '%s' to '%s'", col.name, table_name)
+                        if is_postgres:
+                            ddl = f"ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS {col.name} {col_type}"
+                        else:
+                            ddl = f"ALTER TABLE {table_name} ADD COLUMN {col.name} {col_type}"
+
+                        conn.execute(text(ddl))
+                        logger.info("Schema sync: added column '%s' to '%s'", col.name, table_name)
                     except Exception as e:
                         logger.warning("Note on column '%s' for '%s': %s", col.name, table_name, e)
