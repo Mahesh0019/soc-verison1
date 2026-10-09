@@ -19,6 +19,7 @@ import { useState } from "react";
 import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 
 import { useAuth } from "./AuthProvider";
+import { PipelineHealthIndicator } from "./PipelineHealthIndicator";
 
 const nav = [
   { to: "/", label: "Overview", icon: LayoutDashboard },
@@ -111,9 +112,8 @@ export function Layout() {
               <p className="text-xs text-zinc-500">Live defensive telemetry lab</p>
             </div>
           </div>
-          <div className="hidden items-center gap-2 rounded-lg border border-surface-border bg-surface-raised px-3 py-2 text-xs text-zinc-400 sm:flex">
-            <Database className="h-4 w-4 text-emerald-300" />
-            API connected
+          <div className="flex items-center gap-2">
+            <PipelineHealthIndicator />
           </div>
         </header>
         <div className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6">

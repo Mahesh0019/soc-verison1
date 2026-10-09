@@ -456,5 +456,33 @@ export interface CrossSourceCorrelationResult {
   matched_rules: string[];
 }
 
+export interface TelemetryConnectorStatus {
+  enabled: boolean;
+  running: boolean;
+  upstream_url: string;
+  poll_interval_seconds: number;
+  last_poll_attempt: string | null;
+  last_successful_ingestion: string | null;
+  last_status: string;
+  consecutive_failures: number;
+  total_events_ingested: number;
+  last_error: string | null;
+}
 
+export type PipelineHealthState =
+  | "HEALTHY_INGESTING"
+  | "HEALTHY_IDLE"
+  | "DEGRADED"
+  | "STOPPED"
+  | "STALE"
+  | "UNAVAILABLE";
 
+export interface PipelineHealthSummary {
+  state: PipelineHealthState;
+  label: string;
+  details: string;
+  status: TelemetryConnectorStatus | null;
+  lastCheckedAt: Date | null;
+  isStale: boolean;
+  error?: string | null;
+}

@@ -26,6 +26,7 @@ import type {
   IncidentGraphData,
   IncidentTimelineItem,
   UnifiedIncident,
+  TelemetryConnectorStatus,
 } from "../types";
 import adversarialFallback from "../data/research/adversarial_robustness_v1.json";
 import aiAnalystFallback from "../data/research/ai_analyst_v1.json";
@@ -412,6 +413,11 @@ export async function fetchDetectionCoverageMatrix() {
 
 export async function fetchThreatHuntingMetrics() {
   const { data } = await api.get<any>("/threat-hunting/metrics");
+  return data;
+}
+
+export async function fetchTelemetryConnectorStatus(): Promise<TelemetryConnectorStatus> {
+  const { data } = await api.get<TelemetryConnectorStatus>("/telemetry/connector/status");
   return data;
 }
 

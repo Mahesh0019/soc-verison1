@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "tsc && vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "node --test --experimental-strip-types tests/pipelineHealth.test.ts"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
