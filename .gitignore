@@ -20,6 +20,8 @@ attack_results.csv
 uvicorn_out.txt
 script.py
 research/runs/run_*.json
+scratch/
+
 
 
 

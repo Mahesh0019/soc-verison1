@@ -1,0 +1,5043 @@
+{
+  "metadata": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.13.7 (tags/v3.13.7:bcee1c3, Aug 14 2025, 14:15:11) [MSC v.1944 64 bit (AMD64)]",
+    "processor": "Intel64 Family 6 Model 142 Stepping 12, GenuineIntel",
+    "machine": "AMD64",
+    "sqlite_driver": "sqlite3 / StaticPool",
+    "timestamp_utc": "2026-10-10T01:53:07.064178+00:00",
+    "baseline_commit": "d4f884b",
+    "frozen_checkpoint": "6a153ae17c676e92b7fc7208b374c2646e99b4f6",
+    "latency_methodology": "1 warm-up run (discarded) + 5 measured runs per scenario"
+  },
+  "scenarios_evaluated": 23,
+  "configurations": {
+    "baseline_sequential": {
+      "configuration_name": "baseline",
+      "description": "Production Builtin Rules (Threshold 60, Sequential Queries)",
+      "total_scenarios": 23,
+      "true_positives": 12,
+      "false_positives": 4,
+      "true_negatives": 7,
+      "false_negatives": 0,
+      "precision": 0.75,
+      "recall": 1.0,
+      "false_positive_rate": 0.3636,
+      "false_negative_rate": 0.0,
+      "f1_score": 0.8571,
+      "total_duplicate_alerts": 2,
+      "blind_spots_count": 0,
+      "overall_median_latency_ms": 262.75,
+      "overall_p95_latency_ms": 18593.73,
+      "overall_max_latency_ms": 18593.73,
+      "scenario_results": [
+        {
+          "scenario_id": "BENIGN-01",
+          "category": "benign",
+          "event_count": 80,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "FP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-01",
+            "event_count": 80,
+            "runs_count": 5,
+            "warmup_duration_ms": 343.62,
+            "measured_runs_ms": [
+              322.94,
+              356.89,
+              338.36,
+              292.3,
+              417.16
+            ],
+            "mean_ms": 345.53,
+            "median_ms": 338.36,
+            "p95_ms": 417.16,
+            "max_ms": 417.16,
+            "min_ms": 292.3,
+            "per_event_median_ms": 4.229,
+            "per_event_p95_ms": 5.215,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 17.25,
+              "t_eval_ms": 283.25,
+              "t_evidence_ms": 5.92,
+              "t_correlate_ms": 20.47,
+              "t_total_ms": 338.36
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-02",
+          "category": "benign",
+          "event_count": 100,
+          "duration_seconds": 600.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-02",
+            "event_count": 100,
+            "runs_count": 5,
+            "warmup_duration_ms": 264.75,
+            "measured_runs_ms": [
+              372.73,
+              395.13,
+              313.47,
+              363.03,
+              408.6
+            ],
+            "mean_ms": 370.59,
+            "median_ms": 372.73,
+            "p95_ms": 408.6,
+            "max_ms": 408.6,
+            "min_ms": 313.47,
+            "per_event_median_ms": 3.727,
+            "per_event_p95_ms": 4.086,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 36.43,
+              "t_eval_ms": 336.29,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 372.73
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-03",
+          "category": "benign",
+          "event_count": 65,
+          "duration_seconds": 15.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "FP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-03",
+            "event_count": 65,
+            "runs_count": 5,
+            "warmup_duration_ms": 351.72,
+            "measured_runs_ms": [
+              316.43,
+              284.53,
+              334.61,
+              318.68,
+              321.22
+            ],
+            "mean_ms": 315.09,
+            "median_ms": 318.68,
+            "p95_ms": 334.61,
+            "max_ms": 334.61,
+            "min_ms": 284.53,
+            "per_event_median_ms": 4.903,
+            "per_event_p95_ms": 5.148,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 24.83,
+              "t_eval_ms": 258.23,
+              "t_evidence_ms": 9.61,
+              "t_correlate_ms": 26.02,
+              "t_total_ms": 318.68
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-04",
+          "category": "benign",
+          "event_count": 5,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-04",
+            "event_count": 5,
+            "runs_count": 5,
+            "warmup_duration_ms": 22.26,
+            "measured_runs_ms": [
+              20.29,
+              18.9,
+              18.81,
+              20.4,
+              20.49
+            ],
+            "mean_ms": 19.78,
+            "median_ms": 20.29,
+            "p95_ms": 20.49,
+            "max_ms": 20.49,
+            "min_ms": 18.81,
+            "per_event_median_ms": 4.058,
+            "per_event_p95_ms": 4.098,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 3.56,
+              "t_eval_ms": 15.96,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 20.29
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-01",
+          "category": "benign",
+          "event_count": 10,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-01",
+            "event_count": 10,
+            "runs_count": 5,
+            "warmup_duration_ms": 34.16,
+            "measured_runs_ms": [
+              29.73,
+              28.95,
+              29.1,
+              29.86,
+              29.77
+            ],
+            "mean_ms": 29.48,
+            "median_ms": 29.73,
+            "p95_ms": 29.86,
+            "max_ms": 29.86,
+            "min_ms": 28.95,
+            "per_event_median_ms": 2.973,
+            "per_event_p95_ms": 2.986,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 5.78,
+              "t_eval_ms": 23.5,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 29.73
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-02",
+          "category": "benign",
+          "event_count": 30,
+          "duration_seconds": 180.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-02",
+            "event_count": 30,
+            "runs_count": 5,
+            "warmup_duration_ms": 107.46,
+            "measured_runs_ms": [
+              71.93,
+              72.07,
+              72.39,
+              90.6,
+              97.41
+            ],
+            "mean_ms": 80.88,
+            "median_ms": 72.39,
+            "p95_ms": 97.41,
+            "max_ms": 97.41,
+            "min_ms": 71.93,
+            "per_event_median_ms": 2.413,
+            "per_event_p95_ms": 3.247,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 9.6,
+              "t_eval_ms": 62.78,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 72.39
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-03",
+          "category": "benign",
+          "event_count": 50,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-03",
+            "event_count": 50,
+            "runs_count": 5,
+            "warmup_duration_ms": 195.31,
+            "measured_runs_ms": [
+              156.37,
+              127.47,
+              154.31,
+              175.13,
+              176.79
+            ],
+            "mean_ms": 158.01,
+            "median_ms": 156.37,
+            "p95_ms": 176.79,
+            "max_ms": 176.79,
+            "min_ms": 127.47,
+            "per_event_median_ms": 3.127,
+            "per_event_p95_ms": 3.536,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 16.6,
+              "t_eval_ms": 138.69,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 156.37
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-04",
+          "category": "benign",
+          "event_count": 60,
+          "duration_seconds": 360.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-04",
+            "event_count": 60,
+            "runs_count": 5,
+            "warmup_duration_ms": 237.74,
+            "measured_runs_ms": [
+              262.92,
+              210.02,
+              218.71,
+              184.77,
+              225.77
+            ],
+            "mean_ms": 220.44,
+            "median_ms": 218.71,
+            "p95_ms": 262.92,
+            "max_ms": 262.92,
+            "min_ms": 184.77,
+            "per_event_median_ms": 3.645,
+            "per_event_p95_ms": 4.382,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 20.93,
+              "t_eval_ms": 200.55,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 218.71
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-05",
+          "category": "benign",
+          "event_count": 100,
+          "duration_seconds": 600.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-05",
+            "event_count": 100,
+            "runs_count": 5,
+            "warmup_duration_ms": 366.04,
+            "measured_runs_ms": [
+              358.61,
+              347.32,
+              361.16,
+              348.17,
+              349.68
+            ],
+            "mean_ms": 352.99,
+            "median_ms": 349.68,
+            "p95_ms": 361.16,
+            "max_ms": 361.16,
+            "min_ms": 347.32,
+            "per_event_median_ms": 3.497,
+            "per_event_p95_ms": 3.612,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 31.09,
+              "t_eval_ms": 322.45,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 349.68
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-06",
+          "category": "benign",
+          "event_count": 75,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "FP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-06",
+            "event_count": 75,
+            "runs_count": 5,
+            "warmup_duration_ms": 338.77,
+            "measured_runs_ms": [
+              336.98,
+              260.87,
+              262.75,
+              278.72,
+              252.46
+            ],
+            "mean_ms": 278.36,
+            "median_ms": 262.75,
+            "p95_ms": 336.98,
+            "max_ms": 336.98,
+            "min_ms": 252.46,
+            "per_event_median_ms": 3.503,
+            "per_event_p95_ms": 4.493,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 16.77,
+              "t_eval_ms": 222.38,
+              "t_evidence_ms": 6.11,
+              "t_correlate_ms": 17.81,
+              "t_total_ms": 262.75
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-ERR",
+          "category": "benign",
+          "event_count": 15,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "FP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-ERR",
+            "event_count": 15,
+            "runs_count": 5,
+            "warmup_duration_ms": 120.4,
+            "measured_runs_ms": [
+              112.43,
+              121.85,
+              107.39,
+              125.99,
+              156.87
+            ],
+            "mean_ms": 124.91,
+            "median_ms": 121.85,
+            "p95_ms": 156.87,
+            "max_ms": 156.87,
+            "min_ms": 107.39,
+            "per_event_median_ms": 8.123,
+            "per_event_p95_ms": 10.458,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 4.79,
+              "t_eval_ms": 94.78,
+              "t_evidence_ms": 9.29,
+              "t_correlate_ms": 10.7,
+              "t_total_ms": 121.85
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-01",
+          "category": "attack",
+          "event_count": 300,
+          "duration_seconds": 30.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-01",
+            "event_count": 300,
+            "runs_count": 5,
+            "warmup_duration_ms": 2672.98,
+            "measured_runs_ms": [
+              2814.27,
+              3044.72,
+              2716.04,
+              3144.39,
+              2830.93
+            ],
+            "mean_ms": 2910.07,
+            "median_ms": 2830.93,
+            "p95_ms": 3144.39,
+            "max_ms": 3144.39,
+            "min_ms": 2716.04,
+            "per_event_median_ms": 9.436,
+            "per_event_p95_ms": 10.481,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 68.63,
+              "t_eval_ms": 2603.0,
+              "t_evidence_ms": 10.19,
+              "t_correlate_ms": 118.49,
+              "t_total_ms": 2830.93
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-02",
+          "category": "attack",
+          "event_count": 500,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006",
+            "RULE-007",
+            "RULE-008"
+          ],
+          "alert_count": 4,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-02",
+            "event_count": 500,
+            "runs_count": 5,
+            "warmup_duration_ms": 18234.62,
+            "measured_runs_ms": [
+              18225.81,
+              18593.73,
+              12678.93,
+              11867.85,
+              14049.87
+            ],
+            "mean_ms": 15083.24,
+            "median_ms": 14049.87,
+            "p95_ms": 18593.73,
+            "max_ms": 18593.73,
+            "min_ms": 11867.85,
+            "per_event_median_ms": 28.1,
+            "per_event_p95_ms": 37.187,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 151.8,
+              "t_eval_ms": 13611.85,
+              "t_evidence_ms": 38.43,
+              "t_correlate_ms": 248.48,
+              "t_total_ms": 14049.87
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006', 'RULE-007', 'RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-03",
+          "category": "attack",
+          "event_count": 2,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-012"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-03",
+            "event_count": 2,
+            "runs_count": 5,
+            "warmup_duration_ms": 22.72,
+            "measured_runs_ms": [
+              18.35,
+              18.27,
+              18.23,
+              19.31,
+              18.46
+            ],
+            "mean_ms": 18.52,
+            "median_ms": 18.35,
+            "p95_ms": 19.31,
+            "max_ms": 19.31,
+            "min_ms": 18.23,
+            "per_event_median_ms": 9.175,
+            "per_event_p95_ms": 9.655,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 0.91,
+              "t_eval_ms": 10.87,
+              "t_evidence_ms": 2.7,
+              "t_correlate_ms": 3.95,
+              "t_total_ms": 18.35
+            }
+          },
+          "details": "Alerts: ['RULE-012']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-04",
+          "category": "attack",
+          "event_count": 2,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-013"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-04",
+            "event_count": 2,
+            "runs_count": 5,
+            "warmup_duration_ms": 24.5,
+            "measured_runs_ms": [
+              19.22,
+              20.05,
+              19.32,
+              19.19,
+              19.39
+            ],
+            "mean_ms": 19.43,
+            "median_ms": 19.32,
+            "p95_ms": 20.05,
+            "max_ms": 20.05,
+            "min_ms": 19.19,
+            "per_event_median_ms": 9.66,
+            "per_event_p95_ms": 10.025,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 0.85,
+              "t_eval_ms": 11.9,
+              "t_evidence_ms": 2.54,
+              "t_correlate_ms": 3.99,
+              "t_total_ms": 19.32
+            }
+          },
+          "details": "Alerts: ['RULE-013']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-05",
+          "category": "attack",
+          "event_count": 3,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-009"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-05",
+            "event_count": 3,
+            "runs_count": 5,
+            "warmup_duration_ms": 22.89,
+            "measured_runs_ms": [
+              19.7,
+              19.26,
+              20.38,
+              19.31,
+              19.15
+            ],
+            "mean_ms": 19.56,
+            "median_ms": 19.31,
+            "p95_ms": 20.38,
+            "max_ms": 20.38,
+            "min_ms": 19.15,
+            "per_event_median_ms": 6.437,
+            "per_event_p95_ms": 6.793,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 1.0,
+              "t_eval_ms": 11.52,
+              "t_evidence_ms": 2.61,
+              "t_correlate_ms": 3.94,
+              "t_total_ms": 19.31
+            }
+          },
+          "details": "Alerts: ['RULE-009']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-06",
+          "category": "attack",
+          "event_count": 137,
+          "duration_seconds": 900.0,
+          "fired_rule_ids": [
+            "RULE-001",
+            "RULE-005",
+            "RULE-006",
+            "RULE-007",
+            "RULE-008",
+            "RULE-012"
+          ],
+          "alert_count": 8,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 2,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-06",
+            "event_count": 137,
+            "runs_count": 5,
+            "warmup_duration_ms": 1125.48,
+            "measured_runs_ms": [
+              814.66,
+              962.85,
+              726.9,
+              847.97,
+              732.91
+            ],
+            "mean_ms": 817.06,
+            "median_ms": 814.66,
+            "p95_ms": 962.85,
+            "max_ms": 962.85,
+            "min_ms": 726.9,
+            "per_event_median_ms": 5.946,
+            "per_event_p95_ms": 7.028,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 22.78,
+              "t_eval_ms": 702.88,
+              "t_evidence_ms": 25.01,
+              "t_correlate_ms": 52.18,
+              "t_total_ms": 814.66
+            }
+          },
+          "details": "Alerts: ['RULE-001', 'RULE-005', 'RULE-006', 'RULE-007', 'RULE-008', 'RULE-012']; Incidents: 1; Duplicates: 2"
+        },
+        {
+          "scenario_id": "ADV-EXCL-01",
+          "category": "attack",
+          "event_count": 120,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-01",
+            "event_count": 120,
+            "runs_count": 5,
+            "warmup_duration_ms": 488.9,
+            "measured_runs_ms": [
+              460.18,
+              397.21,
+              437.37,
+              412.4,
+              709.67
+            ],
+            "mean_ms": 483.37,
+            "median_ms": 437.37,
+            "p95_ms": 709.67,
+            "max_ms": 709.67,
+            "min_ms": 397.21,
+            "per_event_median_ms": 3.645,
+            "per_event_p95_ms": 5.914,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 19.05,
+              "t_eval_ms": 393.53,
+              "t_evidence_ms": 4.35,
+              "t_correlate_ms": 20.86,
+              "t_total_ms": 437.37
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-02",
+          "category": "attack",
+          "event_count": 150,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-02",
+            "event_count": 150,
+            "runs_count": 5,
+            "warmup_duration_ms": 943.7,
+            "measured_runs_ms": [
+              1406.66,
+              794.42,
+              844.93,
+              625.6,
+              541.93
+            ],
+            "mean_ms": 842.71,
+            "median_ms": 794.42,
+            "p95_ms": 1406.66,
+            "max_ms": 1406.66,
+            "min_ms": 541.93,
+            "per_event_median_ms": 5.296,
+            "per_event_p95_ms": 9.378,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 28.91,
+              "t_eval_ms": 658.78,
+              "t_evidence_ms": 5.36,
+              "t_correlate_ms": 27.88,
+              "t_total_ms": 794.42
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-03",
+          "category": "attack",
+          "event_count": 90,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-03",
+            "event_count": 90,
+            "runs_count": 5,
+            "warmup_duration_ms": 313.74,
+            "measured_runs_ms": [
+              475.08,
+              291.56,
+              262.94,
+              328.77,
+              323.85
+            ],
+            "mean_ms": 336.44,
+            "median_ms": 323.85,
+            "p95_ms": 475.08,
+            "max_ms": 475.08,
+            "min_ms": 262.94,
+            "per_event_median_ms": 3.598,
+            "per_event_p95_ms": 5.279,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 17.44,
+              "t_eval_ms": 277.11,
+              "t_evidence_ms": 4.0,
+              "t_correlate_ms": 21.01,
+              "t_total_ms": 323.85
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-04",
+          "category": "attack",
+          "event_count": 16,
+          "duration_seconds": 30.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-007"
+          ],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-04",
+            "event_count": 16,
+            "runs_count": 5,
+            "warmup_duration_ms": 80.57,
+            "measured_runs_ms": [
+              87.5,
+              83.38,
+              173.7,
+              124.33,
+              110.42
+            ],
+            "mean_ms": 115.87,
+            "median_ms": 110.42,
+            "p95_ms": 173.7,
+            "max_ms": 173.7,
+            "min_ms": 83.38,
+            "per_event_median_ms": 6.901,
+            "per_event_p95_ms": 10.856,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 4.17,
+              "t_eval_ms": 87.31,
+              "t_evidence_ms": 7.03,
+              "t_correlate_ms": 10.18,
+              "t_total_ms": 110.42
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-05",
+          "category": "attack",
+          "event_count": 30,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-05",
+            "event_count": 30,
+            "runs_count": 5,
+            "warmup_duration_ms": 214.59,
+            "measured_runs_ms": [
+              179.35,
+              221.23,
+              245.5,
+              237.15,
+              259.53
+            ],
+            "mean_ms": 228.55,
+            "median_ms": 237.15,
+            "p95_ms": 259.53,
+            "max_ms": 259.53,
+            "min_ms": 179.35,
+            "per_event_median_ms": 7.905,
+            "per_event_p95_ms": 8.651,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 5.57,
+              "t_eval_ms": 207.18,
+              "t_evidence_ms": 7.44,
+              "t_correlate_ms": 12.08,
+              "t_total_ms": 237.15
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-06",
+          "category": "attack",
+          "event_count": 85,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-008",
+            "RULE-013"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-06",
+            "event_count": 85,
+            "runs_count": 5,
+            "warmup_duration_ms": 827.21,
+            "measured_runs_ms": [
+              625.98,
+              597.8,
+              643.88,
+              915.89,
+              684.64
+            ],
+            "mean_ms": 693.64,
+            "median_ms": 643.88,
+            "p95_ms": 915.89,
+            "max_ms": 915.89,
+            "min_ms": 597.8,
+            "per_event_median_ms": 7.575,
+            "per_event_p95_ms": 10.775,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 16.97,
+              "t_eval_ms": 600.89,
+              "t_evidence_ms": 8.45,
+              "t_correlate_ms": 18.6,
+              "t_total_ms": 643.88
+            }
+          },
+          "details": "Alerts: ['RULE-008', 'RULE-013']; Incidents: 1; Duplicates: 0"
+        }
+      ]
+    },
+    "candidate_stage4_hardened_sequential": {
+      "configuration_name": "candidate_stage4_hardened",
+      "description": "Stage 4 Hardened Path-Normalized Exclusion (Sequential)",
+      "total_scenarios": 23,
+      "true_positives": 10,
+      "false_positives": 1,
+      "true_negatives": 10,
+      "false_negatives": 2,
+      "precision": 0.9091,
+      "recall": 0.8333,
+      "false_positive_rate": 0.0909,
+      "false_negative_rate": 0.1667,
+      "f1_score": 0.8696,
+      "total_duplicate_alerts": 2,
+      "blind_spots_count": 2,
+      "overall_median_latency_ms": 31.16,
+      "overall_p95_latency_ms": 37999.98,
+      "overall_max_latency_ms": 37999.98,
+      "scenario_results": [
+        {
+          "scenario_id": "BENIGN-01",
+          "category": "benign",
+          "event_count": 80,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-01",
+            "event_count": 80,
+            "runs_count": 5,
+            "warmup_duration_ms": 43.15,
+            "measured_runs_ms": [
+              30.41,
+              28.93,
+              29.89,
+              39.63,
+              32.87
+            ],
+            "mean_ms": 32.35,
+            "median_ms": 30.41,
+            "p95_ms": 39.63,
+            "max_ms": 39.63,
+            "min_ms": 28.93,
+            "per_event_median_ms": 0.38,
+            "per_event_p95_ms": 0.495,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 12.56,
+              "t_eval_ms": 17.53,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 30.41
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-02",
+          "category": "benign",
+          "event_count": 100,
+          "duration_seconds": 600.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-02",
+            "event_count": 100,
+            "runs_count": 5,
+            "warmup_duration_ms": 22.03,
+            "measured_runs_ms": [
+              20.39,
+              20.22,
+              25.44,
+              24.82,
+              25.29
+            ],
+            "mean_ms": 23.23,
+            "median_ms": 24.82,
+            "p95_ms": 25.44,
+            "max_ms": 25.44,
+            "min_ms": 20.22,
+            "per_event_median_ms": 0.248,
+            "per_event_p95_ms": 0.254,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 18.9,
+              "t_eval_ms": 5.45,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 24.82
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-03",
+          "category": "benign",
+          "event_count": 65,
+          "duration_seconds": 15.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-03",
+            "event_count": 65,
+            "runs_count": 5,
+            "warmup_duration_ms": 21.37,
+            "measured_runs_ms": [
+              19.09,
+              18.74,
+              15.14,
+              13.8,
+              13.89
+            ],
+            "mean_ms": 16.13,
+            "median_ms": 15.14,
+            "p95_ms": 19.09,
+            "max_ms": 19.09,
+            "min_ms": 13.8,
+            "per_event_median_ms": 0.233,
+            "per_event_p95_ms": 0.294,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 11.69,
+              "t_eval_ms": 3.45,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 15.14
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-04",
+          "category": "benign",
+          "event_count": 5,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-04",
+            "event_count": 5,
+            "runs_count": 5,
+            "warmup_duration_ms": 12.94,
+            "measured_runs_ms": [
+              10.64,
+              11.25,
+              10.95,
+              14.93,
+              15.84
+            ],
+            "mean_ms": 12.72,
+            "median_ms": 11.25,
+            "p95_ms": 15.84,
+            "max_ms": 15.84,
+            "min_ms": 10.64,
+            "per_event_median_ms": 2.25,
+            "per_event_p95_ms": 3.168,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 1.54,
+              "t_eval_ms": 9.59,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 11.25
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-01",
+          "category": "benign",
+          "event_count": 10,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-01",
+            "event_count": 10,
+            "runs_count": 5,
+            "warmup_duration_ms": 8.98,
+            "measured_runs_ms": [
+              5.5,
+              5.72,
+              5.27,
+              5.78,
+              5.34
+            ],
+            "mean_ms": 5.52,
+            "median_ms": 5.5,
+            "p95_ms": 5.78,
+            "max_ms": 5.78,
+            "min_ms": 5.27,
+            "per_event_median_ms": 0.55,
+            "per_event_p95_ms": 0.578,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 3.18,
+              "t_eval_ms": 2.22,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 5.5
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-02",
+          "category": "benign",
+          "event_count": 30,
+          "duration_seconds": 180.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-02",
+            "event_count": 30,
+            "runs_count": 5,
+            "warmup_duration_ms": 13.95,
+            "measured_runs_ms": [
+              11.13,
+              11.42,
+              10.48,
+              10.5,
+              10.08
+            ],
+            "mean_ms": 10.72,
+            "median_ms": 10.5,
+            "p95_ms": 11.42,
+            "max_ms": 11.42,
+            "min_ms": 10.08,
+            "per_event_median_ms": 0.35,
+            "per_event_p95_ms": 0.381,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 7.34,
+              "t_eval_ms": 3.17,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 10.5
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-03",
+          "category": "benign",
+          "event_count": 50,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-03",
+            "event_count": 50,
+            "runs_count": 5,
+            "warmup_duration_ms": 15.2,
+            "measured_runs_ms": [
+              13.36,
+              13.86,
+              16.12,
+              14.76,
+              13.99
+            ],
+            "mean_ms": 14.42,
+            "median_ms": 13.99,
+            "p95_ms": 16.12,
+            "max_ms": 16.12,
+            "min_ms": 13.36,
+            "per_event_median_ms": 0.28,
+            "per_event_p95_ms": 0.322,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 10.54,
+              "t_eval_ms": 3.71,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 13.99
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-04",
+          "category": "benign",
+          "event_count": 60,
+          "duration_seconds": 360.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-04",
+            "event_count": 60,
+            "runs_count": 5,
+            "warmup_duration_ms": 21.47,
+            "measured_runs_ms": [
+              22.21,
+              31.16,
+              35.79,
+              30.44,
+              31.92
+            ],
+            "mean_ms": 30.3,
+            "median_ms": 31.16,
+            "p95_ms": 35.79,
+            "max_ms": 35.79,
+            "min_ms": 22.21,
+            "per_event_median_ms": 0.519,
+            "per_event_p95_ms": 0.597,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 23.06,
+              "t_eval_ms": 7.37,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 31.16
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-05",
+          "category": "benign",
+          "event_count": 100,
+          "duration_seconds": 600.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-05",
+            "event_count": 100,
+            "runs_count": 5,
+            "warmup_duration_ms": 54.46,
+            "measured_runs_ms": [
+              55.42,
+              49.17,
+              48.09,
+              47.69,
+              49.71
+            ],
+            "mean_ms": 50.02,
+            "median_ms": 49.17,
+            "p95_ms": 55.42,
+            "max_ms": 55.42,
+            "min_ms": 47.69,
+            "per_event_median_ms": 0.492,
+            "per_event_p95_ms": 0.554,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 37.27,
+              "t_eval_ms": 11.9,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 49.17
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-06",
+          "category": "benign",
+          "event_count": 75,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-06",
+            "event_count": 75,
+            "runs_count": 5,
+            "warmup_duration_ms": 159.71,
+            "measured_runs_ms": [
+              118.13,
+              135.9,
+              136.57,
+              108.6,
+              151.25
+            ],
+            "mean_ms": 130.09,
+            "median_ms": 135.9,
+            "p95_ms": 151.25,
+            "max_ms": 151.25,
+            "min_ms": 108.6,
+            "per_event_median_ms": 1.812,
+            "per_event_p95_ms": 2.017,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 26.9,
+              "t_eval_ms": 92.45,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 135.9
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-ERR",
+          "category": "benign",
+          "event_count": 15,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "FP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-ERR",
+            "event_count": 15,
+            "runs_count": 5,
+            "warmup_duration_ms": 189.48,
+            "measured_runs_ms": [
+              159.77,
+              126.33,
+              172.13,
+              125.18,
+              105.3
+            ],
+            "mean_ms": 137.74,
+            "median_ms": 126.33,
+            "p95_ms": 172.13,
+            "max_ms": 172.13,
+            "min_ms": 105.3,
+            "per_event_median_ms": 8.422,
+            "per_event_p95_ms": 11.475,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 5.62,
+              "t_eval_ms": 93.14,
+              "t_evidence_ms": 13.13,
+              "t_correlate_ms": 16.12,
+              "t_total_ms": 126.33
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-01",
+          "category": "attack",
+          "event_count": 300,
+          "duration_seconds": 30.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-01",
+            "event_count": 300,
+            "runs_count": 5,
+            "warmup_duration_ms": 5231.87,
+            "measured_runs_ms": [
+              4428.46,
+              4601.89,
+              4266.01,
+              4484.6,
+              4185.19
+            ],
+            "mean_ms": 4393.23,
+            "median_ms": 4428.46,
+            "p95_ms": 4601.89,
+            "max_ms": 4601.89,
+            "min_ms": 4185.19,
+            "per_event_median_ms": 14.762,
+            "per_event_p95_ms": 15.34,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 113.49,
+              "t_eval_ms": 4174.66,
+              "t_evidence_ms": 9.86,
+              "t_correlate_ms": 160.88,
+              "t_total_ms": 4428.46
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-02",
+          "category": "attack",
+          "event_count": 500,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006",
+            "RULE-007",
+            "RULE-008"
+          ],
+          "alert_count": 4,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-02",
+            "event_count": 500,
+            "runs_count": 5,
+            "warmup_duration_ms": 21013.18,
+            "measured_runs_ms": [
+              37999.98,
+              20160.06,
+              14339.65,
+              14530.83,
+              15645.95
+            ],
+            "mean_ms": 20535.29,
+            "median_ms": 15645.95,
+            "p95_ms": 37999.98,
+            "max_ms": 37999.98,
+            "min_ms": 14339.65,
+            "per_event_median_ms": 31.292,
+            "per_event_p95_ms": 76.0,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 92.27,
+              "t_eval_ms": 15189.75,
+              "t_evidence_ms": 47.22,
+              "t_correlate_ms": 437.84,
+              "t_total_ms": 15645.95
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006', 'RULE-007', 'RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-03",
+          "category": "attack",
+          "event_count": 2,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-012"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-03",
+            "event_count": 2,
+            "runs_count": 5,
+            "warmup_duration_ms": 55.12,
+            "measured_runs_ms": [
+              26.62,
+              23.45,
+              22.0,
+              23.45,
+              30.13
+            ],
+            "mean_ms": 25.13,
+            "median_ms": 23.45,
+            "p95_ms": 30.13,
+            "max_ms": 30.13,
+            "min_ms": 22.0,
+            "per_event_median_ms": 11.725,
+            "per_event_p95_ms": 15.065,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 1.03,
+              "t_eval_ms": 14.52,
+              "t_evidence_ms": 3.03,
+              "t_correlate_ms": 5.03,
+              "t_total_ms": 23.45
+            }
+          },
+          "details": "Alerts: ['RULE-012']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-04",
+          "category": "attack",
+          "event_count": 2,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-013"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-04",
+            "event_count": 2,
+            "runs_count": 5,
+            "warmup_duration_ms": 58.77,
+            "measured_runs_ms": [
+              53.06,
+              53.03,
+              26.96,
+              27.34,
+              26.06
+            ],
+            "mean_ms": 37.29,
+            "median_ms": 27.34,
+            "p95_ms": 53.06,
+            "max_ms": 53.06,
+            "min_ms": 26.06,
+            "per_event_median_ms": 13.67,
+            "per_event_p95_ms": 26.53,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 1.96,
+              "t_eval_ms": 17.63,
+              "t_evidence_ms": 3.94,
+              "t_correlate_ms": 5.82,
+              "t_total_ms": 27.34
+            }
+          },
+          "details": "Alerts: ['RULE-013']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-05",
+          "category": "attack",
+          "event_count": 3,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-009"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-05",
+            "event_count": 3,
+            "runs_count": 5,
+            "warmup_duration_ms": 37.74,
+            "measured_runs_ms": [
+              27.98,
+              24.97,
+              26.32,
+              25.78,
+              34.05
+            ],
+            "mean_ms": 27.82,
+            "median_ms": 26.32,
+            "p95_ms": 34.05,
+            "max_ms": 34.05,
+            "min_ms": 24.97,
+            "per_event_median_ms": 8.773,
+            "per_event_p95_ms": 11.35,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 1.27,
+              "t_eval_ms": 16.9,
+              "t_evidence_ms": 3.35,
+              "t_correlate_ms": 5.44,
+              "t_total_ms": 26.32
+            }
+          },
+          "details": "Alerts: ['RULE-009']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-06",
+          "category": "attack",
+          "event_count": 137,
+          "duration_seconds": 900.0,
+          "fired_rule_ids": [
+            "RULE-001",
+            "RULE-005",
+            "RULE-006",
+            "RULE-007",
+            "RULE-008",
+            "RULE-012"
+          ],
+          "alert_count": 8,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 2,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-06",
+            "event_count": 137,
+            "runs_count": 5,
+            "warmup_duration_ms": 1369.65,
+            "measured_runs_ms": [
+              875.62,
+              897.31,
+              995.61,
+              1084.22,
+              1246.92
+            ],
+            "mean_ms": 1019.94,
+            "median_ms": 995.61,
+            "p95_ms": 1246.92,
+            "max_ms": 1246.92,
+            "min_ms": 875.62,
+            "per_event_median_ms": 7.267,
+            "per_event_p95_ms": 9.102,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 22.63,
+              "t_eval_ms": 870.12,
+              "t_evidence_ms": 27.67,
+              "t_correlate_ms": 54.54,
+              "t_total_ms": 995.61
+            }
+          },
+          "details": "Alerts: ['RULE-001', 'RULE-005', 'RULE-006', 'RULE-007', 'RULE-008', 'RULE-012']; Incidents: 1; Duplicates: 2"
+        },
+        {
+          "scenario_id": "ADV-EXCL-01",
+          "category": "attack",
+          "event_count": 120,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "FN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-008"
+          ],
+          "blind_spot_flag": true,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-01",
+            "event_count": 120,
+            "runs_count": 5,
+            "warmup_duration_ms": 55.16,
+            "measured_runs_ms": [
+              33.03,
+              27.29,
+              25.9,
+              30.6,
+              41.66
+            ],
+            "mean_ms": 31.7,
+            "median_ms": 30.6,
+            "p95_ms": 41.66,
+            "max_ms": 41.66,
+            "min_ms": 25.9,
+            "per_event_median_ms": 0.255,
+            "per_event_p95_ms": 0.347,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 23.31,
+              "t_eval_ms": 6.02,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 30.6
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-02",
+          "category": "attack",
+          "event_count": 150,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "FN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-008"
+          ],
+          "blind_spot_flag": true,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-02",
+            "event_count": 150,
+            "runs_count": 5,
+            "warmup_duration_ms": 65.87,
+            "measured_runs_ms": [
+              69.86,
+              70.65,
+              38.13,
+              38.17,
+              53.78
+            ],
+            "mean_ms": 54.12,
+            "median_ms": 53.78,
+            "p95_ms": 70.65,
+            "max_ms": 70.65,
+            "min_ms": 38.13,
+            "per_event_median_ms": 0.359,
+            "per_event_p95_ms": 0.471,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 39.79,
+              "t_eval_ms": 13.99,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 53.78
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-03",
+          "category": "attack",
+          "event_count": 90,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-03",
+            "event_count": 90,
+            "runs_count": 5,
+            "warmup_duration_ms": 777.88,
+            "measured_runs_ms": [
+              1068.7,
+              626.85,
+              388.1,
+              373.82,
+              328.35
+            ],
+            "mean_ms": 557.16,
+            "median_ms": 388.1,
+            "p95_ms": 1068.7,
+            "max_ms": 1068.7,
+            "min_ms": 328.35,
+            "per_event_median_ms": 4.312,
+            "per_event_p95_ms": 11.874,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 27.76,
+              "t_eval_ms": 329.94,
+              "t_evidence_ms": 4.31,
+              "t_correlate_ms": 23.8,
+              "t_total_ms": 388.1
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-04",
+          "category": "attack",
+          "event_count": 16,
+          "duration_seconds": 30.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-007"
+          ],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-04",
+            "event_count": 16,
+            "runs_count": 5,
+            "warmup_duration_ms": 69.07,
+            "measured_runs_ms": [
+              73.85,
+              67.01,
+              74.03,
+              145.52,
+              159.42
+            ],
+            "mean_ms": 103.97,
+            "median_ms": 74.03,
+            "p95_ms": 159.42,
+            "max_ms": 159.42,
+            "min_ms": 67.01,
+            "per_event_median_ms": 4.627,
+            "per_event_p95_ms": 9.964,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 3.49,
+              "t_eval_ms": 54.74,
+              "t_evidence_ms": 8.83,
+              "t_correlate_ms": 10.54,
+              "t_total_ms": 74.03
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-05",
+          "category": "attack",
+          "event_count": 30,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-05",
+            "event_count": 30,
+            "runs_count": 5,
+            "warmup_duration_ms": 278.71,
+            "measured_runs_ms": [
+              151.86,
+              149.99,
+              281.19,
+              180.31,
+              322.85
+            ],
+            "mean_ms": 217.24,
+            "median_ms": 180.31,
+            "p95_ms": 322.85,
+            "max_ms": 322.85,
+            "min_ms": 149.99,
+            "per_event_median_ms": 6.01,
+            "per_event_p95_ms": 10.762,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 6.51,
+              "t_eval_ms": 156.74,
+              "t_evidence_ms": 7.6,
+              "t_correlate_ms": 13.09,
+              "t_total_ms": 180.31
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-06",
+          "category": "attack",
+          "event_count": 85,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-008",
+            "RULE-013"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-06",
+            "event_count": 85,
+            "runs_count": 5,
+            "warmup_duration_ms": 974.47,
+            "measured_runs_ms": [
+              913.0,
+              642.19,
+              764.98,
+              652.09,
+              928.91
+            ],
+            "mean_ms": 780.23,
+            "median_ms": 764.98,
+            "p95_ms": 928.91,
+            "max_ms": 928.91,
+            "min_ms": 642.19,
+            "per_event_median_ms": 9.0,
+            "per_event_p95_ms": 10.928,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 15.69,
+              "t_eval_ms": 712.85,
+              "t_evidence_ms": 9.33,
+              "t_correlate_ms": 19.55,
+              "t_total_ms": 764.98
+            }
+          },
+          "details": "Alerts: ['RULE-008', 'RULE-013']; Incidents: 1; Duplicates: 0"
+        }
+      ]
+    },
+    "candidate_stage4_hardened_batched": {
+      "configuration_name": "candidate_stage4_hardened",
+      "description": "Stage 4 Hardened Path-Normalized Exclusion (Batched Queries)",
+      "total_scenarios": 23,
+      "true_positives": 10,
+      "false_positives": 1,
+      "true_negatives": 10,
+      "false_negatives": 2,
+      "precision": 0.9091,
+      "recall": 0.8333,
+      "false_positive_rate": 0.0909,
+      "false_negative_rate": 0.1667,
+      "f1_score": 0.8696,
+      "total_duplicate_alerts": 2,
+      "blind_spots_count": 2,
+      "overall_median_latency_ms": 33.94,
+      "overall_p95_latency_ms": 9208.35,
+      "overall_max_latency_ms": 9208.35,
+      "scenario_results": [
+        {
+          "scenario_id": "BENIGN-01",
+          "category": "benign",
+          "event_count": 80,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-01",
+            "event_count": 80,
+            "runs_count": 5,
+            "warmup_duration_ms": 31.62,
+            "measured_runs_ms": [
+              18.54,
+              19.47,
+              19.11,
+              23.12,
+              23.96
+            ],
+            "mean_ms": 20.84,
+            "median_ms": 19.47,
+            "p95_ms": 23.96,
+            "max_ms": 23.96,
+            "min_ms": 18.54,
+            "per_event_median_ms": 0.243,
+            "per_event_p95_ms": 0.299,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 13.2,
+              "t_eval_ms": 6.63,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 19.47
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-02",
+          "category": "benign",
+          "event_count": 100,
+          "duration_seconds": 600.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-02",
+            "event_count": 100,
+            "runs_count": 5,
+            "warmup_duration_ms": 31.52,
+            "measured_runs_ms": [
+              26.85,
+              21.67,
+              22.51,
+              21.09,
+              19.55
+            ],
+            "mean_ms": 22.33,
+            "median_ms": 21.67,
+            "p95_ms": 26.85,
+            "max_ms": 26.85,
+            "min_ms": 19.55,
+            "per_event_median_ms": 0.217,
+            "per_event_p95_ms": 0.269,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 15.8,
+              "t_eval_ms": 5.43,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 21.67
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-03",
+          "category": "benign",
+          "event_count": 65,
+          "duration_seconds": 15.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-03",
+            "event_count": 65,
+            "runs_count": 5,
+            "warmup_duration_ms": 15.88,
+            "measured_runs_ms": [
+              15.87,
+              14.12,
+              14.86,
+              14.74,
+              13.83
+            ],
+            "mean_ms": 14.68,
+            "median_ms": 14.74,
+            "p95_ms": 15.87,
+            "max_ms": 15.87,
+            "min_ms": 13.83,
+            "per_event_median_ms": 0.227,
+            "per_event_p95_ms": 0.244,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 11.16,
+              "t_eval_ms": 3.37,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 14.74
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-04",
+          "category": "benign",
+          "event_count": 5,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-04",
+            "event_count": 5,
+            "runs_count": 5,
+            "warmup_duration_ms": 6.46,
+            "measured_runs_ms": [
+              5.75,
+              6.16,
+              6.55,
+              7.65,
+              6.29
+            ],
+            "mean_ms": 6.48,
+            "median_ms": 6.29,
+            "p95_ms": 7.65,
+            "max_ms": 7.65,
+            "min_ms": 5.75,
+            "per_event_median_ms": 1.258,
+            "per_event_p95_ms": 1.53,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 1.85,
+              "t_eval_ms": 4.55,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 6.29
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-01",
+          "category": "benign",
+          "event_count": 10,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-01",
+            "event_count": 10,
+            "runs_count": 5,
+            "warmup_duration_ms": 7.78,
+            "measured_runs_ms": [
+              4.41,
+              4.07,
+              4.0,
+              3.47,
+              3.4
+            ],
+            "mean_ms": 3.87,
+            "median_ms": 4.0,
+            "p95_ms": 4.41,
+            "max_ms": 4.41,
+            "min_ms": 3.4,
+            "per_event_median_ms": 0.4,
+            "per_event_p95_ms": 0.441,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 2.43,
+              "t_eval_ms": 1.5,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 4.0
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-02",
+          "category": "benign",
+          "event_count": 30,
+          "duration_seconds": 180.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-02",
+            "event_count": 30,
+            "runs_count": 5,
+            "warmup_duration_ms": 9.47,
+            "measured_runs_ms": [
+              7.14,
+              7.04,
+              7.44,
+              6.94,
+              7.73
+            ],
+            "mean_ms": 7.26,
+            "median_ms": 7.14,
+            "p95_ms": 7.73,
+            "max_ms": 7.73,
+            "min_ms": 6.94,
+            "per_event_median_ms": 0.238,
+            "per_event_p95_ms": 0.258,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 5.01,
+              "t_eval_ms": 2.11,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 7.14
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-03",
+          "category": "benign",
+          "event_count": 50,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-03",
+            "event_count": 50,
+            "runs_count": 5,
+            "warmup_duration_ms": 12.59,
+            "measured_runs_ms": [
+              10.44,
+              11.08,
+              12.48,
+              12.31,
+              12.35
+            ],
+            "mean_ms": 11.73,
+            "median_ms": 12.31,
+            "p95_ms": 12.48,
+            "max_ms": 12.48,
+            "min_ms": 10.44,
+            "per_event_median_ms": 0.246,
+            "per_event_p95_ms": 0.25,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 8.25,
+              "t_eval_ms": 3.19,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 12.31
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-04",
+          "category": "benign",
+          "event_count": 60,
+          "duration_seconds": 360.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-04",
+            "event_count": 60,
+            "runs_count": 5,
+            "warmup_duration_ms": 14.3,
+            "measured_runs_ms": [
+              12.21,
+              12.77,
+              12.73,
+              13.38,
+              12.53
+            ],
+            "mean_ms": 12.72,
+            "median_ms": 12.73,
+            "p95_ms": 13.38,
+            "max_ms": 13.38,
+            "min_ms": 12.21,
+            "per_event_median_ms": 0.212,
+            "per_event_p95_ms": 0.223,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 9.66,
+              "t_eval_ms": 3.1,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 12.73
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-05",
+          "category": "benign",
+          "event_count": 100,
+          "duration_seconds": 600.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-05",
+            "event_count": 100,
+            "runs_count": 5,
+            "warmup_duration_ms": 21.92,
+            "measured_runs_ms": [
+              19.99,
+              19.89,
+              19.79,
+              19.78,
+              19.78
+            ],
+            "mean_ms": 19.85,
+            "median_ms": 19.79,
+            "p95_ms": 19.99,
+            "max_ms": 19.99,
+            "min_ms": 19.78,
+            "per_event_median_ms": 0.198,
+            "per_event_p95_ms": 0.2,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 15.29,
+              "t_eval_ms": 4.53,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 19.79
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-06",
+          "category": "benign",
+          "event_count": 75,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-06",
+            "event_count": 75,
+            "runs_count": 5,
+            "warmup_duration_ms": 20.84,
+            "measured_runs_ms": [
+              19.09,
+              19.48,
+              19.6,
+              20.9,
+              24.36
+            ],
+            "mean_ms": 20.69,
+            "median_ms": 19.6,
+            "p95_ms": 24.36,
+            "max_ms": 24.36,
+            "min_ms": 19.09,
+            "per_event_median_ms": 0.261,
+            "per_event_p95_ms": 0.325,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 11.93,
+              "t_eval_ms": 7.63,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 19.6
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-ERR",
+          "category": "benign",
+          "event_count": 15,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "FP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-ERR",
+            "event_count": 15,
+            "runs_count": 5,
+            "warmup_duration_ms": 95.39,
+            "measured_runs_ms": [
+              55.93,
+              33.28,
+              32.92,
+              33.94,
+              35.49
+            ],
+            "mean_ms": 38.31,
+            "median_ms": 33.94,
+            "p95_ms": 55.93,
+            "max_ms": 55.93,
+            "min_ms": 32.92,
+            "per_event_median_ms": 2.263,
+            "per_event_p95_ms": 3.729,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 3.32,
+              "t_eval_ms": 16.95,
+              "t_evidence_ms": 5.77,
+              "t_correlate_ms": 8.54,
+              "t_total_ms": 33.94
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-01",
+          "category": "attack",
+          "event_count": 300,
+          "duration_seconds": 30.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-01",
+            "event_count": 300,
+            "runs_count": 5,
+            "warmup_duration_ms": 989.99,
+            "measured_runs_ms": [
+              1497.3,
+              1444.69,
+              1221.21,
+              1022.42,
+              1314.5
+            ],
+            "mean_ms": 1300.02,
+            "median_ms": 1314.5,
+            "p95_ms": 1497.3,
+            "max_ms": 1497.3,
+            "min_ms": 1022.42,
+            "per_event_median_ms": 4.382,
+            "per_event_p95_ms": 4.991,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 56.13,
+              "t_eval_ms": 1176.94,
+              "t_evidence_ms": 9.53,
+              "t_correlate_ms": 85.94,
+              "t_total_ms": 1314.5
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-02",
+          "category": "attack",
+          "event_count": 500,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006",
+            "RULE-007",
+            "RULE-008"
+          ],
+          "alert_count": 4,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-02",
+            "event_count": 500,
+            "runs_count": 5,
+            "warmup_duration_ms": 5507.23,
+            "measured_runs_ms": [
+              5091.01,
+              5636.32,
+              4883.36,
+              7710.9,
+              9208.35
+            ],
+            "mean_ms": 6505.99,
+            "median_ms": 5636.32,
+            "p95_ms": 9208.35,
+            "max_ms": 9208.35,
+            "min_ms": 4883.36,
+            "per_event_median_ms": 11.273,
+            "per_event_p95_ms": 18.417,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 90.13,
+              "t_eval_ms": 5227.88,
+              "t_evidence_ms": 35.02,
+              "t_correlate_ms": 288.63,
+              "t_total_ms": 5636.32
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006', 'RULE-007', 'RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-03",
+          "category": "attack",
+          "event_count": 2,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-012"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-03",
+            "event_count": 2,
+            "runs_count": 5,
+            "warmup_duration_ms": 54.29,
+            "measured_runs_ms": [
+              44.38,
+              44.39,
+              53.78,
+              51.22,
+              45.23
+            ],
+            "mean_ms": 47.8,
+            "median_ms": 45.23,
+            "p95_ms": 53.78,
+            "max_ms": 53.78,
+            "min_ms": 44.38,
+            "per_event_median_ms": 22.615,
+            "per_event_p95_ms": 26.89,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 2.08,
+              "t_eval_ms": 26.62,
+              "t_evidence_ms": 6.31,
+              "t_correlate_ms": 10.68,
+              "t_total_ms": 45.23
+            }
+          },
+          "details": "Alerts: ['RULE-012']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-04",
+          "category": "attack",
+          "event_count": 2,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-013"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-04",
+            "event_count": 2,
+            "runs_count": 5,
+            "warmup_duration_ms": 53.55,
+            "measured_runs_ms": [
+              48.5,
+              28.08,
+              34.29,
+              32.97,
+              47.61
+            ],
+            "mean_ms": 38.29,
+            "median_ms": 34.29,
+            "p95_ms": 48.5,
+            "max_ms": 48.5,
+            "min_ms": 28.08,
+            "per_event_median_ms": 17.145,
+            "per_event_p95_ms": 24.25,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 1.75,
+              "t_eval_ms": 20.58,
+              "t_evidence_ms": 5.08,
+              "t_correlate_ms": 8.33,
+              "t_total_ms": 34.29
+            }
+          },
+          "details": "Alerts: ['RULE-013']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-05",
+          "category": "attack",
+          "event_count": 3,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-009"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-05",
+            "event_count": 3,
+            "runs_count": 5,
+            "warmup_duration_ms": 53.32,
+            "measured_runs_ms": [
+              32.24,
+              33.38,
+              31.58,
+              38.41,
+              34.15
+            ],
+            "mean_ms": 33.95,
+            "median_ms": 33.38,
+            "p95_ms": 38.41,
+            "max_ms": 38.41,
+            "min_ms": 31.58,
+            "per_event_median_ms": 11.127,
+            "per_event_p95_ms": 12.803,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 2.41,
+              "t_eval_ms": 17.22,
+              "t_evidence_ms": 5.05,
+              "t_correlate_ms": 8.48,
+              "t_total_ms": 33.38
+            }
+          },
+          "details": "Alerts: ['RULE-009']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-06",
+          "category": "attack",
+          "event_count": 137,
+          "duration_seconds": 900.0,
+          "fired_rule_ids": [
+            "RULE-001",
+            "RULE-005",
+            "RULE-006",
+            "RULE-007",
+            "RULE-008",
+            "RULE-012"
+          ],
+          "alert_count": 8,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 2,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-06",
+            "event_count": 137,
+            "runs_count": 5,
+            "warmup_duration_ms": 768.6,
+            "measured_runs_ms": [
+              837.91,
+              599.13,
+              640.85,
+              514.79,
+              854.32
+            ],
+            "mean_ms": 689.4,
+            "median_ms": 640.85,
+            "p95_ms": 854.32,
+            "max_ms": 854.32,
+            "min_ms": 514.79,
+            "per_event_median_ms": 4.678,
+            "per_event_p95_ms": 6.236,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 58.24,
+              "t_eval_ms": 487.69,
+              "t_evidence_ms": 43.41,
+              "t_correlate_ms": 90.52,
+              "t_total_ms": 640.85
+            }
+          },
+          "details": "Alerts: ['RULE-001', 'RULE-005', 'RULE-006', 'RULE-007', 'RULE-008', 'RULE-012']; Incidents: 1; Duplicates: 2"
+        },
+        {
+          "scenario_id": "ADV-EXCL-01",
+          "category": "attack",
+          "event_count": 120,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "FN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-008"
+          ],
+          "blind_spot_flag": true,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-01",
+            "event_count": 120,
+            "runs_count": 5,
+            "warmup_duration_ms": 40.03,
+            "measured_runs_ms": [
+              33.94,
+              38.1,
+              65.51,
+              74.76,
+              53.51
+            ],
+            "mean_ms": 53.16,
+            "median_ms": 53.51,
+            "p95_ms": 74.76,
+            "max_ms": 74.76,
+            "min_ms": 33.94,
+            "per_event_median_ms": 0.446,
+            "per_event_p95_ms": 0.623,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 42.67,
+              "t_eval_ms": 11.0,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 53.51
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-02",
+          "category": "attack",
+          "event_count": 150,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "FN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-008"
+          ],
+          "blind_spot_flag": true,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-02",
+            "event_count": 150,
+            "runs_count": 5,
+            "warmup_duration_ms": 74.95,
+            "measured_runs_ms": [
+              70.25,
+              68.22,
+              75.08,
+              65.63,
+              45.04
+            ],
+            "mean_ms": 64.84,
+            "median_ms": 68.22,
+            "p95_ms": 75.08,
+            "max_ms": 75.08,
+            "min_ms": 45.04,
+            "per_event_median_ms": 0.455,
+            "per_event_p95_ms": 0.501,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 53.22,
+              "t_eval_ms": 15.0,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 68.22
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-03",
+          "category": "attack",
+          "event_count": 90,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-03",
+            "event_count": 90,
+            "runs_count": 5,
+            "warmup_duration_ms": 248.82,
+            "measured_runs_ms": [
+              246.09,
+              261.85,
+              194.44,
+              243.72,
+              178.4
+            ],
+            "mean_ms": 224.9,
+            "median_ms": 243.72,
+            "p95_ms": 261.85,
+            "max_ms": 261.85,
+            "min_ms": 178.4,
+            "per_event_median_ms": 2.708,
+            "per_event_p95_ms": 2.909,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 28.67,
+              "t_eval_ms": 164.39,
+              "t_evidence_ms": 8.33,
+              "t_correlate_ms": 22.57,
+              "t_total_ms": 243.72
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-04",
+          "category": "attack",
+          "event_count": 16,
+          "duration_seconds": 30.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-007"
+          ],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-04",
+            "event_count": 16,
+            "runs_count": 5,
+            "warmup_duration_ms": 97.27,
+            "measured_runs_ms": [
+              100.31,
+              101.96,
+              59.7,
+              67.91,
+              67.93
+            ],
+            "mean_ms": 79.56,
+            "median_ms": 67.93,
+            "p95_ms": 101.96,
+            "max_ms": 101.96,
+            "min_ms": 59.7,
+            "per_event_median_ms": 4.246,
+            "per_event_p95_ms": 6.372,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 6.46,
+              "t_eval_ms": 36.96,
+              "t_evidence_ms": 14.49,
+              "t_correlate_ms": 13.92,
+              "t_total_ms": 67.93
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-05",
+          "category": "attack",
+          "event_count": 30,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-05",
+            "event_count": 30,
+            "runs_count": 5,
+            "warmup_duration_ms": 129.77,
+            "measured_runs_ms": [
+              148.32,
+              212.57,
+              217.06,
+              188.54,
+              141.1
+            ],
+            "mean_ms": 181.52,
+            "median_ms": 188.54,
+            "p95_ms": 217.06,
+            "max_ms": 217.06,
+            "min_ms": 141.1,
+            "per_event_median_ms": 6.285,
+            "per_event_p95_ms": 7.235,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 9.59,
+              "t_eval_ms": 146.14,
+              "t_evidence_ms": 12.97,
+              "t_correlate_ms": 19.26,
+              "t_total_ms": 188.54
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-06",
+          "category": "attack",
+          "event_count": 85,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-008",
+            "RULE-013"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-06",
+            "event_count": 85,
+            "runs_count": 5,
+            "warmup_duration_ms": 750.09,
+            "measured_runs_ms": [
+              782.78,
+              905.49,
+              860.19,
+              1058.47,
+              1171.29
+            ],
+            "mean_ms": 955.64,
+            "median_ms": 905.49,
+            "p95_ms": 1171.29,
+            "max_ms": 1171.29,
+            "min_ms": 782.78,
+            "per_event_median_ms": 10.653,
+            "per_event_p95_ms": 13.78,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 23.29,
+              "t_eval_ms": 828.34,
+              "t_evidence_ms": 15.23,
+              "t_correlate_ms": 32.72,
+              "t_total_ms": 905.49
+            }
+          },
+          "details": "Alerts: ['RULE-008', 'RULE-013']; Incidents: 1; Duplicates: 0"
+        }
+      ]
+    },
+    "candidate_stage4_dual_threshold_batched": {
+      "configuration_name": "candidate_stage4_dual_threshold",
+      "description": "Stage 4 Dual-Threshold Architecture (RULE-008 60 + RULE-008B 110 Batched)",
+      "total_scenarios": 23,
+      "true_positives": 12,
+      "false_positives": 1,
+      "true_negatives": 10,
+      "false_negatives": 0,
+      "precision": 0.9231,
+      "recall": 1.0,
+      "false_positive_rate": 0.0909,
+      "false_negative_rate": 0.0,
+      "f1_score": 0.96,
+      "total_duplicate_alerts": 2,
+      "blind_spots_count": 0,
+      "overall_median_latency_ms": 54.12,
+      "overall_p95_latency_ms": 18047.09,
+      "overall_max_latency_ms": 18047.09,
+      "scenario_results": [
+        {
+          "scenario_id": "BENIGN-01",
+          "category": "benign",
+          "event_count": 80,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-01",
+            "event_count": 80,
+            "runs_count": 5,
+            "warmup_duration_ms": 103.99,
+            "measured_runs_ms": [
+              71.72,
+              52.96,
+              54.95,
+              72.53,
+              71.6
+            ],
+            "mean_ms": 64.75,
+            "median_ms": 71.6,
+            "p95_ms": 72.53,
+            "max_ms": 72.53,
+            "min_ms": 52.96,
+            "per_event_median_ms": 0.895,
+            "per_event_p95_ms": 0.907,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 28.01,
+              "t_eval_ms": 42.21,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 71.6
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-02",
+          "category": "benign",
+          "event_count": 100,
+          "duration_seconds": 600.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-02",
+            "event_count": 100,
+            "runs_count": 5,
+            "warmup_duration_ms": 54.55,
+            "measured_runs_ms": [
+              54.95,
+              42.22,
+              78.06,
+              91.79,
+              87.76
+            ],
+            "mean_ms": 70.96,
+            "median_ms": 78.06,
+            "p95_ms": 91.79,
+            "max_ms": 91.79,
+            "min_ms": 42.22,
+            "per_event_median_ms": 0.781,
+            "per_event_p95_ms": 0.918,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 23.79,
+              "t_eval_ms": 50.34,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 78.06
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-03",
+          "category": "benign",
+          "event_count": 65,
+          "duration_seconds": 15.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-03",
+            "event_count": 65,
+            "runs_count": 5,
+            "warmup_duration_ms": 64.32,
+            "measured_runs_ms": [
+              56.56,
+              56.23,
+              35.28,
+              25.31,
+              27.66
+            ],
+            "mean_ms": 40.21,
+            "median_ms": 35.28,
+            "p95_ms": 56.56,
+            "max_ms": 56.56,
+            "min_ms": 25.31,
+            "per_event_median_ms": 0.543,
+            "per_event_p95_ms": 0.87,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 18.6,
+              "t_eval_ms": 16.67,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 35.28
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-04",
+          "category": "benign",
+          "event_count": 5,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-04",
+            "event_count": 5,
+            "runs_count": 5,
+            "warmup_duration_ms": 9.26,
+            "measured_runs_ms": [
+              5.44,
+              6.42,
+              5.73,
+              9.28,
+              7.23
+            ],
+            "mean_ms": 6.82,
+            "median_ms": 6.42,
+            "p95_ms": 9.28,
+            "max_ms": 9.28,
+            "min_ms": 5.44,
+            "per_event_median_ms": 1.284,
+            "per_event_p95_ms": 1.856,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 1.61,
+              "t_eval_ms": 4.84,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 6.42
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-01",
+          "category": "benign",
+          "event_count": 10,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-01",
+            "event_count": 10,
+            "runs_count": 5,
+            "warmup_duration_ms": 12.19,
+            "measured_runs_ms": [
+              6.84,
+              6.4,
+              7.02,
+              5.56,
+              6.06
+            ],
+            "mean_ms": 6.38,
+            "median_ms": 6.4,
+            "p95_ms": 7.02,
+            "max_ms": 7.02,
+            "min_ms": 5.56,
+            "per_event_median_ms": 0.64,
+            "per_event_p95_ms": 0.702,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 2.88,
+              "t_eval_ms": 3.5,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 6.4
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-02",
+          "category": "benign",
+          "event_count": 30,
+          "duration_seconds": 180.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-02",
+            "event_count": 30,
+            "runs_count": 5,
+            "warmup_duration_ms": 15.83,
+            "measured_runs_ms": [
+              11.85,
+              13.35,
+              16.57,
+              14.8,
+              14.51
+            ],
+            "mean_ms": 14.22,
+            "median_ms": 14.51,
+            "p95_ms": 16.57,
+            "max_ms": 16.57,
+            "min_ms": 11.85,
+            "per_event_median_ms": 0.484,
+            "per_event_p95_ms": 0.552,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 7.21,
+              "t_eval_ms": 7.3,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 14.51
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-03",
+          "category": "benign",
+          "event_count": 50,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-03",
+            "event_count": 50,
+            "runs_count": 5,
+            "warmup_duration_ms": 27.02,
+            "measured_runs_ms": [
+              24.1,
+              23.77,
+              23.11,
+              18.41,
+              18.13
+            ],
+            "mean_ms": 21.5,
+            "median_ms": 23.11,
+            "p95_ms": 24.1,
+            "max_ms": 24.1,
+            "min_ms": 18.13,
+            "per_event_median_ms": 0.462,
+            "per_event_p95_ms": 0.482,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 10.55,
+              "t_eval_ms": 11.99,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 23.11
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-04",
+          "category": "benign",
+          "event_count": 60,
+          "duration_seconds": 360.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-04",
+            "event_count": 60,
+            "runs_count": 5,
+            "warmup_duration_ms": 24.37,
+            "measured_runs_ms": [
+              22.1,
+              22.0,
+              26.31,
+              27.06,
+              30.76
+            ],
+            "mean_ms": 25.65,
+            "median_ms": 26.31,
+            "p95_ms": 30.76,
+            "max_ms": 30.76,
+            "min_ms": 22.0,
+            "per_event_median_ms": 0.439,
+            "per_event_p95_ms": 0.513,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 11.39,
+              "t_eval_ms": 14.18,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 26.31
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-05",
+          "category": "benign",
+          "event_count": 100,
+          "duration_seconds": 600.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-05",
+            "event_count": 100,
+            "runs_count": 5,
+            "warmup_duration_ms": 66.8,
+            "measured_runs_ms": [
+              72.9,
+              42.64,
+              39.07,
+              37.61,
+              37.56
+            ],
+            "mean_ms": 45.96,
+            "median_ms": 39.07,
+            "p95_ms": 72.9,
+            "max_ms": 72.9,
+            "min_ms": 37.56,
+            "per_event_median_ms": 0.391,
+            "per_event_p95_ms": 0.729,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 16.07,
+              "t_eval_ms": 22.27,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 39.07
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-06",
+          "category": "benign",
+          "event_count": 75,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-06",
+            "event_count": 75,
+            "runs_count": 5,
+            "warmup_duration_ms": 28.74,
+            "measured_runs_ms": [
+              26.81,
+              26.13,
+              26.19,
+              26.25,
+              26.57
+            ],
+            "mean_ms": 26.39,
+            "median_ms": 26.25,
+            "p95_ms": 26.81,
+            "max_ms": 26.81,
+            "min_ms": 26.13,
+            "per_event_median_ms": 0.35,
+            "per_event_p95_ms": 0.357,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 12.14,
+              "t_eval_ms": 14.28,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 26.25
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-ERR",
+          "category": "benign",
+          "event_count": 15,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "FP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-ERR",
+            "event_count": 15,
+            "runs_count": 5,
+            "warmup_duration_ms": 61.79,
+            "measured_runs_ms": [
+              40.2,
+              42.26,
+              41.79,
+              40.94,
+              44.16
+            ],
+            "mean_ms": 41.87,
+            "median_ms": 41.79,
+            "p95_ms": 44.16,
+            "max_ms": 44.16,
+            "min_ms": 40.2,
+            "per_event_median_ms": 2.786,
+            "per_event_p95_ms": 2.944,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 3.19,
+              "t_eval_ms": 22.64,
+              "t_evidence_ms": 7.37,
+              "t_correlate_ms": 9.31,
+              "t_total_ms": 41.79
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-01",
+          "category": "attack",
+          "event_count": 300,
+          "duration_seconds": 30.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-01",
+            "event_count": 300,
+            "runs_count": 5,
+            "warmup_duration_ms": 1261.41,
+            "measured_runs_ms": [
+              2237.35,
+              1950.41,
+              1631.09,
+              1949.82,
+              1645.18
+            ],
+            "mean_ms": 1882.77,
+            "median_ms": 1949.82,
+            "p95_ms": 2237.35,
+            "max_ms": 2237.35,
+            "min_ms": 1631.09,
+            "per_event_median_ms": 6.499,
+            "per_event_p95_ms": 7.458,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 62.1,
+              "t_eval_ms": 1743.86,
+              "t_evidence_ms": 15.3,
+              "t_correlate_ms": 106.16,
+              "t_total_ms": 1949.82
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-02",
+          "category": "attack",
+          "event_count": 500,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006",
+            "RULE-007",
+            "RULE-008"
+          ],
+          "alert_count": 4,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-02",
+            "event_count": 500,
+            "runs_count": 5,
+            "warmup_duration_ms": 8990.31,
+            "measured_runs_ms": [
+              9698.86,
+              18045.78,
+              16836.58,
+              15075.62,
+              18047.09
+            ],
+            "mean_ms": 15540.79,
+            "median_ms": 16836.58,
+            "p95_ms": 18047.09,
+            "max_ms": 18047.09,
+            "min_ms": 9698.86,
+            "per_event_median_ms": 33.673,
+            "per_event_p95_ms": 36.094,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 244.85,
+              "t_eval_ms": 15704.28,
+              "t_evidence_ms": 119.55,
+              "t_correlate_ms": 1067.21,
+              "t_total_ms": 16836.58
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006', 'RULE-007', 'RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-03",
+          "category": "attack",
+          "event_count": 2,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-012"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-03",
+            "event_count": 2,
+            "runs_count": 5,
+            "warmup_duration_ms": 74.06,
+            "measured_runs_ms": [
+              55.71,
+              58.72,
+              53.24,
+              51.19,
+              54.12
+            ],
+            "mean_ms": 54.6,
+            "median_ms": 54.12,
+            "p95_ms": 58.72,
+            "max_ms": 58.72,
+            "min_ms": 51.19,
+            "per_event_median_ms": 27.06,
+            "per_event_p95_ms": 29.36,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 2.83,
+              "t_eval_ms": 32.6,
+              "t_evidence_ms": 8.85,
+              "t_correlate_ms": 12.38,
+              "t_total_ms": 54.12
+            }
+          },
+          "details": "Alerts: ['RULE-012']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-04",
+          "category": "attack",
+          "event_count": 2,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-013"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-04",
+            "event_count": 2,
+            "runs_count": 5,
+            "warmup_duration_ms": 72.09,
+            "measured_runs_ms": [
+              70.3,
+              74.11,
+              74.28,
+              54.79,
+              52.58
+            ],
+            "mean_ms": 65.21,
+            "median_ms": 70.3,
+            "p95_ms": 74.28,
+            "max_ms": 74.28,
+            "min_ms": 52.58,
+            "per_event_median_ms": 35.15,
+            "per_event_p95_ms": 37.14,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 2.66,
+              "t_eval_ms": 39.3,
+              "t_evidence_ms": 11.06,
+              "t_correlate_ms": 13.67,
+              "t_total_ms": 70.3
+            }
+          },
+          "details": "Alerts: ['RULE-013']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-05",
+          "category": "attack",
+          "event_count": 3,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-009"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-05",
+            "event_count": 3,
+            "runs_count": 5,
+            "warmup_duration_ms": 63.48,
+            "measured_runs_ms": [
+              42.97,
+              47.72,
+              52.89,
+              54.74,
+              59.72
+            ],
+            "mean_ms": 51.61,
+            "median_ms": 52.89,
+            "p95_ms": 59.72,
+            "max_ms": 59.72,
+            "min_ms": 42.97,
+            "per_event_median_ms": 17.63,
+            "per_event_p95_ms": 19.907,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 3.64,
+              "t_eval_ms": 27.09,
+              "t_evidence_ms": 8.68,
+              "t_correlate_ms": 13.57,
+              "t_total_ms": 52.89
+            }
+          },
+          "details": "Alerts: ['RULE-009']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-06",
+          "category": "attack",
+          "event_count": 137,
+          "duration_seconds": 900.0,
+          "fired_rule_ids": [
+            "RULE-001",
+            "RULE-005",
+            "RULE-006",
+            "RULE-007",
+            "RULE-008",
+            "RULE-012"
+          ],
+          "alert_count": 8,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 2,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-06",
+            "event_count": 137,
+            "runs_count": 5,
+            "warmup_duration_ms": 1162.26,
+            "measured_runs_ms": [
+              1506.44,
+              2209.42,
+              1966.73,
+              2111.6,
+              1906.24
+            ],
+            "mean_ms": 1940.09,
+            "median_ms": 1966.73,
+            "p95_ms": 2209.42,
+            "max_ms": 2209.42,
+            "min_ms": 1506.44,
+            "per_event_median_ms": 14.356,
+            "per_event_p95_ms": 16.127,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 109.54,
+              "t_eval_ms": 1514.35,
+              "t_evidence_ms": 101.96,
+              "t_correlate_ms": 217.61,
+              "t_total_ms": 1966.73
+            }
+          },
+          "details": "Alerts: ['RULE-001', 'RULE-005', 'RULE-006', 'RULE-007', 'RULE-008', 'RULE-012']; Incidents: 1; Duplicates: 2"
+        },
+        {
+          "scenario_id": "ADV-EXCL-01",
+          "category": "attack",
+          "event_count": 120,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [
+            "RULE-008B"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-008"
+          ],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-01",
+            "event_count": 120,
+            "runs_count": 5,
+            "warmup_duration_ms": 647.39,
+            "measured_runs_ms": [
+              584.06,
+              741.55,
+              749.91,
+              471.92,
+              354.11
+            ],
+            "mean_ms": 580.31,
+            "median_ms": 584.06,
+            "p95_ms": 749.91,
+            "max_ms": 749.91,
+            "min_ms": 354.11,
+            "per_event_median_ms": 4.867,
+            "per_event_p95_ms": 6.249,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 111.56,
+              "t_eval_ms": 373.53,
+              "t_evidence_ms": 17.08,
+              "t_correlate_ms": 90.06,
+              "t_total_ms": 584.06
+            }
+          },
+          "details": "Alerts: ['RULE-008B']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-02",
+          "category": "attack",
+          "event_count": 150,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-008B"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-008"
+          ],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-02",
+            "event_count": 150,
+            "runs_count": 5,
+            "warmup_duration_ms": 692.0,
+            "measured_runs_ms": [
+              799.35,
+              984.77,
+              771.37,
+              1146.48,
+              776.18
+            ],
+            "mean_ms": 895.63,
+            "median_ms": 799.35,
+            "p95_ms": 1146.48,
+            "max_ms": 1146.48,
+            "min_ms": 771.37,
+            "per_event_median_ms": 5.329,
+            "per_event_p95_ms": 7.643,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 93.58,
+              "t_eval_ms": 500.51,
+              "t_evidence_ms": 32.16,
+              "t_correlate_ms": 171.82,
+              "t_total_ms": 799.35
+            }
+          },
+          "details": "Alerts: ['RULE-008B']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-03",
+          "category": "attack",
+          "event_count": 90,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-03",
+            "event_count": 90,
+            "runs_count": 5,
+            "warmup_duration_ms": 822.24,
+            "measured_runs_ms": [
+              746.8,
+              468.28,
+              405.55,
+              179.46,
+              306.38
+            ],
+            "mean_ms": 421.29,
+            "median_ms": 405.55,
+            "p95_ms": 746.8,
+            "max_ms": 746.8,
+            "min_ms": 179.46,
+            "per_event_median_ms": 4.506,
+            "per_event_p95_ms": 8.298,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 40.88,
+              "t_eval_ms": 332.28,
+              "t_evidence_ms": 9.39,
+              "t_correlate_ms": 36.35,
+              "t_total_ms": 405.55
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-04",
+          "category": "attack",
+          "event_count": 16,
+          "duration_seconds": 30.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-007"
+          ],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-04",
+            "event_count": 16,
+            "runs_count": 5,
+            "warmup_duration_ms": 101.51,
+            "measured_runs_ms": [
+              62.04,
+              49.74,
+              49.4,
+              48.92,
+              54.25
+            ],
+            "mean_ms": 52.87,
+            "median_ms": 49.74,
+            "p95_ms": 62.04,
+            "max_ms": 62.04,
+            "min_ms": 48.92,
+            "per_event_median_ms": 3.109,
+            "per_event_p95_ms": 3.877,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 4.13,
+              "t_eval_ms": 27.88,
+              "t_evidence_ms": 7.11,
+              "t_correlate_ms": 10.26,
+              "t_total_ms": 49.74
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-05",
+          "category": "attack",
+          "event_count": 30,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-05",
+            "event_count": 30,
+            "runs_count": 5,
+            "warmup_duration_ms": 157.71,
+            "measured_runs_ms": [
+              190.3,
+              200.11,
+              214.44,
+              205.23,
+              216.75
+            ],
+            "mean_ms": 205.37,
+            "median_ms": 205.23,
+            "p95_ms": 216.75,
+            "max_ms": 216.75,
+            "min_ms": 190.3,
+            "per_event_median_ms": 6.841,
+            "per_event_p95_ms": 7.225,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 12.8,
+              "t_eval_ms": 150.95,
+              "t_evidence_ms": 14.94,
+              "t_correlate_ms": 23.18,
+              "t_total_ms": 205.23
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-06",
+          "category": "attack",
+          "event_count": 85,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-008",
+            "RULE-013"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-06",
+            "event_count": 85,
+            "runs_count": 5,
+            "warmup_duration_ms": 2277.89,
+            "measured_runs_ms": [
+              2430.29,
+              2670.36,
+              2170.93,
+              2493.59,
+              2195.68
+            ],
+            "mean_ms": 2392.17,
+            "median_ms": 2430.29,
+            "p95_ms": 2670.36,
+            "max_ms": 2670.36,
+            "min_ms": 2170.93,
+            "per_event_median_ms": 28.592,
+            "per_event_p95_ms": 31.416,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 89.17,
+              "t_eval_ms": 2251.48,
+              "t_evidence_ms": 46.98,
+              "t_correlate_ms": 78.65,
+              "t_total_ms": 2430.29
+            }
+          },
+          "details": "Alerts: ['RULE-008', 'RULE-013']; Incidents: 1; Duplicates: 0"
+        }
+      ]
+    },
+    "candidate_stage4_independent_404_batched": {
+      "configuration_name": "candidate_stage4_independent_404",
+      "description": "Stage 4 Independent 404 Evaluation (RULE-005/006 Exclude Socket)",
+      "total_scenarios": 23,
+      "true_positives": 9,
+      "false_positives": 0,
+      "true_negatives": 11,
+      "false_negatives": 3,
+      "precision": 1.0,
+      "recall": 0.75,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.25,
+      "f1_score": 0.8571,
+      "total_duplicate_alerts": 2,
+      "blind_spots_count": 3,
+      "overall_median_latency_ms": 59.73,
+      "overall_p95_latency_ms": 24574.88,
+      "overall_max_latency_ms": 24574.88,
+      "scenario_results": [
+        {
+          "scenario_id": "BENIGN-01",
+          "category": "benign",
+          "event_count": 80,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-01",
+            "event_count": 80,
+            "runs_count": 5,
+            "warmup_duration_ms": 95.65,
+            "measured_runs_ms": [
+              63.68,
+              61.84,
+              52.08,
+              53.13,
+              62.69
+            ],
+            "mean_ms": 58.68,
+            "median_ms": 61.84,
+            "p95_ms": 63.68,
+            "max_ms": 63.68,
+            "min_ms": 52.08,
+            "per_event_median_ms": 0.773,
+            "per_event_p95_ms": 0.796,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 38.57,
+              "t_eval_ms": 17.64,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 61.84
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-02",
+          "category": "benign",
+          "event_count": 100,
+          "duration_seconds": 600.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-02",
+            "event_count": 100,
+            "runs_count": 5,
+            "warmup_duration_ms": 62.99,
+            "measured_runs_ms": [
+              52.84,
+              75.19,
+              75.18,
+              76.83,
+              75.18
+            ],
+            "mean_ms": 71.04,
+            "median_ms": 75.18,
+            "p95_ms": 76.83,
+            "max_ms": 76.83,
+            "min_ms": 52.84,
+            "per_event_median_ms": 0.752,
+            "per_event_p95_ms": 0.768,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 57.6,
+              "t_eval_ms": 17.17,
+              "t_evidence_ms": 0.01,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 75.18
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-03",
+          "category": "benign",
+          "event_count": 65,
+          "duration_seconds": 15.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-03",
+            "event_count": 65,
+            "runs_count": 5,
+            "warmup_duration_ms": 61.16,
+            "measured_runs_ms": [
+              52.99,
+              85.44,
+              83.76,
+              94.98,
+              95.74
+            ],
+            "mean_ms": 82.58,
+            "median_ms": 85.44,
+            "p95_ms": 95.74,
+            "max_ms": 95.74,
+            "min_ms": 52.99,
+            "per_event_median_ms": 1.314,
+            "per_event_p95_ms": 1.473,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 61.86,
+              "t_eval_ms": 23.41,
+              "t_evidence_ms": 0.01,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 85.44
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "BENIGN-04",
+          "category": "benign",
+          "event_count": 5,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "BENIGN-04",
+            "event_count": 5,
+            "runs_count": 5,
+            "warmup_duration_ms": 37.13,
+            "measured_runs_ms": [
+              19.76,
+              15.38,
+              16.49,
+              15.18,
+              14.68
+            ],
+            "mean_ms": 16.3,
+            "median_ms": 15.38,
+            "p95_ms": 19.76,
+            "max_ms": 19.76,
+            "min_ms": 14.68,
+            "per_event_median_ms": 3.076,
+            "per_event_p95_ms": 3.952,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 5.25,
+              "t_eval_ms": 11.95,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 15.38
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-01",
+          "category": "benign",
+          "event_count": 10,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-01",
+            "event_count": 10,
+            "runs_count": 5,
+            "warmup_duration_ms": 17.36,
+            "measured_runs_ms": [
+              9.46,
+              11.48,
+              12.37,
+              19.82,
+              22.8
+            ],
+            "mean_ms": 15.19,
+            "median_ms": 12.37,
+            "p95_ms": 22.8,
+            "max_ms": 22.8,
+            "min_ms": 9.46,
+            "per_event_median_ms": 1.237,
+            "per_event_p95_ms": 2.28,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 7.89,
+              "t_eval_ms": 5.14,
+              "t_evidence_ms": 0.01,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 12.37
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-02",
+          "category": "benign",
+          "event_count": 30,
+          "duration_seconds": 180.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-02",
+            "event_count": 30,
+            "runs_count": 5,
+            "warmup_duration_ms": 49.77,
+            "measured_runs_ms": [
+              44.85,
+              39.07,
+              36.05,
+              42.0,
+              45.57
+            ],
+            "mean_ms": 41.51,
+            "median_ms": 42.0,
+            "p95_ms": 45.57,
+            "max_ms": 45.57,
+            "min_ms": 36.05,
+            "per_event_median_ms": 1.4,
+            "per_event_p95_ms": 1.519,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 28.51,
+              "t_eval_ms": 10.97,
+              "t_evidence_ms": 0.01,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 42.0
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-03",
+          "category": "benign",
+          "event_count": 50,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-03",
+            "event_count": 50,
+            "runs_count": 5,
+            "warmup_duration_ms": 86.96,
+            "measured_runs_ms": [
+              68.1,
+              59.55,
+              51.33,
+              59.73,
+              68.77
+            ],
+            "mean_ms": 61.5,
+            "median_ms": 59.73,
+            "p95_ms": 68.77,
+            "max_ms": 68.77,
+            "min_ms": 51.33,
+            "per_event_median_ms": 1.195,
+            "per_event_p95_ms": 1.375,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 47.01,
+              "t_eval_ms": 16.75,
+              "t_evidence_ms": 0.01,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 59.73
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-04",
+          "category": "benign",
+          "event_count": 60,
+          "duration_seconds": 360.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-04",
+            "event_count": 60,
+            "runs_count": 5,
+            "warmup_duration_ms": 95.9,
+            "measured_runs_ms": [
+              73.7,
+              69.56,
+              79.47,
+              83.41,
+              92.55
+            ],
+            "mean_ms": 79.74,
+            "median_ms": 79.47,
+            "p95_ms": 92.55,
+            "max_ms": 92.55,
+            "min_ms": 69.56,
+            "per_event_median_ms": 1.325,
+            "per_event_p95_ms": 1.542,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 58.84,
+              "t_eval_ms": 18.81,
+              "t_evidence_ms": 0.01,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 79.47
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-05",
+          "category": "benign",
+          "event_count": 100,
+          "duration_seconds": 600.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-05",
+            "event_count": 100,
+            "runs_count": 5,
+            "warmup_duration_ms": 100.59,
+            "measured_runs_ms": [
+              67.94,
+              75.53,
+              77.41,
+              76.17,
+              79.41
+            ],
+            "mean_ms": 75.29,
+            "median_ms": 76.17,
+            "p95_ms": 79.41,
+            "max_ms": 79.41,
+            "min_ms": 67.94,
+            "per_event_median_ms": 0.762,
+            "per_event_p95_ms": 0.794,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 60.57,
+              "t_eval_ms": 17.49,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 76.17
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-06",
+          "category": "benign",
+          "event_count": 75,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-06",
+            "event_count": 75,
+            "runs_count": 5,
+            "warmup_duration_ms": 96.04,
+            "measured_runs_ms": [
+              117.65,
+              96.32,
+              159.31,
+              80.97,
+              60.02
+            ],
+            "mean_ms": 102.85,
+            "median_ms": 96.32,
+            "p95_ms": 159.31,
+            "max_ms": 159.31,
+            "min_ms": 60.02,
+            "per_event_median_ms": 1.284,
+            "per_event_p95_ms": 2.124,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 62.29,
+              "t_eval_ms": 38.77,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 96.32
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "POLL-ERR",
+          "category": "benign",
+          "event_count": 15,
+          "duration_seconds": 300.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "TN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "POLL-ERR",
+            "event_count": 15,
+            "runs_count": 5,
+            "warmup_duration_ms": 24.58,
+            "measured_runs_ms": [
+              10.01,
+              17.9,
+              12.53,
+              19.72,
+              32.77
+            ],
+            "mean_ms": 18.59,
+            "median_ms": 17.9,
+            "p95_ms": 32.77,
+            "max_ms": 32.77,
+            "min_ms": 10.01,
+            "per_event_median_ms": 1.193,
+            "per_event_p95_ms": 2.185,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 10.53,
+              "t_eval_ms": 7.37,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 17.9
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-01",
+          "category": "attack",
+          "event_count": 300,
+          "duration_seconds": 30.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-01",
+            "event_count": 300,
+            "runs_count": 5,
+            "warmup_duration_ms": 5743.31,
+            "measured_runs_ms": [
+              3900.51,
+              5417.9,
+              5776.49,
+              5185.4,
+              4531.7
+            ],
+            "mean_ms": 4962.4,
+            "median_ms": 5185.4,
+            "p95_ms": 5776.49,
+            "max_ms": 5776.49,
+            "min_ms": 3900.51,
+            "per_event_median_ms": 17.285,
+            "per_event_p95_ms": 19.255,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 277.39,
+              "t_eval_ms": 4516.98,
+              "t_evidence_ms": 38.13,
+              "t_correlate_ms": 439.81,
+              "t_total_ms": 5185.4
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-02",
+          "category": "attack",
+          "event_count": 500,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006",
+            "RULE-007",
+            "RULE-008"
+          ],
+          "alert_count": 4,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-02",
+            "event_count": 500,
+            "runs_count": 5,
+            "warmup_duration_ms": 23613.11,
+            "measured_runs_ms": [
+              24574.88,
+              17935.01,
+              20065.83,
+              6650.82,
+              6903.28
+            ],
+            "mean_ms": 15225.96,
+            "median_ms": 17935.01,
+            "p95_ms": 24574.88,
+            "max_ms": 24574.88,
+            "min_ms": 6650.82,
+            "per_event_median_ms": 35.87,
+            "per_event_p95_ms": 49.15,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 251.89,
+              "t_eval_ms": 16803.78,
+              "t_evidence_ms": 98.87,
+              "t_correlate_ms": 412.4,
+              "t_total_ms": 17935.01
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006', 'RULE-007', 'RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-03",
+          "category": "attack",
+          "event_count": 2,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-012"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-03",
+            "event_count": 2,
+            "runs_count": 5,
+            "warmup_duration_ms": 22.76,
+            "measured_runs_ms": [
+              18.42,
+              21.06,
+              22.32,
+              24.71,
+              22.12
+            ],
+            "mean_ms": 21.73,
+            "median_ms": 22.12,
+            "p95_ms": 24.71,
+            "max_ms": 24.71,
+            "min_ms": 18.42,
+            "per_event_median_ms": 11.06,
+            "per_event_p95_ms": 12.355,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 1.03,
+              "t_eval_ms": 12.27,
+              "t_evidence_ms": 3.43,
+              "t_correlate_ms": 4.77,
+              "t_total_ms": 22.12
+            }
+          },
+          "details": "Alerts: ['RULE-012']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-04",
+          "category": "attack",
+          "event_count": 2,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-013"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-04",
+            "event_count": 2,
+            "runs_count": 5,
+            "warmup_duration_ms": 44.16,
+            "measured_runs_ms": [
+              48.23,
+              50.12,
+              57.11,
+              43.31,
+              23.08
+            ],
+            "mean_ms": 44.37,
+            "median_ms": 48.23,
+            "p95_ms": 57.11,
+            "max_ms": 57.11,
+            "min_ms": 23.08,
+            "per_event_median_ms": 24.115,
+            "per_event_p95_ms": 28.555,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 2.26,
+              "t_eval_ms": 30.28,
+              "t_evidence_ms": 7.11,
+              "t_correlate_ms": 8.76,
+              "t_total_ms": 48.23
+            }
+          },
+          "details": "Alerts: ['RULE-013']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-05",
+          "category": "attack",
+          "event_count": 3,
+          "duration_seconds": 10.0,
+          "fired_rule_ids": [
+            "RULE-009"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-05",
+            "event_count": 3,
+            "runs_count": 5,
+            "warmup_duration_ms": 20.95,
+            "measured_runs_ms": [
+              16.35,
+              16.17,
+              16.69,
+              15.87,
+              16.71
+            ],
+            "mean_ms": 16.36,
+            "median_ms": 16.35,
+            "p95_ms": 16.71,
+            "max_ms": 16.71,
+            "min_ms": 15.87,
+            "per_event_median_ms": 5.45,
+            "per_event_p95_ms": 5.57,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 1.05,
+              "t_eval_ms": 8.73,
+              "t_evidence_ms": 2.58,
+              "t_correlate_ms": 4.03,
+              "t_total_ms": 16.35
+            }
+          },
+          "details": "Alerts: ['RULE-009']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ATTACK-06",
+          "category": "attack",
+          "event_count": 137,
+          "duration_seconds": 900.0,
+          "fired_rule_ids": [
+            "RULE-001",
+            "RULE-005",
+            "RULE-006",
+            "RULE-007",
+            "RULE-008",
+            "RULE-012"
+          ],
+          "alert_count": 8,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 2,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ATTACK-06",
+            "event_count": 137,
+            "runs_count": 5,
+            "warmup_duration_ms": 664.84,
+            "measured_runs_ms": [
+              370.93,
+              789.91,
+              529.37,
+              463.78,
+              457.33
+            ],
+            "mean_ms": 522.26,
+            "median_ms": 463.78,
+            "p95_ms": 789.91,
+            "max_ms": 789.91,
+            "min_ms": 370.93,
+            "per_event_median_ms": 3.385,
+            "per_event_p95_ms": 5.766,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 30.02,
+              "t_eval_ms": 362.76,
+              "t_evidence_ms": 27.33,
+              "t_correlate_ms": 48.19,
+              "t_total_ms": 463.78
+            }
+          },
+          "details": "Alerts: ['RULE-001', 'RULE-005', 'RULE-006', 'RULE-007', 'RULE-008', 'RULE-012']; Incidents: 1; Duplicates: 2"
+        },
+        {
+          "scenario_id": "ADV-EXCL-01",
+          "category": "attack",
+          "event_count": 120,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "FN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-008"
+          ],
+          "blind_spot_flag": true,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-01",
+            "event_count": 120,
+            "runs_count": 5,
+            "warmup_duration_ms": 25.77,
+            "measured_runs_ms": [
+              23.53,
+              23.37,
+              24.02,
+              23.81,
+              24.36
+            ],
+            "mean_ms": 23.82,
+            "median_ms": 23.81,
+            "p95_ms": 24.36,
+            "max_ms": 24.36,
+            "min_ms": 23.37,
+            "per_event_median_ms": 0.198,
+            "per_event_p95_ms": 0.203,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 18.4,
+              "t_eval_ms": 5.23,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 23.81
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-02",
+          "category": "attack",
+          "event_count": 150,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "FN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-008"
+          ],
+          "blind_spot_flag": true,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-02",
+            "event_count": 150,
+            "runs_count": 5,
+            "warmup_duration_ms": 34.0,
+            "measured_runs_ms": [
+              30.78,
+              44.1,
+              50.97,
+              71.57,
+              67.67
+            ],
+            "mean_ms": 53.02,
+            "median_ms": 50.97,
+            "p95_ms": 71.57,
+            "max_ms": 71.57,
+            "min_ms": 30.78,
+            "per_event_median_ms": 0.34,
+            "per_event_p95_ms": 0.477,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 36.54,
+              "t_eval_ms": 14.42,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 50.97
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-03",
+          "category": "attack",
+          "event_count": 90,
+          "duration_seconds": 120.0,
+          "fired_rule_ids": [
+            "RULE-008"
+          ],
+          "alert_count": 1,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-03",
+            "event_count": 90,
+            "runs_count": 5,
+            "warmup_duration_ms": 233.8,
+            "measured_runs_ms": [
+              164.99,
+              132.37,
+              112.21,
+              113.32,
+              163.68
+            ],
+            "mean_ms": 137.31,
+            "median_ms": 132.37,
+            "p95_ms": 164.99,
+            "max_ms": 164.99,
+            "min_ms": 112.21,
+            "per_event_median_ms": 1.471,
+            "per_event_p95_ms": 1.833,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 13.69,
+              "t_eval_ms": 87.93,
+              "t_evidence_ms": 4.67,
+              "t_correlate_ms": 15.58,
+              "t_total_ms": 132.37
+            }
+          },
+          "details": "Alerts: ['RULE-008']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-04",
+          "category": "attack",
+          "event_count": 16,
+          "duration_seconds": 30.0,
+          "fired_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-007"
+          ],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-04",
+            "event_count": 16,
+            "runs_count": 5,
+            "warmup_duration_ms": 68.5,
+            "measured_runs_ms": [
+              39.79,
+              38.79,
+              39.99,
+              39.1,
+              39.16
+            ],
+            "mean_ms": 39.37,
+            "median_ms": 39.16,
+            "p95_ms": 39.99,
+            "max_ms": 39.99,
+            "min_ms": 38.79,
+            "per_event_median_ms": 2.447,
+            "per_event_p95_ms": 2.499,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 2.96,
+              "t_eval_ms": 23.06,
+              "t_evidence_ms": 5.73,
+              "t_correlate_ms": 7.55,
+              "t_total_ms": 39.16
+            }
+          },
+          "details": "Alerts: ['RULE-005', 'RULE-006']; Incidents: 1; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-05",
+          "category": "attack",
+          "event_count": 30,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [],
+          "alert_count": 0,
+          "incident_count": 0,
+          "classification": "FN",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [
+            "RULE-005",
+            "RULE-006"
+          ],
+          "blind_spot_flag": true,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-05",
+            "event_count": 30,
+            "runs_count": 5,
+            "warmup_duration_ms": 10.26,
+            "measured_runs_ms": [
+              8.35,
+              7.99,
+              8.44,
+              8.43,
+              8.11
+            ],
+            "mean_ms": 8.26,
+            "median_ms": 8.35,
+            "p95_ms": 8.44,
+            "max_ms": 8.44,
+            "min_ms": 7.99,
+            "per_event_median_ms": 0.278,
+            "per_event_p95_ms": 0.281,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 4.96,
+              "t_eval_ms": 3.22,
+              "t_evidence_ms": 0.0,
+              "t_correlate_ms": 0.0,
+              "t_total_ms": 8.35
+            }
+          },
+          "details": "Alerts: []; Incidents: 0; Duplicates: 0"
+        },
+        {
+          "scenario_id": "ADV-EXCL-06",
+          "category": "attack",
+          "event_count": 85,
+          "duration_seconds": 60.0,
+          "fired_rule_ids": [
+            "RULE-008",
+            "RULE-013"
+          ],
+          "alert_count": 2,
+          "incident_count": 1,
+          "classification": "TP",
+          "duplicate_alerts": 0,
+          "missed_rule_ids": [],
+          "blind_spot_flag": false,
+          "benchmark": {
+            "scenario_id": "ADV-EXCL-06",
+            "event_count": 85,
+            "runs_count": 5,
+            "warmup_duration_ms": 454.48,
+            "measured_runs_ms": [
+              656.28,
+              560.95,
+              439.09,
+              446.28,
+              467.39
+            ],
+            "mean_ms": 514.0,
+            "median_ms": 467.39,
+            "p95_ms": 656.28,
+            "max_ms": 656.28,
+            "min_ms": 439.09,
+            "per_event_median_ms": 5.499,
+            "per_event_p95_ms": 7.721,
+            "stage_breakdown_median": {
+              "t_ingest_ms": 13.01,
+              "t_eval_ms": 420.73,
+              "t_evidence_ms": 7.8,
+              "t_correlate_ms": 18.64,
+              "t_total_ms": 467.39
+            }
+          },
+          "details": "Alerts: ['RULE-008', 'RULE-013']; Incidents: 1; Duplicates: 0"
+        }
+      ]
+    }
+  }
+}
