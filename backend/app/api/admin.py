@@ -92,3 +92,37 @@ def admin_reset_password(
         )
     return {"message": f"Password for user {target.username} reset successfully"}
 
+
+@router.get("/audit-logs")
+def list_audit_logs(
+    action: str | None = None,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(25, ge=1, le=200),
+    _: User = Depends(require_roles("admin")),
+    db: Session = Depends(get_db),
+) -> dict:
+    """Allows administrators to inspect and query the system audit trail."""
+    query = db.query(AuditLog).order_by(AuditLog.timestamp.desc())
+    if action:
+        query = query.filter(AuditLog.action == action)
+    items, total = paginate(query, page, page_size)
+    return {
+        "items": [
+            {
+                "id": log.id,
+                "user_id": log.user_id,
+                "action": log.action,
+                "resource_type": log.resource_type,
+                "resource_id": log.resource_id,
+                "details_json": log.details_json,
+                "ip_address": log.ip_address,
+                "timestamp": log.timestamp.isoformat() if log.timestamp else None,
+            }
+            for log in items
+        ],
+        "total": total,
+        "page": page,
+        "page_size": page_size,
+    }
+
+

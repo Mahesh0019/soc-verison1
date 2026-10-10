@@ -190,6 +190,15 @@ class TestSecurityHardening(unittest.TestCase):
         )
         self.assertIsNotNone(failed_log)
 
+        # 3. GET /api/admin/audit-logs endpoint is protected and returns audit entries
+        res_audit_viewer = self.client.get("/api/admin/audit-logs", headers=self.viewer_headers)
+        self.assertEqual(res_audit_viewer.status_code, 403)
+
+        res_audit_admin = self.client.get("/api/admin/audit-logs", headers=self.admin_headers)
+        self.assertEqual(res_audit_admin.status_code, 200)
+        self.assertGreater(res_audit_admin.json().get("total", 0), 0)
+
+
     def test_06_payload_injection_resilience(self):
         """Verify malicious payload tokens in search/filter inputs are handled safely without crashing."""
         malicious_inputs = [
@@ -292,7 +301,51 @@ class TestSecurityHardening(unittest.TestCase):
             settings.initial_admin_password = original_initial
             ensure_users(self.db)
 
+    def test_10_readiness_probe_success_and_post_startup_failure(self):
+        """Verify readiness check returns 200 when DB is active, and 503 upon post-startup DB failure while liveness remains 200."""
+        from unittest.mock import patch
+
+        # 1. Healthy state
+        res_live = self.client.get("/health")
+        self.assertEqual(res_live.status_code, 200)
+        self.assertEqual(res_live.json().get("status"), "ok")
+
+        res_ready = self.client.get("/health/ready")
+        self.assertEqual(res_ready.status_code, 200)
+        self.assertEqual(res_ready.json().get("status"), "ready")
+        self.assertEqual(res_ready.json().get("database"), "connected")
+
+        res_ready_alias = self.client.get("/ready")
+        self.assertEqual(res_ready_alias.status_code, 200)
+
+        res_root = self.client.get("/")
+        self.assertEqual(res_root.status_code, 200)
+        self.assertEqual(res_root.json().get("readiness"), "/health/ready")
+
+        # 2. Simulate post-startup database failure (e.g., PostgreSQL connection severed)
+        with patch("app.database.session.SessionLocal") as mock_session_local:
+            mock_session = mock_session_local.return_value
+            mock_session.execute.side_effect = Exception("Database connection dropped post-startup")
+
+            # Liveness (/health) remains 200 OK (process is still running)
+            res_live_fail = self.client.get("/health")
+            self.assertEqual(res_live_fail.status_code, 200)
+
+            # Readiness (/health/ready) returns 503 Service Unavailable
+            res_ready_fail = self.client.get("/health/ready")
+            self.assertEqual(res_ready_fail.status_code, 503)
+            self.assertIn("Database persistence unavailable", res_ready_fail.json().get("detail", ""))
+
+            res_alias_fail = self.client.get("/ready")
+            self.assertEqual(res_alias_fail.status_code, 503)
+
+        # 3. Restored connectivity recovers readiness
+        res_ready_recovered = self.client.get("/health/ready")
+        self.assertEqual(res_ready_recovered.status_code, 200)
+        self.assertEqual(res_ready_recovered.json().get("database"), "connected")
+
 
 if __name__ == "__main__":
     unittest.main()
+
 

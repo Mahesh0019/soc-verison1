@@ -2,8 +2,9 @@ import logging
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 
 from app.api import api_router
 from app.config import get_settings
@@ -107,11 +108,37 @@ def create_app() -> FastAPI:
             "version": "1.0.0",
             "docs": "/api/docs",
             "health": "/health",
+            "readiness": "/health/ready",
         }
 
     @app.api_route("/health", methods=["GET", "HEAD"])
-    def health() -> dict:
+    def health(ready: bool = False) -> dict:
+        if ready:
+            return readiness_check()
         return {"status": "ok", "service": settings.app_name}
+
+    @app.api_route("/health/ready", methods=["GET", "HEAD"])
+    @app.api_route("/ready", methods=["GET", "HEAD"])
+    def readiness_check() -> dict:
+        from app.database.session import SessionLocal
+
+        try:
+            db = SessionLocal()
+            try:
+                db.execute(text("SELECT 1"))
+            finally:
+                db.close()
+            return {
+                "status": "ready",
+                "database": "connected",
+                "service": settings.app_name,
+            }
+        except Exception as exc:
+            logger.error("Database readiness check failed: %s", exc)
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Database persistence unavailable",
+            ) from exc
 
     return app
 

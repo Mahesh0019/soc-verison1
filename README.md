@@ -158,7 +158,7 @@ cd frontend && npm run build
 ```
 
 ### Credentials & Security Notice
-Authentication credentials must be configured through the deployment environment. No default production credentials are provided.
+Authentication credentials must be configured through the deployment environment via `INITIAL_ADMIN_PASSWORD`. See [docs/ADMIN_CREDENTIAL_LIFECYCLE.md](docs/ADMIN_CREDENTIAL_LIFECYCLE.md) for bootstrap instructions, self-service rotation, restart behavior, and disaster recovery procedures. No default production credentials are provided.
 
 ---
 
