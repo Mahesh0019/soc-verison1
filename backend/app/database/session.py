@@ -40,8 +40,15 @@ else:
                 time.sleep(1.0)
 
     if not connected:
+        if settings.environment.lower() == "production":
+            logger.critical(
+                "CRITICAL: PostgreSQL connection failed after 3 attempts in production (%s). Aborting fallback to ephemeral SQLite to prevent silent data loss.",
+                last_err,
+            )
+            raise RuntimeError(f"Database connection failed in production: {last_err}") from last_err
+
         logger.warning(
-            "PostgreSQL connection failed after 3 attempts (%s). Falling back to SQLite.",
+            "PostgreSQL connection failed after 3 attempts (%s). Falling back to SQLite for non-production environment.",
             last_err,
         )
         db_url = "sqlite:///./mini_siem.db"

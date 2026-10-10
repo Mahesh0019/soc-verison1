@@ -3,10 +3,11 @@ from collections import defaultdict
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
+from app.auth.dependencies import get_current_user
 from app.auth.security import create_access_token, hash_password, verify_password
 from app.database.session import get_db
 from app.models import AuditLog, User
-from app.schemas import LoginRequest, Token, UserCreate, UserOut
+from app.schemas import LoginRequest, PasswordChangeRequest, Token, UserCreate, UserOut
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -103,5 +104,37 @@ def login(payload: LoginRequest, request: Request, db: Session = Depends(get_db)
 
     token = create_access_token(user.username, {"role": user.role})
     return {"access_token": token, "token_type": "bearer", "user": user}
+
+
+@router.post("/change-password")
+def change_password(
+    payload: PasswordChangeRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> dict[str, str]:
+    """Allows an authenticated user to change their password securely."""
+    if not verify_password(payload.current_password, current_user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Current password verification failed",
+        )
+    current_user.password_hash = hash_password(payload.new_password)
+    try:
+        audit = AuditLog(
+            action="AUTH_PASSWORD_CHANGED",
+            resource_type="USER",
+            resource_id=str(current_user.id),
+            user_id=current_user.id,
+            details_json={"username": current_user.username},
+        )
+        db.add(audit)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to persist password change",
+        )
+    return {"message": "Password updated successfully"}
 
 

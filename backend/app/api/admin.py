@@ -6,8 +6,8 @@ from app.api.utils import apply_keyword_search, paginate
 from app.auth.dependencies import require_roles
 from app.auth.security import hash_password
 from app.database.session import get_db
-from app.models import Alert, DetectionRule, NormalizedEvent, RawLog, ThreatIndicator, User
-from app.schemas import Page, UserCreate, UserOut, UserUpdate
+from app.models import Alert, AuditLog, DetectionRule, NormalizedEvent, RawLog, ThreatIndicator, User
+from app.schemas import AdminPasswordResetRequest, Page, UserCreate, UserOut, UserUpdate
 
 
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -60,4 +60,35 @@ def update_user(user_id: int, payload: UserUpdate, _: User = Depends(require_rol
     db.commit()
     db.refresh(user)
     return user
+
+
+@router.post("/users/{user_id}/reset-password")
+def admin_reset_password(
+    user_id: int,
+    payload: AdminPasswordResetRequest,
+    current_admin: User = Depends(require_roles("admin")),
+    db: Session = Depends(get_db),
+) -> dict[str, str]:
+    """Allows an administrator to reset/rotate another user's password securely."""
+    target = db.get(User, user_id)
+    if not target:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    target.password_hash = hash_password(payload.new_password)
+    try:
+        audit = AuditLog(
+            action="ADMIN_PASSWORD_RESET",
+            resource_type="USER",
+            resource_id=str(target.id),
+            user_id=current_admin.id,
+            details_json={"target_username": target.username, "reset_by": current_admin.username},
+        )
+        db.add(audit)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Failed to reset password",
+        )
+    return {"message": f"Password for user {target.username} reset successfully"}
 

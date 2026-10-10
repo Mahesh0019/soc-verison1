@@ -135,15 +135,19 @@ export function calculatePipelineHealth(
     status.last_status !== "IDLE";
 
   if (hasFailures || isUpstreamError) {
+    const isSleeping502 = status.last_status === "UPSTREAM_UNAVAILABLE_502";
     const errorPrefix = status.last_status.startsWith("UPSTREAM_")
       ? `Upstream: ${status.last_status}`
       : status.last_status;
+    const details = isSleeping502
+      ? `${errorPrefix} (${status.consecutive_failures} fails): Upstream victim waking up (Render free tier spin-down)`
+      : status.last_error
+      ? `${errorPrefix} (${status.consecutive_failures} fails): ${status.last_error}`
+      : `${errorPrefix} (${status.consecutive_failures} consecutive failures)`;
     return {
       state: "DEGRADED",
       label: "Pipeline Degraded",
-      details: status.last_error
-        ? `${errorPrefix} (${status.consecutive_failures} fails): ${status.last_error}`
-        : `${errorPrefix} (${status.consecutive_failures} consecutive failures)`,
+      details,
       status,
       lastCheckedAt,
       isStale: false,

@@ -283,6 +283,31 @@ def start_background_collector() -> None:
     _connector_metrics["upstream_url"] = settings.juice_shop_telemetry_url
     _connector_metrics["poll_interval_seconds"] = settings.poll_interval_seconds
 
+    # Initialize baseline metrics from database if available
+    try:
+        from app.database.session import SessionLocal
+        from app.models import NormalizedEvent
+        from sqlalchemy import func
+
+        db = SessionLocal()
+        try:
+            count = db.query(func.count(NormalizedEvent.id)).filter(
+                (NormalizedEvent.source_type == "JUICE_SHOP_CONNECTOR") | (NormalizedEvent.source_type == "juice_shop_connector")
+            ).scalar() or 0
+            latest = db.query(func.max(NormalizedEvent.timestamp)).filter(
+                (NormalizedEvent.source_type == "JUICE_SHOP_CONNECTOR") | (NormalizedEvent.source_type == "juice_shop_connector")
+            ).scalar()
+            if count > 0:
+                _connector_metrics["total_events_ingested"] = count
+            if latest:
+                _connector_metrics["last_successful_ingestion"] = (
+                    latest.isoformat() if hasattr(latest, "isoformat") else str(latest)
+                )
+        finally:
+            db.close()
+    except Exception as exc:
+        logger.debug(f"[CONNECTOR] Baseline metrics initialization skipped: {exc}")
+
     _task = asyncio.create_task(
         _poll_loop(
             telemetry_url=settings.juice_shop_telemetry_url,

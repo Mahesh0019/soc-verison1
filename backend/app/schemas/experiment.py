@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ExperimentMetricOut(BaseModel):
@@ -18,9 +18,7 @@ class ExperimentMetricOut(BaseModel):
     metric_name: str
     metric_value: float
     details_json: Optional[dict[str, Any]] = None
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ExperimentRunOut(BaseModel):
@@ -35,9 +33,7 @@ class ExperimentRunOut(BaseModel):
     status: str
     created_at: datetime
     metrics: list[ExperimentMetricOut] = []
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ExperimentCreate(BaseModel):
@@ -56,9 +52,7 @@ class ExperimentOut(BaseModel):
     status: str
     created_at: datetime
     runs: list[ExperimentRunOut] = []
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class RunExperimentRequest(BaseModel):

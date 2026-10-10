@@ -209,6 +209,90 @@ class TestSecurityHardening(unittest.TestCase):
             res = self.client.get(f"/api/alerts?q={payload}", headers=self.analyst_headers)
             self.assertEqual(res.status_code, 200, f"Alert query '{payload}' should not crash server")
 
+    def test_07_password_change_self_service(self):
+        """Verify authenticated users can change their password and invalid current password is rejected."""
+        # 1. Invalid current password is rejected
+        res = self.client.post(
+            "/api/auth/change-password",
+            json={"current_password": "WrongPassword123!", "new_password": "NewSecretPassword123!"},
+            headers=self.analyst_headers,
+        )
+        self.assertEqual(res.status_code, 400)
+        self.assertIn("Current password verification failed", res.json()["detail"])
+
+        # 2. Valid current password succeeds
+        res = self.client.post(
+            "/api/auth/change-password",
+            json={"current_password": "AnalystPass123!", "new_password": "NewAnalystPass123!"},
+            headers=self.analyst_headers,
+        )
+        self.assertEqual(res.status_code, 200)
+
+        # 3. New password works for login
+        login_res = self.client.post("/api/auth/login", json={"username": "analyst", "password": "NewAnalystPass123!"})
+        self.assertEqual(login_res.status_code, 200)
+
+        # 4. Old password is no longer valid
+        old_login = self.client.post("/api/auth/login", json={"username": "analyst", "password": "AnalystPass123!"})
+        self.assertEqual(old_login.status_code, 401)
+
+        # Restore password for other tests
+        self.client.post(
+            "/api/auth/change-password",
+            json={"current_password": "NewAnalystPass123!", "new_password": "AnalystPass123!"},
+            headers={"Authorization": f"Bearer {login_res.json()['access_token']}"},
+        )
+
+    def test_08_admin_password_reset_and_rbac(self):
+        """Verify admin can reset user passwords and non-admin cannot."""
+        analyst_user = self.db.query(User).filter(User.username == "analyst").first()
+        self.assertIsNotNone(analyst_user)
+
+        # 1. Viewer cannot reset password (403 Forbidden)
+        viewer_res = self.client.post(
+            f"/api/admin/users/{analyst_user.id}/reset-password",
+            json={"new_password": "HackedPassword123!"},
+            headers=self.viewer_headers,
+        )
+        self.assertEqual(viewer_res.status_code, 403)
+
+        # 2. Admin can reset password (200 OK)
+        admin_res = self.client.post(
+            f"/api/admin/users/{analyst_user.id}/reset-password",
+            json={"new_password": "AdminResetPassword123!"},
+            headers=self.admin_headers,
+        )
+        self.assertEqual(admin_res.status_code, 200)
+
+        # 3. Analyst can log in with new reset password
+        login_res = self.client.post("/api/auth/login", json={"username": "analyst", "password": "AdminResetPassword123!"})
+        self.assertEqual(login_res.status_code, 200)
+
+        # Restore password
+        self.client.post(
+            f"/api/admin/users/{analyst_user.id}/reset-password",
+            json={"new_password": "AnalystPass123!"},
+            headers=self.admin_headers,
+        )
+
+    def test_09_initial_admin_password_bootstrap(self):
+        """Verify ensure_users updates admin password hash when initial_admin_password is set."""
+        from app.config import get_settings
+        settings = get_settings()
+
+        # Temporarily configure custom initial_admin_password
+        original_initial = settings.initial_admin_password
+        settings.initial_admin_password = "RotatedAdminSecret999!"
+        try:
+            ensure_users(self.db)
+            admin_user = self.db.query(User).filter(User.username == "admin").first()
+            from app.auth.security import verify_password
+            self.assertTrue(verify_password("RotatedAdminSecret999!", admin_user.password_hash))
+        finally:
+            settings.initial_admin_password = original_initial
+            ensure_users(self.db)
+
 
 if __name__ == "__main__":
     unittest.main()
+

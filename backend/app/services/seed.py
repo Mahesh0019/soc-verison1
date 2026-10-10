@@ -85,12 +85,21 @@ def clear_demo_data(db: Session) -> dict[str, int]:
 
 
 def ensure_users(db: Session) -> None:
-    for username, email, role, password in DEMO_USERS:
+    from app.config import get_settings
+    settings = get_settings()
+
+    for username, email, role, default_password in DEMO_USERS:
         user = db.query(User).filter(User.username == username).first()
+        effective_password = default_password
+        if username == "admin" and settings.initial_admin_password:
+            effective_password = settings.initial_admin_password
+
         if user:
             user.role = role
+            if username == "admin" and settings.initial_admin_password:
+                user.password_hash = hash_password(settings.initial_admin_password)
             continue
-        db.add(User(username=username, email=email, role=role, password_hash=hash_password(password)))
+        db.add(User(username=username, email=email, role=role, password_hash=hash_password(effective_password)))
     db.commit()
 
 

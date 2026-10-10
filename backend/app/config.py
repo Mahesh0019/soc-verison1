@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     juice_shop_telemetry_api_key: str = ""
     poll_interval_seconds: float = 10.0
     batch_size: int = 50
-
+    initial_admin_password: str | None = None
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 

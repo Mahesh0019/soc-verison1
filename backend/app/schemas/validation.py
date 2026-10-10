@@ -9,7 +9,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ValidationTestOut(BaseModel):
@@ -24,9 +24,7 @@ class ValidationTestOut(BaseModel):
     execution_time_ms: float
     details_json: Optional[dict[str, Any]] = None
     created_at: datetime
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ValidationSuiteRunResponse(BaseModel):

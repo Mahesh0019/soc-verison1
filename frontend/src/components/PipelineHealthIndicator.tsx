@@ -38,6 +38,7 @@ export function PipelineHealthIndicator({
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isWaking, setIsWaking] = useState<boolean>(false);
 
   const popoverRef = useRef<HTMLDivElement>(null);
   const isFetchingRef = useRef<boolean>(false);
@@ -221,7 +222,7 @@ export function PipelineHealthIndicator({
         <div
           role="dialog"
           aria-label="Telemetry Pipeline Health Details"
-          className="absolute right-0 top-full mt-2 w-80 rounded-xl border border-surface-border bg-surface-base/98 p-4 shadow-2xl backdrop-blur-md z-50 animate-in fade-in zoom-in-95 duration-100"
+          className="absolute right-0 top-full mt-2 w-84 rounded-xl border border-zinc-700/80 bg-zinc-950 p-4 shadow-2xl z-50 animate-in fade-in zoom-in-95 duration-100"
         >
           {/* Header */}
           <div className="flex items-start justify-between border-b border-surface-border pb-3">
@@ -304,7 +305,45 @@ export function PipelineHealthIndicator({
               </span>
             </div>
 
-            {status?.last_error && (
+            {/* Render Free-Tier Cold Start Informative Box */}
+            {status?.last_status === "UPSTREAM_UNAVAILABLE_502" && (
+              <div className="rounded-lg border border-amber-500/30 bg-amber-950/40 p-2.5 text-[11px] text-amber-200 space-y-1.5">
+                <div className="font-semibold flex items-center gap-1.5 text-amber-300">
+                  <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                  <span>Upstream Cold-Start (Render Free Tier)</span>
+                </div>
+                <p className="text-zinc-300 leading-relaxed text-[11px]">
+                  The victim server spins down after 15m idle. It takes ~30–60s to wake up when traffic arrives. Polling will recover automatically once booted.
+                </p>
+                <button
+                  type="button"
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    setIsWaking(true);
+                    try {
+                      if (status?.upstream_url) {
+                        try {
+                          const targetOrigin = new URL(status.upstream_url).origin;
+                          await fetch(`${targetOrigin}/health`, { mode: "no-cors" });
+                        } catch {
+                          // ignore CORS restrictions in browser
+                        }
+                      }
+                      await fetchStatus();
+                    } finally {
+                      setIsWaking(false);
+                    }
+                  }}
+                  disabled={isWaking}
+                  className="w-full flex items-center justify-center gap-1.5 rounded bg-amber-500/20 px-2 py-1.5 font-medium text-amber-200 border border-amber-500/40 hover:bg-amber-500/30 transition text-[11px] disabled:opacity-50"
+                >
+                  <RefreshCw className={`h-3 w-3 ${isWaking ? "animate-spin" : ""}`} />
+                  {isWaking ? "Pinging upstream..." : "Send Wake-Up Ping"}
+                </button>
+              </div>
+            )}
+
+            {status?.last_error && status?.last_status !== "UPSTREAM_UNAVAILABLE_502" && (
               <div className="rounded-lg border border-rose-500/30 bg-rose-950/20 p-2 text-[11px] text-rose-300 break-words">
                 <span className="font-semibold">Last Error: </span>
                 {status.last_error}

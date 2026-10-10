@@ -59,7 +59,15 @@ from app.schemas.incident import (
 from app.schemas.risk import RiskAssessmentOut, RiskSummaryOut
 from app.schemas.rule import RuleCreate, RuleHealthOut, RuleHealthSummaryOut, RuleOut, RuleToggle, RuleUpdate
 from app.schemas.threat import ThreatIndicatorCreate, ThreatIndicatorOut
-from app.schemas.user import LoginRequest, Token, UserCreate, UserOut, UserUpdate
+from app.schemas.user import (
+    AdminPasswordResetRequest,
+    LoginRequest,
+    PasswordChangeRequest,
+    Token,
+    UserCreate,
+    UserOut,
+    UserUpdate,
+)
 from app.schemas.validation import (
     CustomValidationTestRequest,
     RuleHealthMetric,
@@ -69,6 +77,7 @@ from app.schemas.validation import (
 )
 
 __all__ = [
+    "AdminPasswordResetRequest",
     "AIAgreementRequest",
     "AIAnalysisOut",
     "AIClaim",
@@ -123,6 +132,7 @@ __all__ = [
     "ModelTrainingRequest",
     "ModelTrainingResponse",
     "Page",
+    "PasswordChangeRequest",
     "RiskAssessmentOut",
     "RiskSummaryOut",
     "RuleCreate",
