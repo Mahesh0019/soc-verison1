@@ -10,7 +10,7 @@ Configure the connector via environment variables or a `.env` file:
 
 | Environment Variable | Description | Default Value |
 | :--- | :--- | :--- |
-| `JUICE_SHOP_TELEMETRY_URL` | Victim telemetry API endpoint URL | `https://demo-victim-1.onrender.com/api/telemetry/events` |
+| `JUICE_SHOP_TELEMETRY_URL` | Victim telemetry API endpoint URL | `https://demo-victim.onrender.com/api/telemetry/events` |
 | `JUICE_SHOP_TELEMETRY_API_KEY` | Bearer API key for victim telemetry access | `""` |
 | `SIEM_INGEST_URL` | Mini-SIEM log ingestion API endpoint URL | `http://localhost:8000/api/logs/ingest` |
 | `SIEM_JWT_TOKEN` | Bearer JWT Token for Mini-SIEM ingestion auth | `""` |

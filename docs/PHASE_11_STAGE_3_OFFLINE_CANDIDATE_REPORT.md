@@ -18,7 +18,7 @@
 In accordance with Phase 11 Stage 3 directives, an isolated candidate improvement for `RULE-008` was implemented and evaluated in a strictly hermetic offline test environment.
 
 ### Safeguard Attestation & Verification:
-1. **Zero Live Attack Traffic**: No HTTP traffic or attack packets were transmitted to `demo-victim-1.onrender.com` or any network. All evaluation ran strictly in-process with synthesized, labeled telemetry scenarios.
+1. **Zero Live Attack Traffic**: No HTTP traffic or attack packets were transmitted to `demo-victim.onrender.com` or any network. All evaluation ran strictly in-process with synthesized, labeled telemetry scenarios.
 2. **Zero Production Database Modification**: No production PostgreSQL connections or record modifications occurred. All tests used ephemeral, in-memory SQLite instances (`DATABASE_URL=sqlite:///:memory:`, `StaticPool`).
 3. **Production Detection Rules Unchanged**: Production `RULE-008`, `RULE-005`, and `RULE-006` in [`backend/app/rules/builtin.py`](file:///c:/Users/User/OneDrive/Desktop/mini-siem-dashboard/backend/app/rules/builtin.py) remain **100% frozen and byte-for-byte identical** to baseline `d4f884b`:
    - `RULE-008`: threshold `60`, window `5 minutes`, filter `{"event_category": "web"}`.

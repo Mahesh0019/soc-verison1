@@ -15,7 +15,7 @@
 In accordance with [`docs/PHASE_11_DETECTION_EVALUATION_PLAN.md`](file:///c:/Users/User/OneDrive/Desktop/mini-siem-dashboard/docs/PHASE_11_DETECTION_EVALUATION_PLAN.md) and explicit operator authorization, **Stage 2: Offline Detection Evaluation** was executed in a strictly hermetic, offline environment.
 
 ### Mandatory Safeguards Verified:
-1. **Zero Live Attack Traffic**: No HTTP traffic was transmitted to `demo-victim-1.onrender.com` or any public network.
+1. **Zero Live Attack Traffic**: No HTTP traffic was transmitted to `demo-victim.onrender.com` or any public network.
 2. **Zero Production Database Modification**: All evaluations executed against an isolated in-memory SQLite database (`DATABASE_URL=sqlite:///:memory:`, `StaticPool`), completely decoupled from production PostgreSQL.
 3. **Production Rule Configuration Preserved**: Production `RULE-008` remains unmodified at threshold `60`, window `5 minutes`, filter `{"event_category": "web"}` in [`backend/app/rules/builtin.py`](file:///c:/Users/User/OneDrive/Desktop/mini-siem-dashboard/backend/app/rules/builtin.py).
 4. **Historical Research Integrity**: Automated git verification confirms that all Phase 0–9 datasets, scripts, manifests, and benchmark runs in `research/` remain **byte-for-byte identical** to checkpoint `6a153ae`:

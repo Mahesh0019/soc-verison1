@@ -3,7 +3,7 @@
 ## 1. Overview & Architecture
 
 Phase 10A provides automated end-to-end verification for genuine live telemetry ingestion across the deployed Mini-SIEM platform:
-- **Victim Application**: Juice Shop on Render (`https://demo-victim-1.onrender.com`) instrumented with in-memory telemetry middleware (`GET /api/telemetry/events`).
+- **Victim Application**: Juice Shop on Render (`https://demo-victim.onrender.com`) instrumented with in-memory telemetry middleware (`GET /api/telemetry/events`).
 - **SOC Backend**: FastAPI & PostgreSQL on Render (`https://soc-verison1.onrender.com`).
 - **Telemetry Connector**: Asynchronous background polling worker in the backend fetching upstream victim events every 10 seconds.
 - **Normalization & Persistence**: Maps victim HTTP events to `NormalizedEvent` (`source_type="WEB"`, `request_path`, `user_agent`, `status_code`, etc.) and persists them to the PostgreSQL database.
@@ -12,7 +12,7 @@ Phase 10A provides automated end-to-end verification for genuine live telemetry 
 ```
 +-------------------------------------------------------+
 |  Stage 1: Preflight Connectivity & Auth Verification   |
-|  - GET https://demo-victim-1.onrender.com/api/telemetry/health
+|  - GET https://demo-victim.onrender.com/api/telemetry/health
 |  - GET https://soc-verison1.onrender.com/health       |
 |  - POST /api/auth/login -> JWT Bearer Token           |
 |  - GET /api/telemetry/connector/status -> running=True |
@@ -61,7 +61,7 @@ Phase 10A provides automated end-to-end verification for genuine live telemetry 
 | Variable | Default Value | Description |
 |---|---|---|
 | `ENABLE_LIVE_TELEMETRY_TEST` | *(unset)* | Set to `true`, `1`, or `yes` to enable live pipeline testing. |
-| `LIVE_VICTIM_URL` | `https://demo-victim-1.onrender.com` | Base URL of deployed victim application. |
+| `LIVE_VICTIM_URL` | `https://demo-victim.onrender.com` | Base URL of deployed victim application. |
 | `LIVE_BACKEND_URL` | `https://soc-verison1.onrender.com` | Base URL of deployed SOC backend. |
 | `LIVE_SOC_USERNAME` | `admin` | Administrative account for backend authentication. |
 | `LIVE_SOC_PASSWORD` | `AdminPass123!` | Password for backend authentication. |
@@ -103,7 +103,7 @@ When run with `ENABLE_LIVE_TELEMETRY_TEST=true` against live services:
 LIVE TELEMETRY PIPELINE VERIFICATION RESULT
 =======================================================
 Probe ID: probe-6f3592bc7b0c
-Victim:   https://demo-victim-1.onrender.com
+Victim:   https://demo-victim.onrender.com
 Backend:  https://soc-verison1.onrender.com
   stage_1_preflight        : PASSED (Victim healthy, Backend healthy, Connector running)
   stage_2_dispatch_probe   : PASSED (Harmless GET /health dispatched with marker 'probe-6f3592bc7b0c')
@@ -121,7 +121,7 @@ PASSED
 
 | Failed Stage | Possible Root Cause | Diagnostic Steps & Remediation |
 |---|---|---|
-| **`stage_1_preflight` (Victim)** | Victim service sleeping (HTTP 502/504) or telemetry endpoint down. | Check `https://demo-victim-1.onrender.com/api/telemetry/health`. If sleeping, wait 30s for Render spinup. |
+| **`stage_1_preflight` (Victim)** | Victim service sleeping (HTTP 502/504) or telemetry endpoint down. | Check `https://demo-victim.onrender.com/api/telemetry/health`. If sleeping, wait 30s for Render spinup. |
 | **`stage_1_preflight` (Backend)** | SOC Backend unresponsive or database connection failed. | Check `https://soc-verison1.onrender.com/health`. Verify PostgreSQL connectivity and Render deployment logs. |
 | **`stage_1_preflight` (Auth)** | Credentials rejected or token expired. | Verify `LIVE_SOC_USERNAME` and `LIVE_SOC_PASSWORD`. |
 | **`stage_1_preflight` (Connector)** | Telemetry connector background task stopped or disabled. | Check `/api/telemetry/connector/status`. Call `POST /api/telemetry/connector/start` if disabled. |

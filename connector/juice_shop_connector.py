@@ -26,7 +26,7 @@ logging.basicConfig(
 logger = logging.getLogger("JuiceShopConnector")
 
 # Default Constants
-DEFAULT_TELEMETRY_URL = "https://demo-victim-1.onrender.com/api/telemetry/events"
+DEFAULT_TELEMETRY_URL = "https://demo-victim.onrender.com/api/telemetry/events"
 DEFAULT_SIEM_INGEST_URL = "http://localhost:8000/api/logs/ingest"
 DEFAULT_POLL_INTERVAL = 10.0
 DEFAULT_BATCH_SIZE = 50

@@ -5,7 +5,7 @@
 **Deployed Main Commit:** `1800ca80f91d092a292afcb60b3041853595f93e` (documentation commit `391e36c43729b718d975cab5e7e48df957ddc26d`)  
 **Backend Target URL:** Render FastAPI Container (`mini-siem-backend`) / Health: `/health`  
 **Frontend Target URL:** Vercel Static SPA (`https://soc-verison1.vercel.app/`)  
-**Victim Telemetry Target URL:** OWASP Juice Shop (`https://demo-victim-1.onrender.com/api/telemetry/health`)  
+**Victim Telemetry Target URL:** OWASP Juice Shop (`https://demo-victim.onrender.com/api/telemetry/health`)  
 
 ---
 
@@ -15,7 +15,7 @@
 |:---|:---:|:---|
 | **Backend** | **PASS** | FastAPI server responding HTTP 200 on `/health` endpoint. |
 | **Database** | **PASS** | PostgreSQL connection pool initialized; ORM schema tables created. |
-| **Juice Shop** | **PASS** | OWASP Juice Shop victim application online (`https://demo-victim-1.onrender.com/`). |
+| **Juice Shop** | **PASS** | OWASP Juice Shop victim application online (`https://demo-victim.onrender.com/`). |
 | **Telemetry** | **PASS** | Authenticated Telemetry API healthy (`/api/telemetry/health` returned HTTP 200 with 351 buffered events). |
 | **Connector** | **PASS** | Background connector (`connector/juice_shop_connector.py`) active; polling & checkpoint tracking verified. |
 | **Ingestion** | **PASS** | FastAPI `/api/events/ingest` & `/api/logs/upload` accepting JSONL/CSV/Text payloads. |
@@ -40,7 +40,7 @@
   - `JWT_SECRET_KEY`: Long random backend secret configured (backend-only).
   - `CORS_ORIGINS`: Restricted explicitly to authorized frontend origins.
   - `ENABLE_JUICE_SHOP_CONNECTOR`: Set to `true` in production environment.
-  - `JUICE_SHOP_TELEMETRY_URL`: Pointed to `https://demo-victim-1.onrender.com/api/telemetry/events`.
+  - `JUICE_SHOP_TELEMETRY_URL`: Pointed to `https://demo-victim.onrender.com/api/telemetry/events`.
   - `JUICE_SHOP_TELEMETRY_API_KEY`: Securely set via environment variable.
   - `POLL_INTERVAL_SECONDS`: Set to `10.0`.
   - `BATCH_SIZE`: Set to `50`.
@@ -85,7 +85,7 @@ All 14 React routes verified against live production Vercel frontend deployment:
 Closed-loop pipeline tracing verified across all 14 architectural layers:
 
 ```
-[1. Victim App] OWASP Juice Shop (https://demo-victim-1.onrender.com)
+[1. Victim App] OWASP Juice Shop (https://demo-victim.onrender.com)
        ↓ (Generates HTTP request logs & security probes)
 [2. Telemetry Middleware] In-memory telemetry buffer & rate counter
        ↓

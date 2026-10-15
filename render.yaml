@@ -23,7 +23,7 @@ services:
       - key: ENABLE_JUICE_SHOP_CONNECTOR
         value: "true"
       - key: JUICE_SHOP_TELEMETRY_URL
-        value: "https://demo-victim-1.onrender.com/api/telemetry/events"
+        value: "https://demo-victim.onrender.com/api/telemetry/events"
       - key: POLL_INTERVAL_SECONDS
         value: "10.0"
 

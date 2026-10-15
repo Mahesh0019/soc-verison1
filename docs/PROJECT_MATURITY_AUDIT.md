@@ -182,7 +182,7 @@ Every major architectural component is classified below according to the seven r
   - Ephemeral connector checkpoint: If the backend container restarts on Render, the `.checkpoint` file is reset to `None`, risking duplicate event reprocessing unless events are deduplicated at the database layer.
 
 ### F. What is Unverified
-- **Remote Juice Shop Victim Latency:** In production on Render free-tier, the victim (`demo-victim-1.onrender.com`) sleeps after inactivity. Live background polling against this live instance requires wake-up handling (handled with backoff, but latency is variable).
+- **Remote Juice Shop Victim Latency:** In production on Render free-tier, the victim (`demo-victim.onrender.com`) sleeps after inactivity. Live background polling against this live instance requires wake-up handling (handled with backoff, but latency is variable).
 - **Behavioral ML with Sparse Telemetry:** The Isolation Forest falls back to heuristic rules when fewer than 5 events are present; this fallback behavior is tested, but real model convergence requires larger event volumes.
 
 ### G. What Should Be Done First

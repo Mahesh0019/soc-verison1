@@ -14,7 +14,7 @@ To evaluate whether progressively adding multi-event correlation, cryptographic 
 
 ## 2. Experimental Design & Dataset
 
-- **Environment:** Controlled OWASP Juice Shop victim container (`https://demo-victim-1.onrender.com/`) and deterministic SQLite benchmark engine.
+- **Environment:** Controlled OWASP Juice Shop victim container (`https://demo-victim.onrender.com/`) and deterministic SQLite benchmark engine.
 - **Dataset:** 22 scenarios (33 telemetry events): 11 genuine attack scenarios and 11 benign/noise scenarios.
 - **Ground Truth:** Pre-assigned immutable labels (`is_attack=True` vs `is_attack=False`).
 

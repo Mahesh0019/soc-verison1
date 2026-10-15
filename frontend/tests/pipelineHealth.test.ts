@@ -16,7 +16,7 @@ describe("Telemetry Pipeline Health Calculations", () => {
   const baseStatus: TelemetryConnectorStatus = {
     enabled: true,
     running: true,
-    upstream_url: "https://demo-victim-1.onrender.com/api/telemetry/events",
+    upstream_url: "https://demo-victim.onrender.com/api/telemetry/events",
     poll_interval_seconds: 10.0,
     last_poll_attempt: new Date(referenceNow.getTime() - 5_000).toISOString(), // 5s ago
     last_successful_ingestion: new Date(referenceNow.getTime() - 30_000).toISOString(), // 30s ago

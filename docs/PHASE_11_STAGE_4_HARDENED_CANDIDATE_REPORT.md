@@ -20,7 +20,7 @@
 In accordance with Phase 11 Stage 4 directives, the experimental candidate for `RULE-008` was hardened against path-exclusion evasion and evaluated alongside alternative architectures to determine whether false-positive suppression can coexist with adversary coverage.
 
 ### Safeguard Attestations:
-1. **Zero Live Attack Traffic**: No packets, HTTP requests, or attack traffic were transmitted to any network or victim host (`demo-victim-1.onrender.com`). All evaluations ran strictly in-process using synthesized, labeled telemetry scenarios.
+1. **Zero Live Attack Traffic**: No packets, HTTP requests, or attack traffic were transmitted to any network or victim host (`demo-victim.onrender.com`). All evaluations ran strictly in-process using synthesized, labeled telemetry scenarios.
 2. **Zero Production Database Modifications**: All testing executed against in-memory SQLite instances (`DATABASE_URL=sqlite:///:memory:`, `StaticPool`), completely decoupled from production PostgreSQL.
 3. **Production Detection Rules Unchanged**: Production `RULE-008` (threshold `60`, window `5 min`, filter `{"event_category": "web"}`), `RULE-005`, and `RULE-006` in [`backend/app/rules/builtin.py`](file:///c:/Users/User/OneDrive/Desktop/mini-siem-dashboard/backend/app/rules/builtin.py) remain **100% frozen and byte-for-byte identical** to baseline `d4f884b`.
 4. **Historical Research Checkpoint Integrity**: Automated git verification confirms that all Phase 0–9 datasets, scripts, manifests, and benchmark runs in `research/` remain **byte-for-byte identical** to checkpoint `6a153ae17c676e92b7fc7208b374c2646e99b4f6`:

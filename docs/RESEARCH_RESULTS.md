@@ -23,7 +23,7 @@ The primary objective of this experimental evaluation is to empirically measure 
 
 ## 3. Experimental Environment
 
-- **Infrastructure:** Isolated, deterministic SQLite in-memory test database and controlled OWASP Juice Shop web application container (`https://demo-victim-1.onrender.com/`).
+- **Infrastructure:** Isolated, deterministic SQLite in-memory test database and controlled OWASP Juice Shop web application container (`https://demo-victim.onrender.com/`).
 - **Telemetry Ingestion:** Authenticated HTTP telemetry proxy recording web requests, response statuses, user agent headers, and payload structures.
 - **Host System:** Windows OS environment executing deterministic benchmark evaluation via `research/scripts/run_experiments.py`.
 

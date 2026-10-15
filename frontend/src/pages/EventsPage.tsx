@@ -247,7 +247,7 @@ export function EventsPage() {
 
           {/* Direct Victim Site Link */}
           <a
-            href="https://demo-victim-1.onrender.com"
+            href="https://demo-victim.onrender.com"
             target="_blank"
             rel="noopener noreferrer"
             title="Open target victim application (OWASP Juice Shop) in a new tab to test interactions and generate live telemetry"

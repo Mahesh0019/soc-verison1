@@ -4,7 +4,7 @@
 **Repository**: [https://github.com/Mahesh0019/soc-verison1](https://github.com/Mahesh0019/soc-verison1)  
 **Deployed Frontend**: [https://soc-verison1.vercel.app/](https://soc-verison1.vercel.app/)  
 **Deployed Backend**: [https://soc-verison1.onrender.com/](https://soc-verison1.onrender.com/)  
-**Victim Application**: [https://demo-victim-1.onrender.com/](https://demo-victim-1.onrender.com/)  
+**Victim Application**: [https://demo-victim.onrender.com/](https://demo-victim.onrender.com/)  
 **Production Commit**: [`9ec2bbbe06d616e5b9fc4ed8837208dfb2d5dcc9`](file:///c:/Users/User/OneDrive/Desktop/mini-siem-dashboard/backend/app/schemas/event.py)  
 **Frozen Research Checkpoint**: `6a153ae17c676e92b7fc7208b374c2646e99b4f6` (Phase 9 Frozen Baseline)  
 **Audit Mode**: Read-Only Architecture, Telemetry Flow, and Data Classification Audit  
@@ -16,7 +16,7 @@
 This audit assesses the operational readiness of the Mini-SIEM / SOC platform, evaluating whether its components operate with **genuine real-time live data**, **persisted database state**, **replayed telemetry**, **synthetic benchmarks**, or **static bundled fixtures**.
 
 ### Key Findings
-1. **Genuine Live Ingestion Confirmed**: The core telemetry ingestion pipeline from the OWASP Juice Shop victim application (`demo-victim-1.onrender.com`) through the asynchronous connector (`juice_shop_background.py`), FastAPI backend, normalization engine, PostgreSQL persistence, and detection rule evaluation is **100% operational in live production**. When live HTTP traffic touches the victim application, events are captured, ingested, and queryable on the dashboard within 10 seconds.
+1. **Genuine Live Ingestion Confirmed**: The core telemetry ingestion pipeline from the OWASP Juice Shop victim application (`demo-victim.onrender.com`) through the asynchronous connector (`juice_shop_background.py`), FastAPI backend, normalization engine, PostgreSQL persistence, and detection rule evaluation is **100% operational in live production**. When live HTTP traffic touches the victim application, events are captured, ingested, and queryable on the dashboard within 10 seconds.
 2. **Operational Plane is Persisted**: All alert handling, status updates, analyst notes, rule toggling, threat intelligence indicators, user management, and incident correlation operate directly against live PostgreSQL database tables (`alerts`, `normalized_events`, `incidents`, `evidence`, `threat_indicators`).
 3. **Multi-Source Replay Engines**: Zeek network telemetry and Windows Sysmon telemetry replay features are real ingestion pipelines that parse raw TSV, JSON, and XML, persist records into `normalized_events`, benchmark throughput (EPS) and latency, and trigger detection rules.
 4. **Research Plane is Frozen**: Research benchmarks (M0–M6 comparison, adversarial robustness curves, AI analyst hallucination benchmarks) represent empirical research datasets and frozen results evaluated over static datasets (`research/datasets/`). The frontend contains bundled JSON fallbacks (`adversarial_robustness_v1.json`, `ai_analyst_v1.json`) if backend disk paths are unavailable in container environments.
@@ -31,7 +31,7 @@ The diagram below traces the end-to-end data lifecycle across the platform:
 ```mermaid
 flowchart TD
     subgraph VictimApp["1. Upstream Victim Environment"]
-        V1["Victim Web Traffic<br/>(OWASP Juice Shop)"] --> V2["Telemetry Middleware<br/>(demo-victim-1.onrender.com)"]
+        V1["Victim Web Traffic<br/>(OWASP Juice Shop)"] --> V2["Telemetry Middleware<br/>(demo-victim.onrender.com)"]
         V2 --> V3["In-Memory Buffer<br/>/api/telemetry/events"]
     end
 
@@ -69,7 +69,7 @@ flowchart TD
 ```
 
 ### Flow Details
-1. **Victim Application Telemetry Middleware**: Intercepts HTTP requests on `https://demo-victim-1.onrender.com`, records method, path, status, response time, and user identity, buffering them in memory.
+1. **Victim Application Telemetry Middleware**: Intercepts HTTP requests on `https://demo-victim.onrender.com`, records method, path, status, response time, and user identity, buffering them in memory.
 2. **Connector Execution (`juice_shop_background.py`)**: Runs inside the FastAPI lifespan using `asyncio.to_thread(_poll_once)` to avoid blocking the Uvicorn event loop. Polls every 10 seconds with `JUICE_SHOP_TELEMETRY_API_KEY`.
 3. **Database Normalization & Storage**:
    - `raw_logs`: Preserves the complete raw JSON string payload with source attribution.
@@ -119,9 +119,9 @@ Each platform feature is categorized according to its operational nature:
 
 ### A. Live Telemetry Verification (PostgreSQL Ingestion Test)
 During live production auditing:
-1. Probe request sent to `https://demo-victim-1.onrender.com/health` with `User-Agent: MiniSIEM-Diagnostic/1.0`.
+1. Probe request sent to `https://demo-victim.onrender.com/health` with `User-Agent: MiniSIEM-Diagnostic/1.0`.
 2. Within 4 seconds, the victim application buffered the event (`buffered_events: 3`).
-3. Within 10 seconds, the background collector on Render polled `https://demo-victim-1.onrender.com/api/telemetry/events` using `JUICE_SHOP_TELEMETRY_API_KEY`.
+3. Within 10 seconds, the background collector on Render polled `https://demo-victim.onrender.com/api/telemetry/events` using `JUICE_SHOP_TELEMETRY_API_KEY`.
 4. Event was ingested as `NormalizedEvent ID=5458`, `source_type="WEB"`, `request_path="/health"`, `created_at="2026-10-09T09:12:06.546809Z"`.
 5. Production total event count verified via `GET /api/events` incremented from **4,704** to **4,706**.
 6. Connector reported: `last_status: "HEALTHY"`, `consecutive_failures: 0`, `last_error: null`, `total_events_ingested: 3`.

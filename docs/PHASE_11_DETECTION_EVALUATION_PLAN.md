@@ -416,7 +416,7 @@ To isolate the specific contribution of Socket.IO polling to system noise:
   - Confusion matrix and latency computations.
 
 ### B. Separately Authorized Live Integration Tests (Staged, Gated)
-- **Scope**: Live testing against the configured victim application (`demo-victim-1.onrender.com`).
+- **Scope**: Live testing against the configured victim application (`demo-victim.onrender.com`).
 - **Prerequisites & Safeguards**:
   - Explicit operator authorization required prior to starting live runs.
   - Restrict traffic origin strictly to authorized IP addresses.
@@ -458,7 +458,7 @@ All evaluation scenarios will be stored in deterministic JSON schema format:
 ```
 
 ### B. Strict Safety Constraints
-1. **Zero External Scanning**: No traffic will be directed toward any host outside the explicitly authorized victim lab domain (`demo-victim-1.onrender.com`).
+1. **Zero External Scanning**: No traffic will be directed toward any host outside the explicitly authorized victim lab domain (`demo-victim.onrender.com`).
 2. **Read-Only Codebase Guarantee**: No source code, rule definitions, configuration files, or database tables will be altered during Stage 1.
 3. **No Threshold Declarations Without Measurement**: No rule threshold will be claimed as optimal without documented empirical metrics.
 4. **Preserve Production State**: Deployed Render backend and Vercel dashboard must not receive unauthorized synthetic bursts during evaluation design.

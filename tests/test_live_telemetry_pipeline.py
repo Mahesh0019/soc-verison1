@@ -71,7 +71,7 @@ class LiveTelemetryPipelineRunner:
         poll_interval_seconds: float = 2.5,
         duplicate_check_seconds: float = 10.0,
     ):
-        self.victim_url = (victim_url or os.getenv("LIVE_VICTIM_URL", "https://demo-victim-1.onrender.com")).rstrip("/")
+        self.victim_url = (victim_url or os.getenv("LIVE_VICTIM_URL", "https://demo-victim.onrender.com")).rstrip("/")
         self.backend_url = (backend_url or os.getenv("LIVE_BACKEND_URL", "https://soc-verison1.onrender.com")).rstrip("/")
         self.username = username or os.getenv("LIVE_SOC_USERNAME", "admin")
         self.password = password or os.getenv("LIVE_SOC_PASSWORD", "AdminPass123!")

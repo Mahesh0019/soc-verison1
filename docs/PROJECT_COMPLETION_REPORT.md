@@ -13,7 +13,7 @@ https://github.com/Mahesh0019/soc-verison1
 **PASS** — All 16 development phases fully implemented and verified.
 
 ## 5. Live SOC Status
-**PASS** — Public Vercel React SPA (`https://soc-verison1.vercel.app/`), Render FastAPI Backend, and Render OWASP Juice Shop Telemetry API (`https://demo-victim-1.onrender.com/api/telemetry/health`) active and verified end-to-end.
+**PASS** — Public Vercel React SPA (`https://soc-verison1.vercel.app/`), Render FastAPI Backend, and Render OWASP Juice Shop Telemetry API (`https://demo-victim.onrender.com/api/telemetry/health`) active and verified end-to-end.
 
 ## 6. Research Experiment Status
 **PASS** — Reproducible M0 through M6 benchmark evaluation pipeline executed with raw run JSON artifacts persisted in `research/runs/`.
