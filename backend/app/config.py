@@ -39,7 +39,15 @@ class Settings(BaseSettings):
             return v.replace("demo-victim-1.onrender.com", "demo-victim.onrender.com").strip()
         return "https://demo-victim.onrender.com/api/telemetry/events"
 
-    juice_shop_telemetry_api_key: str = ""
+    juice_shop_telemetry_api_key: str = "telemetry-secret-key-123"
+
+    @field_validator("juice_shop_telemetry_api_key", mode="before")
+    @classmethod
+    def default_telemetry_api_key(cls, v: Any) -> str:
+        if isinstance(v, str) and v.strip():
+            return v.strip()
+        return "telemetry-secret-key-123"
+
     poll_interval_seconds: float = 10.0
     batch_size: int = 50
     initial_admin_password: str | None = None

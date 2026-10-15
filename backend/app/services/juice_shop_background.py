@@ -66,18 +66,28 @@ _connector_metrics: dict[str, Any] = {
 }
 
 
+_connector_api_key: str = "telemetry-secret-key-123"
+
+
 def get_connector_status() -> dict[str, Any]:
     """Returns a snapshot of real-time connector metrics and health."""
     return dict(_connector_metrics)
 
 
-def configure_connector(upstream_url: str | None = None, poll_interval_seconds: float | None = None) -> dict[str, Any]:
+def configure_connector(
+    upstream_url: str | None = None,
+    poll_interval_seconds: float | None = None,
+    api_key: str | None = None,
+) -> dict[str, Any]:
     """Dynamically reconfigures the running telemetry connector in memory."""
+    global _connector_api_key
     if upstream_url:
         cleaned = upstream_url.replace("demo-victim-1.onrender.com", "demo-victim.onrender.com").strip()
         _connector_metrics["upstream_url"] = cleaned
     if poll_interval_seconds is not None and poll_interval_seconds > 0:
         _connector_metrics["poll_interval_seconds"] = float(poll_interval_seconds)
+    if api_key is not None:
+        _connector_api_key = api_key.strip()
     return get_connector_status()
 
 
@@ -216,10 +226,11 @@ async def _poll_loop(
             current_poll_interval = _connector_metrics.get("poll_interval_seconds") or poll_interval
 
             try:
+                active_api_key = _connector_api_key or telemetry_api_key or "telemetry-secret-key-123"
                 ingested = await asyncio.to_thread(
                     _poll_once,
                     current_url,
-                    telemetry_api_key,
+                    active_api_key,
                     current_poll_interval,
                     batch_size,
                     checkpoint_path,
@@ -297,8 +308,10 @@ def start_background_collector() -> None:
 
     settings = get_settings()
 
+    global _connector_api_key
     _connector_metrics["enabled"] = True
     _connector_metrics["running"] = True
+    _connector_api_key = settings.juice_shop_telemetry_api_key or "telemetry-secret-key-123"
     _connector_metrics["upstream_url"] = settings.juice_shop_telemetry_url.replace(
         "demo-victim-1.onrender.com", "demo-victim.onrender.com"
     ).strip()

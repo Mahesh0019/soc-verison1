@@ -24,6 +24,8 @@ services:
         value: "true"
       - key: JUICE_SHOP_TELEMETRY_URL
         value: "https://demo-victim.onrender.com/api/telemetry/events"
+      - key: JUICE_SHOP_TELEMETRY_API_KEY
+        value: "telemetry-secret-key-123"
       - key: POLL_INTERVAL_SECONDS
         value: "10.0"
 

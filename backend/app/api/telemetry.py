@@ -130,7 +130,9 @@ def update_telemetry_connector(
 
     upstream_url = payload.get("upstream_url")
     poll_interval_seconds = payload.get("poll_interval_seconds")
+    api_key = payload.get("api_key")
     return configure_connector(
         upstream_url=upstream_url,
         poll_interval_seconds=poll_interval_seconds,
+        api_key=api_key,
     )

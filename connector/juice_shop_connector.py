@@ -27,6 +27,7 @@ logger = logging.getLogger("JuiceShopConnector")
 
 # Default Constants
 DEFAULT_TELEMETRY_URL = "https://demo-victim.onrender.com/api/telemetry/events"
+DEFAULT_TELEMETRY_API_KEY = "telemetry-secret-key-123"
 DEFAULT_SIEM_INGEST_URL = "http://localhost:8000/api/logs/ingest"
 DEFAULT_POLL_INTERVAL = 10.0
 DEFAULT_BATCH_SIZE = 50
@@ -36,7 +37,7 @@ CHECKPOINT_FILE_PATH = Path(__file__).parent / ".checkpoint"
 class ConnectorConfig:
     def __init__(self) -> None:
         self.telemetry_url = os.getenv("JUICE_SHOP_TELEMETRY_URL", DEFAULT_TELEMETRY_URL)
-        self.telemetry_api_key = os.getenv("JUICE_SHOP_TELEMETRY_API_KEY", "")
+        self.telemetry_api_key = os.getenv("JUICE_SHOP_TELEMETRY_API_KEY", DEFAULT_TELEMETRY_API_KEY)
         self.siem_ingest_url = os.getenv("SIEM_INGEST_URL", DEFAULT_SIEM_INGEST_URL)
         self.siem_jwt_token = os.getenv("SIEM_JWT_TOKEN", "")
         
