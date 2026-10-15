@@ -87,7 +87,10 @@ def configure_connector(
     if poll_interval_seconds is not None and poll_interval_seconds > 0:
         _connector_metrics["poll_interval_seconds"] = float(poll_interval_seconds)
     if api_key is not None:
-        _connector_api_key = api_key.strip()
+        cleaned_key = api_key.strip().strip("'\"")
+        if cleaned_key.lower().startswith("bearer "):
+            cleaned_key = cleaned_key[7:].strip()
+        _connector_api_key = cleaned_key or "telemetry-secret-key-123"
     return get_connector_status()
 
 

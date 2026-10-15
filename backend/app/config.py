@@ -45,7 +45,10 @@ class Settings(BaseSettings):
     @classmethod
     def default_telemetry_api_key(cls, v: Any) -> str:
         if isinstance(v, str) and v.strip():
-            return v.strip()
+            cleaned = v.strip().strip("'\"")
+            if cleaned.lower().startswith("bearer "):
+                cleaned = cleaned[7:].strip()
+            return cleaned or "telemetry-secret-key-123"
         return "telemetry-secret-key-123"
 
     poll_interval_seconds: float = 10.0

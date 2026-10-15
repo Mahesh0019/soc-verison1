@@ -168,7 +168,10 @@ def fetch_telemetry(url: str, api_key: str, since: str | None = None, timeout: f
     req.add_header("Accept", "application/json")
     req.add_header("User-Agent", "JuiceShopConnector/1.0")
     if api_key:
-        req.add_header("Authorization", f"Bearer {api_key}")
+        cleaned_key = api_key.strip().strip("'\"")
+        if cleaned_key.lower().startswith("bearer "):
+            cleaned_key = cleaned_key[7:].strip()
+        req.add_header("Authorization", f"Bearer {cleaned_key}")
 
     try:
         with urllib.request.urlopen(req, timeout=timeout) as response:
