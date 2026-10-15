@@ -301,6 +301,52 @@ class TestEventsApiLegacyRegression(unittest.TestCase):
         # Ingestion count must still be 0
         self.assertEqual(status["total_events_ingested"], 0)
 
+    def test_exclude_noise_filters_socket_io_events(self):
+        """Verify that exclude_noise=True eliminates socket.io background polling records."""
+        # Insert a socket.io event and a real event
+        db = self.SessionLocal()
+        try:
+            ev_noise = NormalizedEvent(
+                timestamp=datetime.now(UTC),
+                source_ip="192.168.1.100",
+                event_type="web_request",
+                event_category="web",
+                source_type="WEB",
+                request_path="/health/socket.io/?EIO=4&transport=polling",
+                message="GET /health/socket.io returned 200",
+                severity="low",
+            )
+            ev_real = NormalizedEvent(
+                timestamp=datetime.now(UTC),
+                source_ip="192.168.1.100",
+                event_type="web_request",
+                event_category="web",
+                source_type="WEB",
+                request_path="/rest/products/search?q=testnoise",
+                message="GET /rest/products/search returned 200",
+                severity="low",
+            )
+            db.add_all([ev_noise, ev_real])
+            db.commit()
+        finally:
+            db.close()
+
+        # Query with exclude_noise=False
+        resp_all = self.client.get("/api/events?page_size=100&exclude_noise=false", headers=self.auth_headers)
+        self.assertEqual(resp_all.status_code, 200)
+        items_all = resp_all.json()["items"]
+        paths_all = [it.get("request_path") or "" for it in items_all]
+        self.assertTrue(any("socket.io" in p for p in paths_all))
+
+        # Query with exclude_noise=True
+        resp_filtered = self.client.get("/api/events?page_size=100&exclude_noise=true", headers=self.auth_headers)
+        self.assertEqual(resp_filtered.status_code, 200)
+        items_filtered = resp_filtered.json()["items"]
+        paths_filtered = [it.get("request_path") or "" for it in items_filtered]
+        self.assertFalse(any("socket.io" in p for p in paths_filtered))
+        self.assertTrue(any("/rest/products/search?q=testnoise" in p for p in paths_filtered))
+
 
 if __name__ == "__main__":
     unittest.main()
+

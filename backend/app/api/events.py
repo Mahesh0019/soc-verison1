@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.api.utils import apply_date_range, apply_keyword_search, apply_sort, paginate
@@ -34,10 +35,18 @@ def list_events(
     date_to: datetime | None = None,
     sort_by: str | None = "timestamp",
     sort_order: str = Query("desc", pattern="^(asc|desc)$"),
+    exclude_noise: bool = Query(False),
     _: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ) -> dict:
     query = db.query(NormalizedEvent)
+    if exclude_noise:
+        query = query.filter(
+            or_(
+                NormalizedEvent.request_path.is_(None),
+                ~NormalizedEvent.request_path.ilike("%socket.io%"),
+            )
+        )
     query = apply_keyword_search(
         query,
         NormalizedEvent,

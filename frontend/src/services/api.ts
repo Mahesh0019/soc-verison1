@@ -68,7 +68,7 @@ export async function fetchDashboard() {
   return data;
 }
 
-export async function fetchEvents(params: Record<string, string | number | undefined>) {
+export async function fetchEvents(params: Record<string, string | number | boolean | undefined>) {
   const { data } = await api.get<Page<NormalizedEvent>>("/events", { params: compact(params) });
   return data;
 }

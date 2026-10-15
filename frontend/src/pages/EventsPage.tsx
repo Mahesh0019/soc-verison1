@@ -4,12 +4,16 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
+  ExternalLink,
   Eye,
   EyeOff,
+  Pause,
   Play,
+  Radio,
   RefreshCw,
   Search,
   Shield,
+  Sparkles,
   UploadCloud,
   X,
 } from "lucide-react";
@@ -29,6 +33,8 @@ export function EventsPage() {
   const [page, setPage] = useState(1);
   const pageSize = 30;
   const [hidePollingNoise, setHidePollingNoise] = useState(true);
+  const [liveStreaming, setLiveStreaming] = useState(true);
+  const [newEventsNotice, setNewEventsNotice] = useState<number | null>(null);
   const [filters, setFilters] = useState({
     q: "",
     source_type: "",
@@ -40,23 +46,46 @@ export function EventsPage() {
   });
   const [showReplayModal, setShowReplayModal] = useState(false);
   const [replayResult, setReplayResult] = useState<ZeekReplayResponse | null>(null);
-  const requestIdRef = useRef(0);
 
-  const loadEvents = (targetPage: number = page, isManualRefresh: boolean = false) => {
+  const requestIdRef = useRef(0);
+  const lastTotalRef = useRef<number | null>(null);
+  const lastFetchTimeRef = useRef<number>(Date.now());
+
+  const loadEvents = (
+    targetPage: number = page,
+    mode: "initial" | "manual" | "silent" = "initial"
+  ) => {
     const reqId = ++requestIdRef.current;
-    if (isManualRefresh) {
+    if (mode === "manual") {
       setRefreshing(true);
-    } else {
+    } else if (mode === "initial") {
       setLoading(true);
+    } else {
+      setRefreshing(true);
     }
-    fetchEvents({ ...filters, page: targetPage, page_size: pageSize })
+
+    fetchEvents({
+      ...filters,
+      page: targetPage,
+      page_size: pageSize,
+      exclude_noise: hidePollingNoise,
+    })
       .then((res) => {
         if (reqId !== requestIdRef.current) return;
+
+        // Detect newly arrived telemetry from victim site
+        if (lastTotalRef.current !== null && res.total > lastTotalRef.current) {
+          const diff = res.total - lastTotalRef.current;
+          setNewEventsNotice(diff);
+          setTimeout(() => setNewEventsNotice(null), 5000);
+        }
+        lastTotalRef.current = res.total;
+        lastFetchTimeRef.current = Date.now();
 
         const maxPage = Math.max(1, Math.ceil(res.total / pageSize));
         // If targetPage exceeds total pages due to a count reduction and total > 0, clamp to maxPage
         if (targetPage > maxPage && res.total > 0) {
-          loadEvents(maxPage, isManualRefresh);
+          loadEvents(maxPage, mode);
           return;
         }
 
@@ -76,18 +105,51 @@ export function EventsPage() {
       });
   };
 
-  // Reset to page 1 whenever any filter changes
+  // Reset to page 1 whenever filters or noise suppression changes
   useEffect(() => {
     setPage(1);
-    loadEvents(1);
-  }, [filters]);
+    loadEvents(1, "initial");
+  }, [filters, hidePollingNoise]);
+
+  // Active continuous live stream polling (every 8 seconds when tab is active and modal closed)
+  useEffect(() => {
+    if (!liveStreaming || selected !== null) return;
+
+    const intervalId = setInterval(() => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") {
+        return; // Don't poll in background
+      }
+      loadEvents(page, "silent");
+    }, 8000);
+
+    return () => clearInterval(intervalId);
+  }, [liveStreaming, selected, page, filters, hidePollingNoise]);
+
+  // Tab switch synchronization: When returning to SIEM tab from victim app, sync immediately
+  useEffect(() => {
+    const handleVisibilityOrFocus = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "visible") {
+        const elapsed = Date.now() - lastFetchTimeRef.current;
+        if (elapsed >= 3000) {
+          loadEvents(page, "silent");
+        }
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityOrFocus);
+    window.addEventListener("focus", handleVisibilityOrFocus);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityOrFocus);
+      window.removeEventListener("focus", handleVisibilityOrFocus);
+    };
+  }, [page, filters, hidePollingNoise]);
 
   const handleRefresh = () => {
-    loadEvents(page, true);
+    loadEvents(page, "manual");
   };
 
   const handlePageChange = (newPage: number) => {
-    loadEvents(newPage);
+    loadEvents(newPage, "initial");
   };
 
   const rawEvents = data?.items || [];
@@ -102,28 +164,76 @@ export function EventsPage() {
       {/* Top action header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-zinc-100">Telemetry & Events</h1>
-          <p className="text-xs text-zinc-400">Multi-source event store (Web, Auth, Firewall, Zeek Network Telemetry)</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold tracking-tight text-zinc-100">Telemetry & Events</h1>
+            {liveStreaming ? (
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                <span className="relative flex h-1.5 w-1.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                </span>
+                LIVE STREAM
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-medium text-amber-400">
+                <Pause className="h-2.5 w-2.5" />
+                PAUSED
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-zinc-400">
+            Real-time telemetry ingestion from Victim Application (OWASP Juice Shop), Auth, Firewall & Zeek
+          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {/* Live Stream Auto-Poll Toggle Button */}
+          <button
+            onClick={() => setLiveStreaming((prev) => !prev)}
+            title={
+              liveStreaming
+                ? "Live telemetry streaming active (auto-polls every 8s and on tab focus). Click to pause."
+                : "Live telemetry streaming paused. Click to resume auto-streaming."
+            }
+            className={`focus-ring inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition ${
+              liveStreaming
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300 hover:bg-emerald-500/20"
+                : "border-surface-border bg-surface-raised text-zinc-400 hover:bg-surface-inset hover:text-zinc-200"
+            }`}
+          >
+            {liveStreaming ? (
+              <>
+                <span className="relative flex h-2 w-2 mr-0.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                Live (8s)
+              </>
+            ) : (
+              <>
+                <Pause className="h-3.5 w-3.5 text-amber-400" />
+                Stream Paused
+              </>
+            )}
+          </button>
+
           {/* Manual Refresh Button */}
           <button
             onClick={handleRefresh}
             disabled={loading || refreshing}
-            title="Refresh events while preserving current search term, filters, and page"
+            title="Refresh events immediately while preserving current search term, filters, and page"
             className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-surface-border bg-surface-raised px-3 py-2 text-xs font-medium text-zinc-300 transition hover:bg-surface-inset hover:text-zinc-100 disabled:opacity-50"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? "animate-spin text-cyan-400" : ""}`} />
             Refresh
           </button>
 
-          {/* UI-Only Noise Filter Toggle */}
+          {/* Noise Filter Toggle */}
           <button
             onClick={() => setHidePollingNoise((prev) => !prev)}
             title={
               hidePollingNoise
-                ? "Page-level display filter: Currently hiding Socket.IO background polling within the current page window. Click to show all."
-                : "Showing all events including Socket.IO background polling. Click to hide background polling on this page."
+                ? "Currently filtering background Socket.IO transport noise. Click to show all raw polling events."
+                : "Showing all events including Socket.IO polling. Click to exclude background noise."
             }
             className={`focus-ring inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition ${
               hidePollingNoise
@@ -132,8 +242,20 @@ export function EventsPage() {
             }`}
           >
             {hidePollingNoise ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-            {hidePollingNoise ? "Polling Hidden (Page Filter)" : "All Polling Shown"}
+            {hidePollingNoise ? "Noise Filtered" : "All Polling Shown"}
           </button>
+
+          {/* Direct Victim Site Link */}
+          <a
+            href="https://demo-victim-1.onrender.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open target victim application (OWASP Juice Shop) in a new tab to test interactions and generate live telemetry"
+            className="focus-ring inline-flex items-center gap-1.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-3 py-2 text-xs font-semibold text-cyan-300 transition hover:bg-cyan-500/20 hover:text-cyan-200"
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            Victim App ↗
+          </a>
 
           {/* Zeek Replay Action */}
           <button
@@ -141,10 +263,29 @@ export function EventsPage() {
             className="focus-ring inline-flex items-center gap-2 rounded-lg border border-purple-500/40 bg-purple-500/10 px-3 py-2 text-xs font-semibold text-purple-300 transition hover:bg-purple-500/20"
           >
             <Activity className="h-4 w-4" />
-            Replay Zeek Network Telemetry
+            Replay Zeek
           </button>
         </div>
       </div>
+
+      {/* New Ingested Telemetry Banner */}
+      {newEventsNotice !== null && newEventsNotice > 0 ? (
+        <div className="flex items-center justify-between rounded-lg border border-emerald-500/40 bg-emerald-950/30 px-3.5 py-2.5 text-xs text-emerald-300 animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 flex-shrink-0 text-emerald-400 animate-pulse" />
+            <span>
+              <strong>+{newEventsNotice} new telemetry event{newEventsNotice === 1 ? "" : "s"}</strong> received and ingested from victim site in real time!
+            </span>
+          </div>
+          <button
+            onClick={() => setNewEventsNotice(null)}
+            className="text-emerald-400 hover:text-emerald-200 focus-ring"
+            aria-label="Dismiss banner"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      ) : null}
 
       {/* Filters Bar */}
       <div className="rounded-lg border border-surface-border bg-surface-raised p-4">
