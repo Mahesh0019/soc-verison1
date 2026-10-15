@@ -30,6 +30,15 @@ class Settings(BaseSettings):
     # Juice Shop connector - disabled by default so local dev is unaffected
     enable_juice_shop_connector: bool = False
     juice_shop_telemetry_url: str = "https://demo-victim.onrender.com/api/telemetry/events"
+
+    @field_validator("juice_shop_telemetry_url", mode="before")
+    @classmethod
+    def sanitize_telemetry_url(cls, v: Any) -> str:
+        if isinstance(v, str) and v.strip():
+            # Automatically migrate legacy victim domain if set in Render environment
+            return v.replace("demo-victim-1.onrender.com", "demo-victim.onrender.com").strip()
+        return "https://demo-victim.onrender.com/api/telemetry/events"
+
     juice_shop_telemetry_api_key: str = ""
     poll_interval_seconds: float = 10.0
     batch_size: int = 50

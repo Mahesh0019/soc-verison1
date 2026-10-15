@@ -118,3 +118,19 @@ def get_telemetry_connector_status(_: User = Depends(get_current_user)) -> dict[
     from app.services.juice_shop_background import get_connector_status
 
     return get_connector_status()
+
+
+@router.post("/connector/configure")
+def update_telemetry_connector(
+    payload: dict[str, Any],
+    _: User = Depends(require_roles("admin")),
+) -> dict[str, Any]:
+    """Dynamically reconfigures the running telemetry connector in real-time."""
+    from app.services.juice_shop_background import configure_connector
+
+    upstream_url = payload.get("upstream_url")
+    poll_interval_seconds = payload.get("poll_interval_seconds")
+    return configure_connector(
+        upstream_url=upstream_url,
+        poll_interval_seconds=poll_interval_seconds,
+    )
