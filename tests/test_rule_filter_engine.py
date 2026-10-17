@@ -63,6 +63,7 @@ class TestRuleFilterEngine(unittest.TestCase):
         category: str = "web",
         status_code: int = 200,
         offset_seconds: int = 0,
+        http_method: str | None = "GET",
     ) -> NormalizedEvent:
         now = datetime(2026, 10, 10, 12, 0, 0, tzinfo=UTC) + timedelta(seconds=offset_seconds)
         return NormalizedEvent(
@@ -74,6 +75,7 @@ class TestRuleFilterEngine(unittest.TestCase):
             severity="low",
             source_ip=source_ip,
             request_path=path,
+            http_method=http_method,
             status_code=status_code,
             message="Test event",
         )
@@ -394,6 +396,74 @@ class TestRuleFilterEngine(unittest.TestCase):
             # 401 (/rest/products/search?bypass=...), 404 (/rest/products/2?ref=...), 405 (None) must be MATCHED
             # 402 (/health/socket.io/...), 403 (/assets/...) must be EXCLUDED
             self.assertEqual(matched_ids, [401, 404, 405])
+        finally:
+            db.close()
+
+    def test_13_exclude_get_exact_paths_in_memory(self):
+        """Verify exclude_get_exact_paths correctly filters GET metadata requests while preserving others."""
+        filters = {
+            "request_path_contains_any": ["/admin"],
+            "exclude_get_exact_paths": [
+                "/rest/admin/application-version",
+                "/rest/admin/application-configuration",
+            ],
+        }
+        # Benign GET metadata -> excluded
+        ev1 = self._create_event(501, "/rest/admin/application-version", http_method="GET")
+        self.assertFalse(event_matches_filters(ev1, filters))
+
+        ev2 = self._create_event(502, "/rest/admin/application-configuration/", http_method="GET")
+        self.assertFalse(event_matches_filters(ev2, filters))
+
+        # Query string on metadata -> excluded
+        ev3 = self._create_event(503, "/rest/admin/application-version?v=1", http_method="GET")
+        self.assertFalse(event_matches_filters(ev3, filters))
+
+        # Subpath of metadata -> NOT excluded (matched)
+        ev4 = self._create_event(504, "/rest/admin/application-version/secret", http_method="GET")
+        self.assertTrue(event_matches_filters(ev4, filters))
+
+        # Non-GET method on metadata endpoint -> NOT excluded (matched)
+        ev5 = self._create_event(505, "/rest/admin/application-configuration", http_method="POST")
+        self.assertTrue(event_matches_filters(ev5, filters))
+
+        # General admin path -> NOT excluded (matched)
+        ev6 = self._create_event(506, "/admin/dashboard", http_method="GET")
+        self.assertTrue(event_matches_filters(ev6, filters))
+
+    def test_14_database_apply_filters_exclude_get_exact_paths(self):
+        """Verify database apply_filters correctly filters exclude_get_exact_paths in SQL."""
+        db = self.SessionLocal()
+        try:
+            db.query(Alert).delete()
+            db.query(NormalizedEvent).delete()
+            db.commit()
+
+            events = [
+                self._create_event(601, "/rest/admin/application-version", http_method="GET"),
+                self._create_event(602, "/rest/admin/application-configuration", http_method="GET"),
+                self._create_event(603, "/rest/admin/application-configuration", http_method="POST"),
+                self._create_event(604, "/admin/users", http_method="GET"),
+                self._create_event(605, "/rest/admin/application-version/secrets", http_method="GET"),
+                self._create_event(606, None, http_method="GET"),
+            ]
+            db.add_all(events)
+            db.commit()
+
+            filters = {
+                "exclude_get_exact_paths": [
+                    "/rest/admin/application-version",
+                    "/rest/admin/application-configuration",
+                ],
+            }
+            query = db.query(NormalizedEvent)
+            query = apply_filters(query, filters)
+            results = query.order_by(NormalizedEvent.id.asc()).all()
+
+            matched_ids = [r.id for r in results]
+            # 601 and 602 (GET metadata) must be excluded
+            # 603 (POST), 604 (/admin/users), 605 (subpath), 606 (None) must be matched
+            self.assertEqual(matched_ids, [603, 604, 605, 606])
         finally:
             db.close()
 

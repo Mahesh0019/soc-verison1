@@ -170,7 +170,13 @@ def builtin_rules() -> list[dict[str, Any]]:
             "enabled": True,
             "conditions_json": {
                 "type": "threshold",
-                "filters": {"request_path_contains_any": ["/admin", "/login", "/wp-admin", "/.env"]},
+                "filters": {
+                    "request_path_contains_any": ["/admin", "/login", "/wp-admin", "/.env"],
+                    "exclude_get_exact_paths": [
+                        "/rest/admin/application-version",
+                        "/rest/admin/application-configuration",
+                    ],
+                },
                 "group_by": ["source_ip"],
             },
             "time_window_minutes": 10,

@@ -465,6 +465,20 @@ def event_matches_filters(event: NormalizedEvent, filters: dict[str, Any]) -> bo
                 norm_path = normalize_request_path(event.request_path)
                 if norm_path and any(str(token).lower() in norm_path for token in expected if token):
                     return False
+        elif key == "exclude_get_exact_paths":
+            if expected:
+                method = (getattr(event, "http_method", None) or "GET").upper()
+                if method == "GET":
+                    norm_path = normalize_request_path(event.request_path).rstrip("/")
+                    normalized_targets = {normalize_request_path(p).rstrip("/") for p in expected if p}
+                    if norm_path and norm_path in normalized_targets:
+                        return False
+        elif key == "request_path_not_in":
+            if expected:
+                norm_path = normalize_request_path(event.request_path).rstrip("/")
+                normalized_targets = {normalize_request_path(p).rstrip("/") for p in expected if p}
+                if norm_path and norm_path in normalized_targets:
+                    return False
         elif key == "user_agent_contains_any":
             haystack = (event.user_agent or "").lower()
             if not any(str(token).lower() in haystack for token in expected):
@@ -525,6 +539,43 @@ def apply_filters(query, filters: dict[str, Any]):
                     )
                     clauses = [~clean_path.ilike(f"%{token}%") for token in active_tokens]
                     query = query.filter(or_(NormalizedEvent.request_path.is_(None), and_(*clauses)))
+        elif key == "exclude_get_exact_paths":
+            if expected:
+                target_variants = set()
+                for p in expected:
+                    if p:
+                        clean_target = normalize_request_path(p).rstrip("/")
+                        target_variants.add(clean_target)
+                        target_variants.add(clean_target + "/")
+                if target_variants:
+                    clean_path = case(
+                        (NormalizedEvent.request_path.contains("?"), func.substr(NormalizedEvent.request_path, 1, func.instr(NormalizedEvent.request_path, "?") - 1)),
+                        (NormalizedEvent.request_path.contains("#"), func.substr(NormalizedEvent.request_path, 1, func.instr(NormalizedEvent.request_path, "#") - 1)),
+                        else_=NormalizedEvent.request_path,
+                    )
+                    is_get = or_(
+                        NormalizedEvent.http_method.is_(None),
+                        NormalizedEvent.http_method == "",
+                        func.upper(NormalizedEvent.http_method) == "GET",
+                    )
+                    is_excluded = func.lower(clean_path).in_(target_variants)
+                    query = query.filter(or_(NormalizedEvent.request_path.is_(None), ~and_(is_get, is_excluded)))
+        elif key == "request_path_not_in":
+            if expected:
+                target_variants = set()
+                for p in expected:
+                    if p:
+                        clean_target = normalize_request_path(p).rstrip("/")
+                        target_variants.add(clean_target)
+                        target_variants.add(clean_target + "/")
+                if target_variants:
+                    clean_path = case(
+                        (NormalizedEvent.request_path.contains("?"), func.substr(NormalizedEvent.request_path, 1, func.instr(NormalizedEvent.request_path, "?") - 1)),
+                        (NormalizedEvent.request_path.contains("#"), func.substr(NormalizedEvent.request_path, 1, func.instr(NormalizedEvent.request_path, "#") - 1)),
+                        else_=NormalizedEvent.request_path,
+                    )
+                    is_excluded = func.lower(clean_path).in_(target_variants)
+                    query = query.filter(or_(NormalizedEvent.request_path.is_(None), ~is_excluded))
         elif key == "user_agent_contains_any":
             clauses = [NormalizedEvent.user_agent.ilike(f"%{token}%") for token in expected]
             query = query.filter(or_(*clauses))
