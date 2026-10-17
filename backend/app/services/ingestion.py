@@ -94,7 +94,7 @@ def persist_events(
         db.add(event)
         events.append(event)
     db.flush()
-    alert_count = evaluate_rules_for_events(db, events)
+    alert_count = evaluate_rules_for_events(db, events, use_batched_threshold=True)
     db.commit()
     preview = events[:10]
     return {

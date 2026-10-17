@@ -5,12 +5,24 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 from sqlalchemy import and_, case, func, or_
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models import Alert, AlertEvent, DetectionRule, NormalizedEvent, ThreatIndicator
 
 
 ACTIVE_ALERT_STATUSES = ("open", "investigating")
+
+
+def ensure_utc(dt: datetime | None) -> datetime:
+    """Ensures a datetime object is timezone-aware in UTC, following project convention."""
+    if dt is None:
+        return datetime.now(UTC)
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt.astimezone(UTC)
 
 
 def evaluate_rules_for_events(
@@ -109,8 +121,8 @@ def evaluate_threshold_rule_batched(db: Session, rule: DetectionRule, events: li
         if not group_events:
             continue
 
-        min_ts = min(ev.timestamp for ev in group_events)
-        max_ts = max(ev.timestamp for ev in group_events)
+        min_ts = min(ensure_utc(ev.timestamp) for ev in group_events)
+        max_ts = max(ensure_utc(ev.timestamp) for ev in group_events)
         window_delta = timedelta(minutes=rule.time_window_minutes)
         start_ts = min_ts - window_delta
 
@@ -124,10 +136,11 @@ def evaluate_threshold_rule_batched(db: Session, rule: DetectionRule, events: li
         all_related = query.order_by(NormalizedEvent.timestamp.desc()).all()
 
         for event in group_events:
-            ev_start = event.timestamp - window_delta
+            ev_ts = ensure_utc(event.timestamp)
+            ev_start = ev_ts - window_delta
             window_matches = [
                 r for r in all_related
-                if ev_start <= r.timestamp <= event.timestamp and event_matches_filters(r, filters)
+                if ev_start <= ensure_utc(r.timestamp) <= ev_ts and event_matches_filters(r, filters)
             ][:250]
             if len(window_matches) >= rule.threshold:
                 alert = upsert_alert(db, rule, event, window_matches, group_dict)
@@ -356,19 +369,61 @@ def build_alert_description(rule: DetectionRule, related_events: list[Normalized
 
 
 def as_aware(value: datetime) -> datetime:
-    return value if value.tzinfo else value.replace(tzinfo=UTC)
+    return ensure_utc(value)
 
 
 def link_events(db: Session, alert: Alert, events: list[NormalizedEvent]) -> None:
-    pending = {(item.alert_id, item.event_id) for item in db.new if isinstance(item, AlertEvent)}
-    with db.no_autoflush:
-        existing = {row.event_id for row in db.query(AlertEvent).filter(AlertEvent.alert_id == alert.id).all()}
+    if not events:
+        return
+
+    # Ensure alert and any newly created events have their primary keys assigned
+    if alert.id is None or any(e.id is None for e in events):
+        db.flush()
+
+    unique_event_ids = list(dict.fromkeys(e.id for e in events if e.id is not None))
+    if not unique_event_ids or alert.id is None:
+        return
+
+    records = [{"alert_id": alert.id, "event_id": eid} for eid in unique_event_ids]
+
+    dialect_name = db.get_bind().dialect.name
+    if dialect_name == "postgresql":
+        stmt = pg_insert(AlertEvent).values(records).on_conflict_do_nothing(
+            index_elements=["alert_id", "event_id"]
+        )
+        db.execute(stmt)
+    elif dialect_name == "sqlite":
+        stmt = sqlite_insert(AlertEvent).values(records).on_conflict_do_nothing(
+            index_elements=["alert_id", "event_id"]
+        )
+        db.execute(stmt)
+    else:
+        # Fallback for other dialects: check existing and insert with savepoint
+        with db.no_autoflush:
+            existing = {
+                row.event_id
+                for row in db.query(AlertEvent.event_id)
+                .filter(AlertEvent.alert_id == alert.id, AlertEvent.event_id.in_(unique_event_ids))
+                .all()
+            }
+        for eid in unique_event_ids:
+            if eid not in existing:
+                try:
+                    with db.begin_nested():
+                        db.add(AlertEvent(alert_id=alert.id, event_id=eid))
+                        db.flush()
+                except IntegrityError as exc:
+                    err_msg = str(exc).lower()
+                    if "uq_alert_event" in err_msg or ("alert_events.alert_id" in err_msg and "alert_events.event_id" in err_msg):
+                        pass
+                    else:
+                        raise
+
+    # Expire events relationship so subsequent ORM access loads all current links
+    db.expire(alert, ["events"])
     for event in events:
-        key = (alert.id, event.id)
-        if event.id not in existing and key not in pending:
-            db.add(AlertEvent(alert_id=alert.id, event_id=event.id))
-            existing.add(event.id)
-            pending.add(key)
+        if event.id is not None:
+            db.expire(event, ["alert_links"])
 
 
 def normalize_request_path(raw_path: str | None) -> str:
