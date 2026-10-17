@@ -8,9 +8,29 @@ from sqlalchemy import and_, case, func, or_
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.functions import GenericFunction
 
 from app.models import Alert, AlertEvent, DetectionRule, NormalizedEvent, ThreatIndicator
+
+
+class instr(GenericFunction):
+    """Cross-dialect string position function.
+
+    In SQLite / standard SQL: instr(haystack, needle) -> 1-based index or 0.
+    In PostgreSQL: compiles to strpos(haystack, needle) -> 1-based index or 0.
+    """
+
+    name = "instr"
+    inherit_cache = True
+
+
+@compiles(instr, "postgresql")
+def _compile_instr_postgresql(element, compiler, **kw):
+    args = [compiler.process(clause, **kw) for clause in element.clauses]
+    return f"strpos({', '.join(args)})"
+
 
 
 ACTIVE_ALERT_STATUSES = ("open", "investigating")
@@ -520,6 +540,27 @@ def event_matches_filters(event: NormalizedEvent, filters: dict[str, Any]) -> bo
     return True
 
 
+def _clean_request_path_expression():
+    """SQL expression that strips query strings ('?') and fragments ('#') from request_path.
+
+    Evaluates position of '?' and '#' using cross-dialect instr/strpos to cleanly
+    extract the bare URL path across both SQLite and PostgreSQL.
+    """
+    col = NormalizedEvent.request_path
+    return case(
+        (
+            and_(col.contains("?"), col.contains("#")),
+            case(
+                (func.instr(col, "?") < func.instr(col, "#"), func.substr(col, 1, func.instr(col, "?") - 1)),
+                else_=func.substr(col, 1, func.instr(col, "#") - 1),
+            ),
+        ),
+        (col.contains("?"), func.substr(col, 1, func.instr(col, "?") - 1)),
+        (col.contains("#"), func.substr(col, 1, func.instr(col, "#") - 1)),
+        else_=col,
+    )
+
+
 def apply_filters(query, filters: dict[str, Any]):
     for key, expected in filters.items():
         if key == "status_code_range":
@@ -532,11 +573,7 @@ def apply_filters(query, filters: dict[str, Any]):
             if expected:
                 active_tokens = [str(token) for token in expected if token]
                 if active_tokens:
-                    clean_path = case(
-                        (NormalizedEvent.request_path.contains("?"), func.substr(NormalizedEvent.request_path, 1, func.instr(NormalizedEvent.request_path, "?") - 1)),
-                        (NormalizedEvent.request_path.contains("#"), func.substr(NormalizedEvent.request_path, 1, func.instr(NormalizedEvent.request_path, "#") - 1)),
-                        else_=NormalizedEvent.request_path,
-                    )
+                    clean_path = _clean_request_path_expression()
                     clauses = [~clean_path.ilike(f"%{token}%") for token in active_tokens]
                     query = query.filter(or_(NormalizedEvent.request_path.is_(None), and_(*clauses)))
         elif key == "exclude_get_exact_paths":
@@ -548,11 +585,7 @@ def apply_filters(query, filters: dict[str, Any]):
                         target_variants.add(clean_target)
                         target_variants.add(clean_target + "/")
                 if target_variants:
-                    clean_path = case(
-                        (NormalizedEvent.request_path.contains("?"), func.substr(NormalizedEvent.request_path, 1, func.instr(NormalizedEvent.request_path, "?") - 1)),
-                        (NormalizedEvent.request_path.contains("#"), func.substr(NormalizedEvent.request_path, 1, func.instr(NormalizedEvent.request_path, "#") - 1)),
-                        else_=NormalizedEvent.request_path,
-                    )
+                    clean_path = _clean_request_path_expression()
                     is_get = or_(
                         NormalizedEvent.http_method.is_(None),
                         NormalizedEvent.http_method == "",
@@ -569,11 +602,7 @@ def apply_filters(query, filters: dict[str, Any]):
                         target_variants.add(clean_target)
                         target_variants.add(clean_target + "/")
                 if target_variants:
-                    clean_path = case(
-                        (NormalizedEvent.request_path.contains("?"), func.substr(NormalizedEvent.request_path, 1, func.instr(NormalizedEvent.request_path, "?") - 1)),
-                        (NormalizedEvent.request_path.contains("#"), func.substr(NormalizedEvent.request_path, 1, func.instr(NormalizedEvent.request_path, "#") - 1)),
-                        else_=NormalizedEvent.request_path,
-                    )
+                    clean_path = _clean_request_path_expression()
                     is_excluded = func.lower(clean_path).in_(target_variants)
                     query = query.filter(or_(NormalizedEvent.request_path.is_(None), ~is_excluded))
         elif key == "user_agent_contains_any":

@@ -16,7 +16,12 @@ Regression test suite for RULE-007 (Repeated sensitive path access) exact-path e
 
 from __future__ import annotations
 
+import os
+import shutil
+import subprocess
 import sys
+import tempfile
+import time
 import unittest
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -348,6 +353,145 @@ class TestRule007ExclusionRegression(unittest.TestCase):
         self.assertEqual(unbatched_links, batched_links)
         self.assertEqual(unbatched_links, [93, 94, 95, 96, 97])
 
+    def test_tc11_postgresql_rule_007_threshold_evaluation_equivalence(self):
+        """TC-11: Verify RULE-007 evaluation against a real PostgreSQL 16 database."""
+        pg_bin = r"C:\Program Files\PostgreSQL\16\bin"
+        initdb_exe = os.path.join(pg_bin, "initdb.exe")
+        pg_ctl_exe = os.path.join(pg_bin, "pg_ctl.exe")
+        if not os.path.exists(initdb_exe) or not os.path.exists(pg_ctl_exe):
+            self.skipTest("PostgreSQL 16 binaries not available for local test cluster")
+
+        port = 5446
+        data_dir = os.path.join(tempfile.gettempdir(), f"pg_reg_{int(time.time() * 1000) % 1000000}").replace("\\", "/")
+        log_file = os.path.join(tempfile.gettempdir(), f"pg_reg_{int(time.time() * 1000) % 1000000}.log").replace("\\", "/")
+
+        init_res = subprocess.run(
+            [initdb_exe, "-D", data_dir, "-U", "postgres", "-A", "trust", "--no-locale", "-E", "UTF8"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        if init_res.returncode != 0:
+            self.skipTest("PostgreSQL initdb failed")
+
+        subprocess.run(
+            [pg_ctl_exe, "-D", data_dir, "-l", log_file, "-o", f"-p {port}", "start"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+        import psycopg
+
+        ready = False
+        for _ in range(12):
+            try:
+                c = psycopg.connect(f"postgresql://postgres@127.0.0.1:{port}/postgres", connect_timeout=1)
+                c.close()
+                ready = True
+                break
+            except Exception:
+                time.sleep(0.3)
+
+        if not ready:
+            self.skipTest("PostgreSQL failed to become ready")
+
+        pg_url = f"postgresql+psycopg://postgres@127.0.0.1:{port}/postgres"
+        pg_eng = create_engine(pg_url)
+        Base.metadata.create_all(pg_eng)
+        PgSession = sessionmaker(bind=pg_eng, autoflush=False, autocommit=False)
+        db_pg = PgSession()
+
+        try:
+            # Seed builtin rules
+            ensure_builtin_rules(db_pg)
+            db_pg.commit()
+
+            rule_007 = db_pg.query(DetectionRule).filter(DetectionRule.rule_id == "RULE-007").first()
+            self.assertIsNotNone(rule_007)
+
+            # Ingest 4 benign events (should be excluded) and 4 attack events (should alert)
+            base_time = datetime(2026, 10, 17, 12, 0, 0, tzinfo=UTC)
+            events = []
+            
+            # 4 Benign metadata requests
+            for i in range(4):
+                raw = RawLog(source_type="web", original_content=f"benign_{i}")
+                db_pg.add(raw)
+                db_pg.flush()
+                ev = NormalizedEvent(
+                    id=300 + i,
+                    raw_log_id=raw.id,
+                    timestamp=base_time + timedelta(seconds=i * 5),
+                    source_type="WEB",
+                    event_category="web",
+                    event_type="web_request",
+                    severity="low",
+                    source_ip="198.51.100.99",
+                    request_path="/rest/admin/application-version?_v=1#app",
+                    http_method="GET",
+                    status_code=304,
+                    message="Benign metadata fetch",
+                )
+                events.append(ev)
+                db_pg.add(ev)
+
+            # 4 Genuine reconnaissance attacks
+            for i in range(4):
+                raw = RawLog(source_type="web", original_content=f"attack_{i}")
+                db_pg.add(raw)
+                db_pg.flush()
+                ev = NormalizedEvent(
+                    id=400 + i,
+                    raw_log_id=raw.id,
+                    timestamp=base_time + timedelta(seconds=30 + i * 5),
+                    source_type="WEB",
+                    event_category="web",
+                    event_type="web_request",
+                    severity="high",
+                    source_ip="198.51.100.99",
+                    request_path="/admin/users",
+                    http_method="GET",
+                    status_code=403,
+                    message="Sensitive admin probe",
+                )
+                events.append(ev)
+                db_pg.add(ev)
+
+            db_pg.commit()
+
+            # Evaluate RULE-007 on real PostgreSQL
+            alert_count = evaluate_rules_for_events(
+                db_pg, events, auto_correlate=False, use_batched_threshold=True, rules_override=[rule_007]
+            )
+            db_pg.commit()
+
+            self.assertEqual(alert_count, 1, "Expected exactly 1 alert from genuine reconnaissance on PostgreSQL")
+            alert = db_pg.query(Alert).filter(Alert.rule_id == rule_007.id).first()
+            self.assertIsNotNone(alert)
+            self.assertEqual(alert.event_count, 4, "Alert must link only the 4 genuine attack events, not the 4 benign metadata events")
+
+            linked_ids = sorted([link.event_id for link in db_pg.query(AlertEvent).filter(AlertEvent.alert_id == alert.id).all()])
+            self.assertEqual(linked_ids, [400, 401, 402, 403], "Linked event IDs on PostgreSQL must be the attack events only")
+
+        finally:
+            db_pg.close()
+            pg_eng.dispose()
+            subprocess.run(
+                [pg_ctl_exe, "-D", data_dir, "stop", "-m", "immediate"],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            time.sleep(0.5)
+            shutil.rmtree(data_dir, ignore_errors=True)
+            if os.path.exists(log_file):
+                try:
+                    os.unlink(log_file)
+                except Exception:
+                    pass
+
 
 if __name__ == "__main__":
     unittest.main()
+

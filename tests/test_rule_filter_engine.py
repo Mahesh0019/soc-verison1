@@ -14,7 +14,11 @@ Unit tests for rule-filter engine enhancements in Phase 11 Stage 3:
 from __future__ import annotations
 
 import os
+import shutil
+import subprocess
 import sys
+import tempfile
+import time
 import unittest
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -467,7 +471,231 @@ class TestRuleFilterEngine(unittest.TestCase):
         finally:
             db.close()
 
+    def _create_matrix_events(self) -> list[NormalizedEvent]:
+        events_spec = [
+            # Benign metadata requests that MUST be excluded from RULE-007 exact path filter:
+            (701, "GET", "/rest/admin/application-version", "exact version"),
+            (702, "GET", "/rest/admin/application-version/", "version trailing slash"),
+            (703, "GET", "/rest/admin/application-version?format=json", "version with query"),
+            (704, "GET", "/rest/admin/application-version#meta", "version with fragment"),
+            (705, "GET", "/rest/admin/application-version?format=json#meta", "version with query & fragment"),
+            (706, "GET", "/rest/admin/application-version#meta?format=json", "version fragment then query"),
+            (707, "GET", "/REST/ADMIN/APPLICATION-VERSION", "version uppercase"),
+            (708, "GET", "/REST/admin/application-version?A=1", "version mixed case with query"),
+            (709, "GET", "/rest/admin/application-configuration", "exact config"),
+            (710, "GET", "/rest/admin/application-configuration/", "config trailing slash"),
+            (711, "GET", "/rest/admin/application-configuration?keys=true", "config with query"),
+            (712, "GET", "/rest/admin/application-configuration#schema", "config with fragment"),
+            (713, "GET", "/REST/ADMIN/APPLICATION-CONFIGURATION", "config uppercase"),
+            # Requests that MUST NOT be excluded (retained to trigger alerts):
+            (801, "POST", "/rest/admin/application-version", "non-GET method POST"),
+            (802, "PUT", "/rest/admin/application-version", "non-GET method PUT"),
+            (803, "DELETE", "/rest/admin/application-configuration", "non-GET method DELETE"),
+            (804, "GET", "/rest/admin/application-version/subpath", "version subpath probe"),
+            (805, "GET", "/rest/admin/application-version/v2", "version subpath v2"),
+            (806, "GET", "/rest/admin/application-versions", "version variant path"),
+            (807, "GET", "/rest/admin/application-configuration/users", "config subpath probe"),
+            (808, "GET", "/admin/secrets", "sensitive path /admin"),
+            (809, "GET", "/admin/setup", "sensitive path /admin/setup"),
+            (810, "GET", "/login", "sensitive path /login"),
+            (811, "GET", "/.env", "sensitive path /.env"),
+            (812, "GET", "/wp-admin", "sensitive path /wp-admin"),
+            # Unrelated ordinary traffic (filtered out by path_contains_any):
+            (901, "GET", "/products", "ordinary products"),
+            (902, "GET", "/assets/app.js", "static asset"),
+        ]
+        events = []
+        now = datetime(2026, 10, 17, 12, 0, 0, tzinfo=UTC)
+        for eid, method, path, desc in events_spec:
+            ev = NormalizedEvent(
+                id=eid,
+                timestamp=now,
+                source_type="test_connector",
+                event_type="web_request",
+                event_category="web",
+                severity="low",
+                source_ip="198.51.100.10",
+                request_path=path,
+                http_method=method,
+                status_code=200,
+                message=f"Event {eid}: {method} {path} ({desc})",
+            )
+            events.append(ev)
+        return events
+
+    def _provision_ephemeral_postgresql(self, port: int = 5442):
+        pg_bin = r"C:\Program Files\PostgreSQL\16\bin"
+        initdb_exe = os.path.join(pg_bin, "initdb.exe")
+        pg_ctl_exe = os.path.join(pg_bin, "pg_ctl.exe")
+        if not os.path.exists(initdb_exe) or not os.path.exists(pg_ctl_exe):
+            return None, None
+
+        data_dir = os.path.join(tempfile.gettempdir(), f"pg_flt_{int(time.time() * 1000) % 1000000}").replace("\\", "/")
+        log_file = os.path.join(tempfile.gettempdir(), f"pg_flt_{int(time.time() * 1000) % 1000000}.log").replace("\\", "/")
+
+        init_res = subprocess.run(
+            [initdb_exe, "-D", data_dir, "-U", "postgres", "-A", "trust", "--no-locale", "-E", "UTF8"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+        if init_res.returncode != 0:
+            return None, None
+
+        subprocess.run(
+            [pg_ctl_exe, "-D", data_dir, "-l", log_file, "-o", f"-p {port}", "start"],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+
+        import psycopg
+
+        ready = False
+        for _ in range(12):
+            try:
+                c = psycopg.connect(f"postgresql://postgres@127.0.0.1:{port}/postgres", connect_timeout=1)
+                c.close()
+                ready = True
+                break
+            except Exception:
+                time.sleep(0.3)
+
+        if not ready:
+            return None, None
+
+        pg_url = f"postgresql+psycopg://postgres@127.0.0.1:{port}/postgres"
+        engine = create_engine(pg_url)
+        Base.metadata.create_all(engine)
+
+        def cleanup():
+            try:
+                engine.dispose()
+            except Exception:
+                pass
+            subprocess.run(
+                [pg_ctl_exe, "-D", data_dir, "stop", "-m", "immediate"],
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            time.sleep(0.5)
+            shutil.rmtree(data_dir, ignore_errors=True)
+            if os.path.exists(log_file):
+                try:
+                    os.unlink(log_file)
+                except Exception:
+                    pass
+
+        return engine, cleanup
+
+    def test_15_database_apply_filters_postgresql_equivalence(self):
+        """Verify apply_filters produces identical results across In-Memory, SQLite, and PostgreSQL 16."""
+        rule_7_filters = {
+            "request_path_contains_any": ["/admin", "/login", "/wp-admin", "/.env"],
+            "exclude_get_exact_paths": [
+                "/rest/admin/application-version",
+                "/rest/admin/application-configuration",
+            ],
+        }
+        expected_retained = {801, 802, 803, 804, 805, 806, 807, 808, 809, 810, 811, 812}
+
+        # 1. In-memory evaluation
+        events = self._create_matrix_events()
+        mem_matched = {e.id for e in events if event_matches_filters(e, rule_7_filters)}
+        self.assertEqual(mem_matched, expected_retained, "In-memory evaluation must match expected retained events")
+
+        # 2. SQLite database query evaluation
+        db_sqlite = self.SessionLocal()
+        try:
+            db_sqlite.query(NormalizedEvent).delete()
+            db_sqlite.commit()
+            db_sqlite.add_all(events)
+            db_sqlite.commit()
+
+            sq_results = apply_filters(db_sqlite.query(NormalizedEvent), rule_7_filters).all()
+            sq_matched = {r.id for r in sq_results}
+            self.assertEqual(sq_matched, expected_retained, "SQLite query must match expected retained events")
+            self.assertEqual(sq_matched, mem_matched, "SQLite query must exactly equal in-memory filtering")
+        finally:
+            db_sqlite.close()
+
+        # 3. PostgreSQL database query evaluation
+        pg_engine, pg_cleanup = self._provision_ephemeral_postgresql(port=5443)
+        if pg_engine is None:
+            self.skipTest("PostgreSQL 16 binaries not available or failed to start")
+
+        try:
+            PgSession = sessionmaker(bind=pg_engine)
+            db_pg = PgSession()
+            pg_events = self._create_matrix_events()
+            db_pg.add_all(pg_events)
+            db_pg.commit()
+
+            pg_results = apply_filters(db_pg.query(NormalizedEvent), rule_7_filters).all()
+            pg_matched = {r.id for r in pg_results}
+            self.assertEqual(pg_matched, expected_retained, "PostgreSQL query must match expected retained events")
+            self.assertEqual(pg_matched, mem_matched, "PostgreSQL query must exactly equal in-memory filtering")
+            self.assertEqual(pg_matched, sq_matched, "PostgreSQL query must exactly equal SQLite filtering")
+            db_pg.close()
+        finally:
+            pg_cleanup()
+
+    def test_16_database_apply_filters_not_contains_any_cross_dialect(self):
+        """Verify request_path_not_contains_any with query strings and fragments executes on PostgreSQL 16."""
+        pg_engine, pg_cleanup = self._provision_ephemeral_postgresql(port=5444)
+        if pg_engine is None:
+            self.skipTest("PostgreSQL 16 binaries not available or failed to start")
+
+        try:
+            PgSession = sessionmaker(bind=pg_engine)
+            db_pg = PgSession()
+            now = datetime(2026, 10, 17, 12, 0, 0, tzinfo=UTC)
+            events = [
+                NormalizedEvent(id=1, timestamp=now, source_type="test", event_type="web", event_category="web", severity="low", message="Test 1", request_path="/admin/test?q=1"),
+                NormalizedEvent(id=2, timestamp=now, source_type="test", event_type="web", event_category="web", severity="low", message="Test 2", request_path="/socket.io/?EIO=3#hash"),
+                NormalizedEvent(id=3, timestamp=now, source_type="test", event_type="web", event_category="web", severity="low", message="Test 3", request_path="/assets/styles.css"),
+                NormalizedEvent(id=4, timestamp=now, source_type="test", event_type="web", event_category="web", severity="low", message="Test 4", request_path="/api/feed"),
+            ]
+            db_pg.add_all(events)
+            db_pg.commit()
+
+            filters = {"request_path_not_contains_any": ["socket.io", "assets"]}
+            results = apply_filters(db_pg.query(NormalizedEvent), filters).order_by(NormalizedEvent.id.asc()).all()
+            matched_ids = [r.id for r in results]
+            self.assertEqual(matched_ids, [1, 4])
+            db_pg.close()
+        finally:
+            pg_cleanup()
+
+    def test_17_database_apply_filters_not_in_cross_dialect(self):
+        """Verify request_path_not_in with query strings and fragments executes on PostgreSQL 16."""
+        pg_engine, pg_cleanup = self._provision_ephemeral_postgresql(port=5445)
+        if pg_engine is None:
+            self.skipTest("PostgreSQL 16 binaries not available or failed to start")
+
+        try:
+            PgSession = sessionmaker(bind=pg_engine)
+            db_pg = PgSession()
+            now = datetime(2026, 10, 17, 12, 0, 0, tzinfo=UTC)
+            events = [
+                NormalizedEvent(id=1, timestamp=now, source_type="test", event_type="web", event_category="web", severity="low", message="Test 1", request_path="/api/health?check=1"),
+                NormalizedEvent(id=2, timestamp=now, source_type="test", event_type="web", event_category="web", severity="low", message="Test 2", request_path="/api/health"),
+                NormalizedEvent(id=3, timestamp=now, source_type="test", event_type="web", event_category="web", severity="low", message="Test 3", request_path="/api/feed"),
+            ]
+            db_pg.add_all(events)
+            db_pg.commit()
+
+            filters = {"request_path_not_in": ["/api/health"]}
+            results = apply_filters(db_pg.query(NormalizedEvent), filters).order_by(NormalizedEvent.id.asc()).all()
+            matched_ids = [r.id for r in results]
+            self.assertEqual(matched_ids, [3])
+            db_pg.close()
+        finally:
+            pg_cleanup()
+
 
 if __name__ == "__main__":
     unittest.main()
+
 
