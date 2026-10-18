@@ -17,6 +17,9 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import insert as pg_insert
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models import Alert, Incident, IncidentAlert
@@ -110,6 +113,57 @@ def next_incident_number(db: Session) -> str:
     return f"INC-{(count + 1):03d}"
 
 
+def link_incident_alert(db: Session, incident_id: int, alert_id: int) -> None:
+    """
+    Idempotently links an Alert to an Incident.
+    Uses targeted ON CONFLICT (incident_id, alert_id) DO NOTHING on PostgreSQL and SQLite
+    to prevent concurrent duplicate-key violations while preserving unrelated integrity errors.
+    """
+    if incident_id is None or alert_id is None:
+        db.flush()
+    if incident_id is None or alert_id is None:
+        return
+
+    records = [{"incident_id": incident_id, "alert_id": alert_id}]
+    dialect_name = db.get_bind().dialect.name
+
+    if dialect_name == "postgresql":
+        stmt = pg_insert(IncidentAlert).values(records).on_conflict_do_nothing(
+            index_elements=["incident_id", "alert_id"]
+        )
+        db.execute(stmt)
+    elif dialect_name == "sqlite":
+        stmt = sqlite_insert(IncidentAlert).values(records).on_conflict_do_nothing(
+            index_elements=["incident_id", "alert_id"]
+        )
+        db.execute(stmt)
+    else:
+        with db.no_autoflush:
+            existing = (
+                db.query(IncidentAlert.id)
+                .filter(
+                    IncidentAlert.incident_id == incident_id,
+                    IncidentAlert.alert_id == alert_id,
+                )
+                .first()
+            )
+        if not existing:
+            try:
+                with db.begin_nested():
+                    db.add(IncidentAlert(incident_id=incident_id, alert_id=alert_id))
+                    db.flush()
+            except IntegrityError as exc:
+                err_msg = str(exc).lower()
+                # Narrowed to match strictly uq_incident_alert (PostgreSQL/named constraint)
+                # or composite incident_alerts (incident_id, alert_id) in SQLite.
+                # Unrelated unique constraints or foreign key violations will NOT match and will re-raise.
+                if "uq_incident_alert" in err_msg or ("incident_alerts.incident_id" in err_msg and "incident_alerts.alert_id" in err_msg):
+                    pass
+                else:
+                    raise
+
+
+
 def correlate_incidents(
     db: Session,
     touched_alert_ids: set[int],
@@ -124,6 +178,7 @@ def correlate_incidents(
 
     alerts = db.query(Alert).filter(Alert.id.in_(touched_alert_ids)).all()
     affected_incidents: dict[int, Incident] = {}
+    incident_alerts_cache: dict[int, list[Alert]] = {}
 
     for alert in alerts:
         source_ip = alert.source_ip
@@ -155,18 +210,9 @@ def correlate_incidents(
         last_seen_aware = alert.last_seen
 
         if incident:
-            # Check if alert is already linked
-            already_linked = (
-                db.query(IncidentAlert)
-                .filter(
-                    IncidentAlert.incident_id == incident.id,
-                    IncidentAlert.alert_id == alert.id,
-                )
-                .first()
-            )
-            if not already_linked:
-                db.add(IncidentAlert(incident_id=incident.id, alert_id=alert.id))
-                db.flush()
+            # Idempotently associate alert with incident without duplicate-key races
+            link_incident_alert(db, incident.id, alert.id)
+            db.expire(incident, ["alerts"])
 
             # Extend timestamps
             from app.services.correlation_service import ensure_utc
@@ -194,6 +240,7 @@ def correlate_incidents(
                 f"Observed stages: {stages_str} (correlation strength: {metrics['correlation_strength']})."
             )
 
+            incident_alerts_cache[incident.id] = linked_alerts
             affected_incidents[incident.id] = incident
 
         else:
@@ -226,9 +273,10 @@ def correlate_incidents(
             db.add(new_incident)
             db.flush()
 
-            db.add(IncidentAlert(incident_id=new_incident.id, alert_id=alert.id))
-            db.flush()
+            link_incident_alert(db, new_incident.id, alert.id)
+            db.expire(new_incident, ["alerts"])
 
+            incident_alerts_cache[new_incident.id] = [alert]
             affected_incidents[new_incident.id] = new_incident
 
     # Enrich affected incidents with Phase 6 Unified timeline, graph, and explainable scores
@@ -241,12 +289,16 @@ def correlate_incidents(
     )
 
     for inc in affected_incidents.values():
-        linked_alerts = (
-            db.query(Alert)
-            .join(IncidentAlert, IncidentAlert.alert_id == Alert.id)
-            .filter(IncidentAlert.incident_id == inc.id)
-            .all()
-        )
+        cached_alerts = incident_alerts_cache.get(inc.id)
+        if cached_alerts is not None:
+            linked_alerts = cached_alerts
+        else:
+            linked_alerts = (
+                db.query(Alert)
+                .join(IncidentAlert, IncidentAlert.alert_id == Alert.id)
+                .filter(IncidentAlert.incident_id == inc.id)
+                .all()
+            )
         linked_alert_ids = [a.id for a in linked_alerts]
         linked_events = (
             db.query(NormalizedEvent)
