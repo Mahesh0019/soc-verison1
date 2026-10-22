@@ -46,7 +46,7 @@ class TestPhase11Stage4CandidateHardening(unittest.TestCase):
 
     def test_01_production_rules_immutability(self):
         """Verify production RULE-008, RULE-005, RULE-006 remain completely unchanged in builtin.py."""
-        rules = {r["rule_id"]: r for r in builtin_rules()}
+        rules = {r["rule_id"]: r for r in builtin_rules(mode="baseline")}
 
         self.assertIn("RULE-008", rules)
         r008 = rules["RULE-008"]

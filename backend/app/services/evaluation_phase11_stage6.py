@@ -776,7 +776,7 @@ def get_all_stage6_scenarios() -> List[LabeledScenario]:
 # ---------------------------------------------------------------------------
 
 def build_stage6_rules(config_name: str) -> List[dict[str, Any]]:
-    raw_rules = copy.deepcopy(builtin_rules())
+    raw_rules = copy.deepcopy(builtin_rules(mode="baseline"))
 
     if config_name == "baseline":
         # Production Builtin Rules Unmodified

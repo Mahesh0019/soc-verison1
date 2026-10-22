@@ -499,7 +499,7 @@ class IsolatedEvaluationRunner:
     def _init_database(self):
         db = self.SessionLocal()
         try:
-            ensure_builtin_rules(db)
+            ensure_builtin_rules(db, mode="baseline")
             ensure_indicators(db)
             db.commit()
         finally:

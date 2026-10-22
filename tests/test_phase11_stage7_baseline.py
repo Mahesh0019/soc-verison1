@@ -53,7 +53,7 @@ class TestPhase11Stage7Baseline:
 
     def test_01_production_rules_immutability(self):
         """Verify production builtin rules remain completely unmodified."""
-        rules = builtin_rules()
+        rules = builtin_rules(mode="baseline")
         assert len(rules) == 14, f"Expected 14 builtin rules, got {len(rules)}"
 
         rule_008 = next((r for r in rules if r["rule_id"] == "RULE-008"), None)

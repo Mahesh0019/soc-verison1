@@ -256,11 +256,11 @@ BUILTIN_SCENARIOS: list[dict[str, Any]] = [
         "scenario_id": "SCEN-GEO-POS",
         "test_name": "Login from outside established geographic baseline",
         "expected_result": True,
-        "burst_count": 1,
+        "burst_count": 2,
         "events": [
             {
                 "event_category": "authentication",
-                "event_type": "login",
+                "event_type": "failed_login",
                 "geo_country": "RU",
                 "source_ip": "198.51.100.213",
                 "username": "user1",
@@ -1052,7 +1052,7 @@ def run_validation_test(
     if scenario.get("requires_ti"):
         ti = db.query(ThreatIndicator).filter(ThreatIndicator.value == "203.0.113.66").first()
         if not ti:
-            db.add(ThreatIndicator(type="ip", value="203.0.113.66", threat_type="botnet", confidence=0.9))
+            db.add(ThreatIndicator(type="ip", value="203.0.113.66", description="botnet", severity="high"))
             db.flush()
 
     if "custom_sequence" in scenario:

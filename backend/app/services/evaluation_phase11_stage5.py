@@ -325,7 +325,7 @@ def get_all_stage5_scenarios() -> List[LabeledScenario]:
 # ---------------------------------------------------------------------------
 
 def build_stage5_rules(config_name: str) -> List[dict[str, Any]]:
-    raw_rules = copy.deepcopy(builtin_rules())
+    raw_rules = copy.deepcopy(builtin_rules(mode="baseline"))
 
     if config_name == "baseline":
         return raw_rules

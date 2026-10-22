@@ -818,7 +818,7 @@ def build_stage7_rules(
     sigma_multiplier: float = 2.0,
     min_floor: int = 40,
 ) -> List[dict[str, Any]]:
-    raw_rules = copy.deepcopy(builtin_rules())
+    raw_rules = copy.deepcopy(builtin_rules(mode="baseline"))
 
     if config_name == "baseline_sequential":
         # Production Builtin Rules Unmodified (14 rules)
