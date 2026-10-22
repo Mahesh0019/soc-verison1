@@ -217,7 +217,7 @@ def build_candidate_rules_definitions(config_name: str) -> List[dict[str, Any]]:
     Constructs isolated in-memory rule definitions for evaluation.
     Leaves production code in builtin.py untouched.
     """
-    raw_rules = copy.deepcopy(builtin_rules())
+    raw_rules = copy.deepcopy(builtin_rules(mode="baseline"))
     if config_name == "baseline":
         return raw_rules
 
@@ -522,7 +522,7 @@ class Stage3EvaluationRunner:
             r_name = a.rule.name if a.rule else f"Rule-{a.rule_id}"
             # Find rule_id from conditions
             r_id = f"RULE-{a.rule_id:03d}" if a.rule_id else r_name
-            for r_item in builtin_rules():
+            for r_item in builtin_rules(mode="baseline"):
                 if r_item["name"] == r_name:
                     r_id = r_item["rule_id"]
                     break

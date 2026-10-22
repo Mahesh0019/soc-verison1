@@ -2,7 +2,79 @@ import posixpath
 import statistics
 from datetime import UTC, datetime, timedelta
 from typing import Any
-from urllib.parse import unquote, urlsplit
+from urllib.parse import quote, unquote, unquote_plus, urlsplit
+
+VERIFIED_STATIC_EXTENSIONS = (
+    ".js",
+    ".css",
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".svg",
+    ".ico",
+    ".woff",
+    ".woff2",
+    ".ttf",
+    ".eot",
+    ".map",
+    ".webp",
+)
+
+VERIFIED_STATIC_PREFIXES = (
+    "/assets/",
+    "/static/",
+    "/media/",
+)
+
+
+def escape_like_value(val: str) -> str:
+    """Escapes SQL LIKE/ILIKE pattern special characters (%, _, \\)."""
+    return val.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
+
+
+def extract_decoded_haystack(raw_haystack: str) -> str:
+    """Safely normalizes raw text for attack signature matching.
+
+    Performs bounded (at most two passes) URL decoding and form-encoded space (+)
+    normalization without mutating raw input or database fields, allowing
+    signature matching against URL-encoded attacks (%2e%2e, %3cscript, etc.)
+    and plus-encoded spaces (+or+, union+select) while preserving raw event evidence.
+    """
+    if not raw_haystack:
+        return ""
+    haystack = raw_haystack.lower()
+    variants = [haystack]
+
+    if "+" in haystack:
+        try:
+            plus_decoded = unquote_plus(haystack)
+            if plus_decoded not in variants:
+                variants.append(plus_decoded)
+        except Exception:
+            pass
+
+    if "%" in haystack:
+        try:
+            decoded_1 = unquote(haystack)
+            if decoded_1 not in variants:
+                variants.append(decoded_1)
+            decoded_1_plus = unquote_plus(haystack)
+            if decoded_1_plus not in variants:
+                variants.append(decoded_1_plus)
+
+            target_for_pass2 = decoded_1 if "%" in decoded_1 else decoded_1_plus
+            if "%" in target_for_pass2:
+                try:
+                    decoded_2 = unquote_plus(target_for_pass2)
+                    if decoded_2 not in variants:
+                        variants.append(decoded_2)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+    return " ".join(variants)
 
 from sqlalchemy import and_, case, func, or_
 from sqlalchemy.dialects.postgresql import insert as pg_insert
@@ -499,13 +571,45 @@ def event_matches_filters(event: NormalizedEvent, filters: dict[str, Any]) -> bo
                 normalized_targets = {normalize_request_path(p).rstrip("/") for p in expected if p}
                 if norm_path and norm_path in normalized_targets:
                     return False
+        elif key == "exclude_static_assets":
+            if expected:
+                if event.status_code == 304:
+                    return False
+                clean_path = normalize_request_path(event.request_path)
+                if clean_path:
+                    if any(clean_path.endswith(ext) for ext in VERIFIED_STATIC_EXTENSIONS):
+                        return False
+                    if any(clean_path.startswith(prefix) for prefix in VERIFIED_STATIC_PREFIXES):
+                        return False
+        elif key == "exclude_path_extensions":
+            if expected:
+                clean_path = normalize_request_path(event.request_path)
+                if clean_path and any(clean_path.endswith(str(ext).lower()) for ext in expected if ext):
+                    return False
+        elif key == "exclude_status_codes":
+            if expected and event.status_code in expected:
+                return False
         elif key == "user_agent_contains_any":
             haystack = (event.user_agent or "").lower()
             if not any(str(token).lower() in haystack for token in expected):
                 return False
         elif key == "pattern_any":
-            haystack = f"{event.request_path or ''} {event.message or ''} {event.raw_log or ''} {getattr(event, 'raw_reference', None) or ''} {getattr(event, 'command_line', None) or ''}".lower()
-            if not any(str(token).lower() in haystack for token in expected):
+            raw_text = f"{event.request_path or ''} {event.message or ''} {event.raw_log or ''} {getattr(event, 'raw_reference', None) or ''} {getattr(event, 'command_line', None) or ''}"
+            haystack = extract_decoded_haystack(raw_text)
+            matched = False
+            for token in expected:
+                t_str = str(token).lower()
+                if t_str in haystack:
+                    matched = True
+                    break
+                try:
+                    dec_t = unquote(t_str)
+                    if dec_t != t_str and dec_t in haystack:
+                        matched = True
+                        break
+                except Exception:
+                    pass
+            if not matched:
                 return False
         elif key == "command_line_contains_any":
             haystack = (getattr(event, "command_line", None) or "").lower()
@@ -567,14 +671,14 @@ def apply_filters(query, filters: dict[str, Any]):
             low, high = expected
             query = query.filter(NormalizedEvent.status_code >= low, NormalizedEvent.status_code <= high)
         elif key == "request_path_contains_any":
-            clauses = [NormalizedEvent.request_path.ilike(f"%{token}%") for token in expected]
+            clauses = [NormalizedEvent.request_path.ilike(f"%{escape_like_value(str(token))}%", escape="\\") for token in expected]
             query = query.filter(or_(*clauses))
         elif key == "request_path_not_contains_any":
             if expected:
                 active_tokens = [str(token) for token in expected if token]
                 if active_tokens:
                     clean_path = _clean_request_path_expression()
-                    clauses = [~clean_path.ilike(f"%{token}%") for token in active_tokens]
+                    clauses = [~clean_path.ilike(f"%{escape_like_value(str(token))}%", escape="\\") for token in active_tokens]
                     query = query.filter(or_(NormalizedEvent.request_path.is_(None), and_(*clauses)))
         elif key == "exclude_get_exact_paths":
             if expected:
@@ -605,22 +709,88 @@ def apply_filters(query, filters: dict[str, Any]):
                     clean_path = _clean_request_path_expression()
                     is_excluded = func.lower(clean_path).in_(target_variants)
                     query = query.filter(or_(NormalizedEvent.request_path.is_(None), ~is_excluded))
+        elif key == "exclude_static_assets":
+            if expected:
+                clean_path = _clean_request_path_expression()
+                clean_lower = func.lower(clean_path)
+                ext_clauses = [clean_lower.ilike(f"%{ext}") for ext in VERIFIED_STATIC_EXTENSIONS]
+                prefix_clauses = [clean_lower.ilike(f"{prefix}%") for prefix in VERIFIED_STATIC_PREFIXES]
+                has_traversal = or_(clean_lower.contains(".."), clean_lower.contains("%2e"))
+                is_static_path = and_(~has_traversal, or_(*ext_clauses, *prefix_clauses))
+                not_304 = or_(NormalizedEvent.status_code.is_(None), NormalizedEvent.status_code != 304)
+                not_static_path = or_(NormalizedEvent.request_path.is_(None), ~is_static_path)
+                query = query.filter(and_(not_304, not_static_path))
+        elif key == "exclude_path_extensions":
+            if expected:
+                clean_path = _clean_request_path_expression()
+                clean_lower = func.lower(clean_path)
+                ext_clauses = [clean_lower.ilike(f"%{str(ext).lower()}") for ext in expected if ext]
+                if ext_clauses:
+                    query = query.filter(or_(NormalizedEvent.request_path.is_(None), ~or_(*ext_clauses)))
+        elif key == "exclude_status_codes":
+            if expected:
+                query = query.filter(or_(NormalizedEvent.status_code.is_(None), ~NormalizedEvent.status_code.in_(expected)))
         elif key == "user_agent_contains_any":
-            clauses = [NormalizedEvent.user_agent.ilike(f"%{token}%") for token in expected]
+            clauses = [NormalizedEvent.user_agent.ilike(f"%{escape_like_value(str(token))}%", escape="\\") for token in expected]
             query = query.filter(or_(*clauses))
         elif key == "pattern_any":
-            clauses = []
+            all_match_tokens: set[str] = set()
             for token in expected:
-                clauses.append(NormalizedEvent.request_path.ilike(f"%{token}%"))
-                clauses.append(NormalizedEvent.message.ilike(f"%{token}%"))
-                clauses.append(NormalizedEvent.raw_reference.ilike(f"%{token}%"))
-                clauses.append(NormalizedEvent.command_line.ilike(f"%{token}%"))
+                token_str = str(token)
+                all_match_tokens.add(token_str)
+                if " " in token_str:
+                    all_match_tokens.add(token_str.replace(" ", "+"))
+                    all_match_tokens.add(token_str.replace(" ", "%20"))
+                if "'" in token_str:
+                    all_match_tokens.add(token_str.replace("'", "%27"))
+                    if " " in token_str:
+                        all_match_tokens.add(token_str.replace("'", "%27").replace(" ", "+"))
+                        all_match_tokens.add(token_str.replace("'", "%27").replace(" ", "%20"))
+                try:
+                    enc_1 = quote(token_str, safe="")
+                    if enc_1.lower() != token_str.lower():
+                        all_match_tokens.add(enc_1)
+                        enc_2 = quote(enc_1, safe="")
+                        if enc_2.lower() != enc_1.lower():
+                            all_match_tokens.add(enc_2)
+                except Exception:
+                    pass
+                if "../" in token_str:
+                    all_match_tokens.update(["..%2f", "%2e%2e%2f", "%2e%2e/", "%252e%252e%252f", "%252e%252e/"])
+                if "..\\" in token_str:
+                    all_match_tokens.update(["..%5c", "%2e%2e%5c", "%252e%252e%255c"])
+                if "/etc/passwd" in token_str:
+                    all_match_tokens.update(["%2fetc%2fpasswd", "/etc%2fpasswd", "%2fetc/passwd", "%252fetc%252fpasswd"])
+                if "<script" in token_str.lower():
+                    all_match_tokens.update(["%3cscript", "%253cscript"])
+                if "<img" in token_str.lower():
+                    all_match_tokens.update(["%3cimg", "%253cimg"])
+                if "<svg" in token_str.lower():
+                    all_match_tokens.update(["%3csvg", "%253csvg"])
+                if "<iframe" in token_str.lower():
+                    all_match_tokens.update(["%3ciframe", "%253ciframe"])
+
+            seen_lower: set[str] = set()
+            deduped_tokens: list[str] = []
+            for t in all_match_tokens:
+                t_low = t.lower()
+                if t_low not in seen_lower:
+                    seen_lower.add(t_low)
+                    deduped_tokens.append(t)
+
+            clauses = []
+            for match_token in deduped_tokens:
+                escaped = escape_like_value(match_token)
+                clauses.append(NormalizedEvent.request_path.ilike(f"%{escaped}%", escape="\\"))
+                clauses.append(NormalizedEvent.message.ilike(f"%{escaped}%", escape="\\"))
+                clauses.append(NormalizedEvent.raw_reference.ilike(f"%{escaped}%", escape="\\"))
+                clauses.append(NormalizedEvent.command_line.ilike(f"%{escaped}%", escape="\\"))
             query = query.filter(or_(*clauses))
         elif key == "command_line_contains_any":
-            clauses = [NormalizedEvent.command_line.ilike(f"%{token}%") for token in expected]
+            clauses = [NormalizedEvent.command_line.ilike(f"%{escape_like_value(str(token))}%", escape="\\") for token in expected]
             query = query.filter(or_(*clauses))
         elif key == "dns_query_contains_any":
-            clauses = [NormalizedEvent.dns_query.ilike(f"%{token}%") for token in expected]
+            clauses = [NormalizedEvent.dns_query.ilike(f"%{escape_like_value(str(token))}%", escape="\\") for token in expected]
             query = query.filter(or_(*clauses))
         elif key == "process_in":
             query = query.filter(func.lower(NormalizedEvent.process).in_([str(item).lower() for item in expected]))

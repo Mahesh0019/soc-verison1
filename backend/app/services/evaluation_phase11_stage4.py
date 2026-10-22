@@ -152,7 +152,7 @@ def build_stage4_candidate_rules(config_name: str) -> List[dict[str, Any]]:
     Constructs isolated candidate rule definitions for Stage 4 evaluation.
     Leaves production code in builtin.py untouched.
     """
-    raw_rules = copy.deepcopy(builtin_rules())
+    raw_rules = copy.deepcopy(builtin_rules(mode="baseline"))
 
     if config_name == "baseline":
         return raw_rules

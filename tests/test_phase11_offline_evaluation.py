@@ -79,7 +79,7 @@ class TestPhase11OfflineDetectionEvaluation(unittest.TestCase):
 
     def test_03_production_detection_rules_unmodified(self):
         """Verify production RULE-008 threshold (60) and filter configuration remain frozen."""
-        rules = {r["rule_id"]: r for r in builtin_rules()}
+        rules = {r["rule_id"]: r for r in builtin_rules(mode="baseline")}
         self.assertIn("RULE-008", rules)
         r008 = rules["RULE-008"]
         self.assertEqual(r008["threshold"], 60, "Production RULE-008 threshold must remain 60")

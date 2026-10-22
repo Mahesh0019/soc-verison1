@@ -15,18 +15,34 @@ DEMO_USERS = [
 ]
 
 
-def ensure_builtin_rules(db: Session) -> None:
+def ensure_builtin_rules(db: Session, mode: str = "remediated") -> None:
     try:
-        existing_rules = {rule.name: rule for rule in db.query(DetectionRule).all()}
-        for item in builtin_rules() + network_rules() + endpoint_rules():
-            rule = existing_rules.get(item["name"])
+        all_existing = db.query(DetectionRule).all()
+        existing_by_id = {rule.rule_id: rule for rule in all_existing if rule.rule_id}
+        existing_by_name = {rule.name: rule for rule in all_existing if rule.name}
+
+        for item in builtin_rules(mode=mode) + network_rules() + endpoint_rules():
+            # Lookup by stable rule_id first, then fallback to name
+            rule = existing_by_id.get(item.get("rule_id")) or existing_by_name.get(item.get("name"))
             if not rule:
-                db.add(DetectionRule(**item))
+                new_rule = DetectionRule(**item)
+                db.add(new_rule)
+                if new_rule.rule_id:
+                    existing_by_id[new_rule.rule_id] = new_rule
+                if new_rule.name:
+                    existing_by_name[new_rule.name] = new_rule
             else:
-                # Backfill any metadata fields that were newly introduced or are empty
+                # Update rule attributes safely in-place without violating unique constraints
+                rule.name = item["name"]
+                rule.description = item.get("description", rule.description)
+                rule.severity = item.get("severity", rule.severity)
+                rule.category = item.get("category", rule.category)
+                rule.conditions_json = item.get("conditions_json", rule.conditions_json)
+                rule.threshold = item.get("threshold", rule.threshold)
+                rule.time_window_minutes = item.get("time_window_minutes", rule.time_window_minutes)
+
                 for field in [
                     "rule_id",
-                    "category",
                     "version",
                     "status",
                     "source",
@@ -37,13 +53,19 @@ def ensure_builtin_rules(db: Session) -> None:
                     "expected_data_source",
                     "test_cases_json",
                 ]:
-                    if getattr(rule, field, None) in (None, "", "NOT_MAPPED") and field in item:
+                    if field in item and item[field] is not None:
                         setattr(rule, field, item[field])
+
+                if rule.rule_id:
+                    existing_by_id[rule.rule_id] = rule
+                if rule.name:
+                    existing_by_name[rule.name] = rule
         db.commit()
     except Exception as exc:
         db.rollback()
         import logging
         logging.getLogger("uvicorn.error").exception("Warning in ensure_builtin_rules: %s", exc)
+        raise
 
 
 def seed_demo_data(db: Session) -> dict[str, int]:

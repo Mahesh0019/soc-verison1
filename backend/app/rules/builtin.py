@@ -1,7 +1,8 @@
 from typing import Any
 
 
-def builtin_rules() -> list[dict[str, Any]]:
+def baseline_builtin_rules() -> list[dict[str, Any]]:
+    """Frozen Phase 11 baseline built-in rules (unmodified benchmark ground truth)."""
     return [
         {
             "rule_id": "RULE-001",
@@ -370,3 +371,434 @@ def builtin_rules() -> list[dict[str, Any]]:
             },
         },
     ]
+
+
+def remediated_builtin_rules() -> list[dict[str, Any]]:
+    """Remediated built-in detection rules addressing audit false positives and coverage gaps:
+
+    - RULE-008: excludes verified static assets (.js, .css, images, fonts, 304s) while preserving high-volume API detection.
+    - RULE-007: separates ordinary /login user traffic from reconnaissance while retaining genuine sensitive-path detection (/admin, /.env, /console, /actuator, /.git).
+    - RULE-014: supports attribute-bearing (<script, <img, <svg, <iframe, onerror=) and URL-encoded XSS signatures with safe normalization.
+    - RULE-013: detects directory traversal and URL-encoded traversal indicators (../, %2e%2e, %2fetc%2fpasswd).
+    - RULE-004: contextual geographic anomaly requiring repeated authentication failures rather than alerting on legitimate international logins.
+    """
+    return [
+        {
+            "rule_id": "RULE-001",
+            "name": "Multiple failed login attempts from same IP",
+            "description": "Detects repeated authentication failures from one source IP within a sliding window.",
+            "category": "authentication",
+            "severity": "high",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1110.001",
+            "confidence": 0.80,
+            "false_positive_notes": "Multiple users behind corporate NAT or office gateway forgetting passwords.",
+            "expected_data_source": "auth_telemetry",
+            "enabled": True,
+            "conditions_json": {"type": "threshold", "filters": {"event_type": "failed_login"}, "group_by": ["source_ip"]},
+            "time_window_minutes": 10,
+            "threshold": 5,
+            "test_cases_json": {
+                "positive": "5 consecutive failed_login events from 198.51.100.20 within 10 minutes",
+                "negative": "2 failed_login events from 198.51.100.20 within 10 minutes",
+            },
+        },
+        {
+            "rule_id": "RULE-002",
+            "name": "Successful login after failed attempts",
+            "description": "Detects a successful login following several failures from the same IP and user.",
+            "category": "authentication",
+            "severity": "critical",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1110.001",
+            "confidence": 0.90,
+            "false_positive_notes": "Legitimate user mistyping password repeatedly before entering correct one.",
+            "expected_data_source": "auth_telemetry",
+            "enabled": True,
+            "conditions_json": {"type": "sequence_success_after_failures"},
+            "time_window_minutes": 15,
+            "threshold": 3,
+            "test_cases_json": {
+                "positive": "3 failed_login events followed by successful_login for target user",
+                "negative": "Single successful_login with 0 prior failures",
+            },
+        },
+        {
+            "rule_id": "RULE-003",
+            "name": "Suspicious admin login",
+            "description": "Flags successful privileged account logins for analyst review.",
+            "category": "privilege_abuse",
+            "severity": "high",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1078.003",
+            "confidence": 0.88,
+            "false_positive_notes": "Authorized routine system maintenance by IT staff during maintenance windows.",
+            "expected_data_source": "auth_telemetry",
+            "enabled": True,
+            "conditions_json": {
+                "type": "threshold",
+                "filters": {"event_type": "successful_login", "username_in": ["admin", "root", "administrator"]},
+                "group_by": ["username", "source_ip"],
+            },
+            "time_window_minutes": 30,
+            "threshold": 1,
+            "test_cases_json": {
+                "positive": "successful_login event with username 'admin'",
+                "negative": "successful_login event with username 'standard_user'",
+            },
+        },
+        {
+            "rule_id": "RULE-004",
+            "name": "Repeated failed login from unusual country",
+            "description": "Detects repeated failed authentication attempts from countries outside the expected baseline.",
+            "category": "account_anomaly",
+            "severity": "medium",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1078",
+            "confidence": 0.75,
+            "false_positive_notes": "Employee traveling abroad or authenticating through corporate international VPN exit.",
+            "expected_data_source": "auth_telemetry",
+            "enabled": True,
+            "conditions_json": {
+                "type": "threshold",
+                "filters": {
+                    "event_category": "authentication",
+                    "event_type": "failed_login",
+                    "geo_country_not_in": ["US", "TR", "DE", "GB", "IN"],
+                },
+                "group_by": ["source_ip", "geo_country"],
+            },
+            "time_window_minutes": 20,
+            "threshold": 2,
+            "test_cases_json": {
+                "positive": "2 failed_login events with geo_country='CN' within 20 minutes",
+                "negative": "1 successful_login event from unusual country or failed_login from baseline country",
+            },
+        },
+        {
+            "rule_id": "RULE-005",
+            "name": "High number of 404 responses",
+            "description": "Detects many HTTP 404 responses from a single source IP indicating automated crawling.",
+            "category": "reconnaissance",
+            "severity": "medium",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1595.002",
+            "confidence": 0.65,
+            "false_positive_notes": "Search engine crawler indexing deprecated URLs or broken frontend client links.",
+            "expected_data_source": "web_telemetry",
+            "enabled": True,
+            "conditions_json": {"type": "threshold", "filters": {"status_code": 404}, "group_by": ["source_ip"]},
+            "time_window_minutes": 10,
+            "threshold": 10,
+            "test_cases_json": {
+                "positive": "10 HTTP 404 events from single source_ip within 10 minutes",
+                "negative": "3 HTTP 404 events from single source_ip within 10 minutes",
+            },
+        },
+        {
+            "rule_id": "RULE-006",
+            "name": "Possible directory brute force",
+            "description": "Detects repeated 4xx client errors probing web endpoints from one source IP.",
+            "category": "reconnaissance",
+            "severity": "high",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1595.002",
+            "confidence": 0.80,
+            "false_positive_notes": "Vigorous automated crawler or broken single-page application router looping misses.",
+            "expected_data_source": "web_telemetry",
+            "enabled": True,
+            "conditions_json": {
+                "type": "threshold",
+                "filters": {"event_category": "web", "status_code_range": [400, 499]},
+                "group_by": ["source_ip"],
+            },
+            "time_window_minutes": 10,
+            "threshold": 15,
+            "test_cases_json": {
+                "positive": "15 4xx responses from single source_ip within 10 minutes",
+                "negative": "5 4xx responses from single source_ip within 10 minutes",
+            },
+        },
+        {
+            "rule_id": "RULE-007",
+            "name": "Repeated sensitive path access",
+            "description": "Detects repeated requests to paths such as /admin, /wp-admin, /.env, /console, and /actuator.",
+            "category": "reconnaissance",
+            "severity": "high",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1595.002",
+            "confidence": 0.85,
+            "false_positive_notes": "Internal admin refreshing configuration page repeatedly during setup.",
+            "expected_data_source": "web_telemetry",
+            "enabled": True,
+            "conditions_json": {
+                "type": "threshold",
+                "filters": {
+                    "request_path_contains_any": ["/admin", "/wp-admin", "/.env", "/console", "/actuator", "/.git"],
+                    "exclude_get_exact_paths": [
+                        "/rest/admin/application-version",
+                        "/rest/admin/application-configuration",
+                    ],
+                },
+                "group_by": ["source_ip"],
+            },
+            "time_window_minutes": 10,
+            "threshold": 4,
+            "test_cases_json": {
+                "positive": "4 requests to '/.env' from single source_ip within 10 minutes",
+                "negative": "1 request to '/admin' from single source_ip",
+            },
+        },
+        {
+            "rule_id": "RULE-008",
+            "name": "Large request volume burst",
+            "description": "Detects a large number of web requests in a short time window indicative of DoS or high-rate scrape while excluding static asset noise.",
+            "category": "traffic_anomaly",
+            "severity": "medium",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1499.001",
+            "confidence": 0.60,
+            "false_positive_notes": "Load testing, asset preloading, or legitimate high-throughput API client.",
+            "expected_data_source": "web_telemetry",
+            "enabled": True,
+            "conditions_json": {
+                "type": "threshold",
+                "filters": {
+                    "event_category": "web",
+                    "exclude_static_assets": True,
+                },
+                "group_by": ["source_ip"],
+            },
+            "time_window_minutes": 5,
+            "threshold": 60,
+            "test_cases_json": {
+                "positive": "60 web requests from single source_ip in 5 minutes",
+                "negative": "20 web requests from single source_ip in 5 minutes",
+            },
+        },
+        {
+            "rule_id": "RULE-009",
+            "name": "Suspicious user agent",
+            "description": "Detects offensive security tool user agents including curl, sqlmap, nikto, and python-requests.",
+            "category": "reconnaissance",
+            "severity": "high",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1071.001",
+            "confidence": 0.75,
+            "false_positive_notes": "Internal developer testing endpoints via curl or automated python-requests integration.",
+            "expected_data_source": "web_telemetry",
+            "enabled": True,
+            "conditions_json": {
+                "type": "threshold",
+                "filters": {"user_agent_contains_any": ["curl", "sqlmap", "nikto", "python-requests"]},
+                "group_by": ["source_ip", "user_agent"],
+            },
+            "time_window_minutes": 10,
+            "threshold": 1,
+            "test_cases_json": {
+                "positive": "Request with user_agent='sqlmap/1.5'",
+                "negative": "Request with user_agent='Mozilla/5.0 (Windows NT 10.0; Win64; x64)'",
+            },
+        },
+        {
+            "rule_id": "RULE-010",
+            "name": "Firewall denied traffic spike",
+            "description": "Detects repeated denied firewall events from one source IP indicating active port probing.",
+            "category": "network",
+            "severity": "medium",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1046",
+            "confidence": 0.70,
+            "false_positive_notes": "Misconfigured internal daemon repeatedly attempting connection to closed service.",
+            "expected_data_source": "firewall_telemetry",
+            "enabled": True,
+            "conditions_json": {"type": "threshold", "filters": {"event_type": "firewall_denied"}, "group_by": ["source_ip"]},
+            "time_window_minutes": 10,
+            "threshold": 20,
+            "test_cases_json": {
+                "positive": "20 firewall_denied events from single source_ip in 10 minutes",
+                "negative": "5 firewall_denied events from single source_ip in 10 minutes",
+            },
+        },
+        {
+            "rule_id": "RULE-011",
+            "name": "Repeated access from blacklisted indicator",
+            "description": "Matches events against the threat intelligence blacklist table.",
+            "category": "threat_intel",
+            "severity": "critical",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1071",
+            "confidence": 0.98,
+            "false_positive_notes": "Stale C2 indicator value that has been reassigned to legitimate cloud host.",
+            "expected_data_source": "threat_intel",
+            "enabled": True,
+            "conditions_json": {"type": "blacklist"},
+            "time_window_minutes": 60,
+            "threshold": 1,
+            "test_cases_json": {
+                "positive": "Event with source_ip matching indicator in threat_indicators table",
+                "negative": "Event with clean unlisted source_ip",
+            },
+        },
+        {
+            "rule_id": "RULE-012",
+            "name": "SQL injection attempt detected",
+            "description": "Detects SQL injection signatures in HTTP request paths or messages.",
+            "category": "web_attack",
+            "severity": "critical",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1190",
+            "confidence": 0.95,
+            "false_positive_notes": "Legitimate product searches for database books, quotes, or mathematical strings.",
+            "expected_data_source": "web_telemetry",
+            "enabled": True,
+            "conditions_json": {
+                "type": "pattern",
+                "filters": {
+                    "pattern_any": ["' or '1'='1", "union select", "sleep(", "' or 1=1", "select * from", "-- -"]
+                },
+                "group_by": ["source_ip"],
+            },
+            "time_window_minutes": 15,
+            "threshold": 1,
+            "test_cases_json": {
+                "positive": "Request with path '/search?q=' UNION SELECT 1,password FROM users--'",
+                "negative": "Request with path '/search?q=apple+juice'",
+            },
+        },
+        {
+            "rule_id": "RULE-013",
+            "name": "Path traversal attempt detected",
+            "description": "Detects directory traversal sequences and URL-encoded traversal indicators in requested URLs or query parameters.",
+            "category": "web_attack",
+            "severity": "high",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1083",
+            "confidence": 0.92,
+            "false_positive_notes": "Legitimate relative path references in file management or CMS applications.",
+            "expected_data_source": "web_telemetry",
+            "enabled": True,
+            "conditions_json": {
+                "type": "pattern",
+                "filters": {
+                    "pattern_any": ["../", "..\\", "..%2f", "..%5c", "%2e%2e", "/etc/passwd", "win.ini"]
+                },
+                "group_by": ["source_ip"],
+            },
+            "time_window_minutes": 15,
+            "threshold": 1,
+            "test_cases_json": {
+                "positive": "Request with path '/ftp/..%2f..%2fetc/passwd'",
+                "negative": "Request with path '/assets/images/logo.png'",
+            },
+        },
+        {
+            "rule_id": "RULE-014",
+            "name": "Cross-site scripting probe detected",
+            "description": "Detects common and URL-encoded XSS payload signatures including attribute-bearing tags in HTTP parameters.",
+            "category": "web_attack",
+            "severity": "high",
+            "version": "1.0",
+            "status": "ACTIVE",
+            "source": "builtin",
+            "owner": "secops-team",
+            "mitre_technique": "T1059.007",
+            "confidence": 0.90,
+            "false_positive_notes": "Developer forum discussion, comments, or documentation containing HTML snippets.",
+            "expected_data_source": "web_telemetry",
+            "enabled": True,
+            "conditions_json": {
+                "type": "pattern",
+                "filters": {
+                    "pattern_any": [
+                        "<script",
+                        "<img",
+                        "<svg",
+                        "<iframe",
+                        "javascript:",
+                        "onerror=",
+                        "onload=",
+                        "alert(",
+                    ]
+                },
+                "group_by": ["source_ip"],
+            },
+            "time_window_minutes": 15,
+            "threshold": 1,
+            "test_cases_json": {
+                "positive": "Request with query parameter '<script>alert(1)</script>'",
+                "negative": "Request with query parameter 'text=hello+world'",
+            },
+        },
+    ]
+
+
+VALID_BUILTIN_RULE_MODES = {"baseline", "frozen", "remediated"}
+
+
+def builtin_rules(mode: str | None = None, remediated: bool | None = None) -> list[dict[str, Any]]:
+    """Returns built-in detection rules via explicit, deterministic selection.
+
+    Deterministic selection:
+    1. Rejects unknown mode values with ValueError.
+    2. Rejects contradictory mode and remediated arguments with ValueError.
+    3. Explicit `remediated=False` or `mode in ('baseline', 'frozen')` returns baseline rules.
+    4. Default (`mode is None` and `remediated is None`, `mode='remediated'`, or `remediated is True`): returns remediated rules.
+    """
+    if mode is not None and mode not in VALID_BUILTIN_RULE_MODES:
+        raise ValueError(
+            f"Invalid mode '{mode}'. Expected one of: {', '.join(sorted(VALID_BUILTIN_RULE_MODES))}."
+        )
+
+    if mode is not None and remediated is not None:
+        if remediated is True and mode in ("baseline", "frozen"):
+            raise ValueError(
+                f"Contradictory arguments: mode='{mode}' cannot be combined with remediated=True."
+            )
+        if remediated is False and mode == "remediated":
+            raise ValueError(
+                "Contradictory arguments: mode='remediated' cannot be combined with remediated=False."
+            )
+
+    if remediated is False or mode in ("baseline", "frozen"):
+        return baseline_builtin_rules()
+    return remediated_builtin_rules()
